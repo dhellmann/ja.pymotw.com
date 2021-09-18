@@ -1,0 +1,524 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>signal &#8211; 非同期のシステムイベント通知を受け取る - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="プロセス間通信とネットワーキング" href="../ipc.html" />
+    <link rel="next" title="subprocess – プロセスを生成して連携する" href="../subprocess/index.html" />
+    <link rel="prev" title="asyncore – 非同期 I/O ハンドラ" href="../asyncore/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">signal &#8211; 非同期のシステムイベント通知を受け取る</a><ul>
+<li><a class="reference internal" href="#id1">シグナルを受け取る</a></li>
+<li><a class="reference internal" href="#getsignal">getsignal()</a></li>
+<li><a class="reference internal" href="#id2">シグナルを送る</a></li>
+<li><a class="reference internal" href="#id3">アラーム</a></li>
+<li><a class="reference internal" href="#id4">シグナルを無視する</a></li>
+<li><a class="reference internal" href="#id5">シグナルとスレッド</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../asyncore/index.html" title="前の章へ"><strong>前:</strong> asyncore &#8211; 非同期 I/O ハンドラ</a><br/>
+          <a href="../subprocess/index.html" title="次の章へ"><strong>次:</strong> subprocess &#8211; プロセスを生成して連携する</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/signal/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../subprocess/index.html" title="subprocess – プロセスを生成して連携する"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../asyncore/index.html" title="asyncore – 非同期 I/O ハンドラ"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../ipc.html" accesskey="U">プロセス間通信とネットワーキング</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="signal">
+<h1>signal &#8211; 非同期のシステムイベント通知を受け取る<a class="headerlink" href="#signal" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-signal"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">非同期のシステムイベント通知を受け取る</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Unix シグナルハンドラでプログラミングすることは普通以上の努力が必要です。本稿はシグナルの入門です。全てのプラットホーム上で正しくシグナルを利用することの詳細は説明していません。Unix のバージョンを横断して標準仕様があり、また変形した仕様もあります。そのため、実行して問題があれば使用中の OS のドキュメントを調べてください。</p>
+</div>
+<p>シグナルはあるイベントをプログラムへ通知するオペレーティングシステムの機能で、非同期にその通知を受け取ります。シグナルはそのシステムが生成するか、1つのプロセスから他のプロセスへ送信されます。シグナルはプログラムの通常処理の流れを中断させるので、シグナルを受信したら何らかの操作(特に I/O)でエラーを発生させることができます。</p>
+<p>シグナルは整数値で識別され、オペレーティングシステムの C 言語のヘッダに定義されています。Python は <a class="reference internal" href="#module-signal" title="非同期のシステムイベント通知を受け取る"><tt class="xref py py-mod docutils literal"><span class="pre">signal</span></tt></a> モジュールのシンボルとしてプラットホームに適したシグナルを定義します。 <tt class="docutils literal"><span class="pre">SIGINT</span></tt> と <tt class="docutils literal"><span class="pre">SIGUSR1</span></tt> を使用する例を次に示します。両方とも全ての Unix や Unix に似たシステムで定義されています。</p>
+<div class="section" id="id1">
+<h2>シグナルを受け取る<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>イベントベースプログラミングの別の形態として、あるシグナルが発生したときに実行される <em>シグナルハンドラ</em> というコールバック関数を設定することでそのシグナルを受け取れます。シグナルハンドラへの引数はシグナル番号とシグナルによって中断されたプログラム位置のスタックフレームです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">receive_signal</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;Received:&#39;</span><span class="p">,</span> <span class="n">signum</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGUSR1</span><span class="p">,</span> <span class="n">receive_signal</span><span class="p">)</span>
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGUSR2</span><span class="p">,</span> <span class="n">receive_signal</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;My PID is:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Waiting...&#39;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この例は数秒毎に停止しながら無限ループする比較的シンプルなものです。シグナルが発生したとき sleep 呼び出しは中断されて、シグナルハンドラ <tt class="docutils literal"><span class="pre">receive_signal()</span></tt> がシグナル番号を表示します。シグナルハンドラが返される場合、ループは継続します。</p>
+<p>実行中のプログラムへシグナルを送信するために kill コマンドを使用します。次の出力を生成するために1つのウィンドウで <tt class="docutils literal"><span class="pre">signal_signal.py</span></tt> を実行しました。その後、別のウィンドウで <tt class="docutils literal"><span class="pre">kill</span> <span class="pre">-USR1</span> <span class="pre">$pid</span></tt> , <tt class="docutils literal"><span class="pre">kill</span> <span class="pre">-USR2</span> <span class="pre">$pid</span></tt> , <tt class="docutils literal"><span class="pre">kill</span> <span class="pre">-INT</span> <span class="pre">$pid</span></tt> を実行しました。</p>
+<div class="highlight-python"><pre>$ python signal_signal.py
+My PID is: 71387
+Waiting...
+Waiting...
+Waiting...
+Received: 30
+Waiting...
+Waiting...
+Received: 31
+Waiting...
+Waiting...
+Traceback (most recent call last):
+  File "signal_signal.py", line 25, in &lt;module&gt;
+    time.sleep(3)
+KeyboardInterrupt</pre>
+</div>
+</div>
+<div class="section" id="getsignal">
+<h2>getsignal()<a class="headerlink" href="#getsignal" title="Permalink to this headline">¶</a></h2>
+<p>あるシグナルに登録されているシグナルハンドラを確認するには <tt class="xref py py-func docutils literal"><span class="pre">getsignal()</span></tt> を使用してください。そして、引数にシグナル番号を渡してください。返り値は登録されたハンドラか、 <tt class="docutils literal"><span class="pre">signal.SIG_IGN</span></tt> (シグナルが無視された場合), <tt class="docutils literal"><span class="pre">signal.SIG_DFL</span></tt> (デフォルト動作が用いられた)の特殊な値のどれかか、又は None (存在するシグナルハンドラが Python ではなく C で登録されていた場合)です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">signal</span>
+
+<span class="k">def</span> <span class="nf">alarm_received</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">return</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">alarm_received</span><span class="p">)</span>
+
+<span class="n">signals_to_names</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;SIG&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;SIG_&#39;</span><span class="p">):</span>
+        <span class="n">signals_to_names</span><span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span> <span class="o">=</span> <span class="n">n</span>
+
+<span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">signals_to_names</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">getsignal</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">handler</span> <span class="ow">is</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIG_DFL</span><span class="p">:</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="s">&#39;SIG_DFL&#39;</span>
+    <span class="k">elif</span> <span class="n">handler</span> <span class="ow">is</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIG_IGN</span><span class="p">:</span>
+        <span class="n">handler</span> <span class="o">=</span> <span class="s">&#39;SIG_IGN&#39;</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%-10s</span><span class="s"> (</span><span class="si">%2d</span><span class="s">):&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">),</span> <span class="n">handler</span>
+</pre></div>
+</div>
+<p>大事なことなので2回言いますが、それぞれの OS  は違ったシグナルを定義しているかもしれないので、他のシステムでこのサンプルコードを実行すると出力結果は変わるかもしれません。次の実行結果は OS X のものです。</p>
+<div class="highlight-python"><pre>$ python signal_getsignal.py
+SIGHUP     ( 1): SIG_DFL
+SIGINT     ( 2): &amp;lt;built-in function default_int_handler&amp;gt;
+SIGQUIT    ( 3): SIG_DFL
+SIGILL     ( 4): SIG_DFL
+SIGTRAP    ( 5): SIG_DFL
+SIGIOT     ( 6): SIG_DFL
+SIGEMT     ( 7): SIG_DFL
+SIGFPE     ( 8): SIG_DFL
+SIGKILL    ( 9): None
+SIGBUS     (10): SIG_DFL
+SIGSEGV    (11): SIG_DFL
+SIGSYS     (12): SIG_DFL
+SIGPIPE    (13): SIG_IGN
+SIGALRM    (14): &amp;lt;function alarm_received at 0x7c3f0&amp;gt;
+SIGTERM    (15): SIG_DFL
+SIGURG     (16): SIG_DFL
+SIGSTOP    (17): None
+SIGTSTP    (18): SIG_DFL
+SIGCONT    (19): SIG_DFL
+SIGCHLD    (20): SIG_DFL
+SIGTTIN    (21): SIG_DFL
+SIGTTOU    (22): SIG_DFL
+SIGIO      (23): SIG_DFL
+SIGXCPU    (24): SIG_DFL
+SIGXFSZ    (25): SIG_IGN
+SIGVTALRM  (26): SIG_DFL
+SIGPROF    (27): SIG_DFL
+SIGWINCH   (28): SIG_DFL
+SIGINFO    (29): SIG_DFL
+SIGUSR1    (30): SIG_DFL
+SIGUSR2    (31): SIG_DFL</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>シグナルを送る<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>シグナルを送るための関数は <tt class="docutils literal"><span class="pre">os.kill()</span></tt> です。その使用方法は PyMOTW の <a class="reference internal" href="../os/index.html#module-os" title="Portable access to operating system specific features."><tt class="xref py py-mod docutils literal"><span class="pre">os</span></tt></a> モジュール や <a class="reference internal" href="../os/index.html#creating-processes-with-os-fork"><em>Creating Processes with os.fork()</em></a> で説明しています。</p>
+</div>
+<div class="section" id="id3">
+<h2>アラーム<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>アラームは一定時間が経過した後にプログラムがそのことを通知するために OS へ依頼する特殊なシグナルの種類です。 <a class="reference external" href="http://docs.python.org/lib/node545.html">os の標準モジュールドキュメント</a> によると、I/O 操作や他のシステムコールが永久にブロッキングしないようにするために役に立ちます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">receive_alarm</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;Alarm :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+
+<span class="c"># 2秒で receive_alarm を呼び出す</span>
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">receive_alarm</span><span class="p">)</span>
+<span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;Before:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;After :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>この例では <tt class="xref py py-func docutils literal"><span class="pre">sleep()</span></tt> の呼び出しは4秒間継続されません。</p>
+<div class="highlight-python"><pre>$ python signal_alarm.py
+Before: Sun Aug 17 10:51:09 2008
+Alarm : Sun Aug 17 10:51:11 2008
+After : Sun Aug 17 10:51:11 2008</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>シグナルを無視する<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>シグナルを無視するためにはハンドラとして <tt class="docutils literal"><span class="pre">SIG_IGN</span></tt> を登録します。このスクリプトは <tt class="docutils literal"><span class="pre">SIGINT</span></tt> のデフォルトハンドラを <tt class="docutils literal"><span class="pre">SIG_IGN</span></tt> で置き換えて <tt class="docutils literal"><span class="pre">SIGUSR1</span></tt> のために登録します。その後、受け取るシグナルを待つために <tt class="xref py py-func docutils literal"><span class="pre">signal.pause()</span></tt> を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">do_exit</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIG_IGN</span><span class="p">)</span>
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGUSR1</span><span class="p">,</span> <span class="n">do_exit</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;My PID:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>通常では <tt class="docutils literal"><span class="pre">SIGINT</span></tt> (Ctrl-C を入力したとき、シェルからプログラムへ送信されるシグナル)は <a class="reference internal" href="../exceptions/index.html#exceptions-keyboardinterrupt"><em>KeyboardInterrupt</em></a> を発生させます。この例では <tt class="docutils literal"><span class="pre">SIGINT</span></tt> を無視して <tt class="docutils literal"><span class="pre">SIGUSR1</span></tt> を受け取ったときに <a class="reference internal" href="../exceptions/index.html#exceptions-systemexit"><em>SystemExit</em></a> を発生させます。 <tt class="docutils literal"><span class="pre">^C</span></tt> はターミナルからそのスクリプトを終了させようと Ctrl-C を入力したことを表しています。 <tt class="docutils literal"><span class="pre">kill</span> <span class="pre">-USR1</span> <span class="pre">72598</span></tt> を他のターミナルから実行することで最終的にそのスクリプトを終了させます。</p>
+<div class="highlight-python"><pre>$ python signal_ignore.py
+My PID: 72598
+^C^C^C^CExiting</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>シグナルとスレッド<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>シグナルとスレッドを同時に使用することは一般的にうまくいきません。1つのプロセスのメインスレッドのみがシグナルを受け取るからです。次の例では、1つのスレッドでシグナルを待つシグナルハンドラをセットします。そして、他の一方からシグナルを送ります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">signal_handler</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;Received signal </span><span class="si">%d</span><span class="s"> in </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">())</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGUSR1</span><span class="p">,</span> <span class="n">signal_handler</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">wait_for_signal</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;Waiting for signal in&#39;</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+    <span class="n">signal</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;Done waiting&#39;</span>
+
+<span class="c"># シグナルを受け取らないスレッドを開始する</span>
+<span class="n">receiver</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">wait_for_signal</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;receiver&#39;</span><span class="p">)</span>
+<span class="n">receiver</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">send_signal</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;Sending signal in&#39;</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGUSR1</span><span class="p">)</span>
+
+<span class="n">sender</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">send_signal</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;sender&#39;</span><span class="p">)</span>
+<span class="n">sender</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">sender</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+<span class="c"># シグナルを確認するためにスレッドを待ちます(発生しない！)</span>
+<span class="k">print</span> <span class="s">&#39;Waiting for&#39;</span><span class="p">,</span> <span class="n">receiver</span>
+<span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">receiver</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>複数のシグナルハンドラがメインスレッドで全て登録されていることに注意してください。これはスレッドとシグナルを同時に使用するために根本となるプラットホームの機能に関係なく、Python の signal モジュール実装の必須条件です。receiver スレッドは <tt class="xref py py-func docutils literal"><span class="pre">signal.pause()</span></tt> を呼び出しますが、そのスレッドはシグナルを受け取りません。receiver スレッドは決して終了しないので永久にブロッキングしないようにサンプルコードの最後付近で <tt class="docutils literal"><span class="pre">signal.alarm(2)</span></tt> を呼び出します。</p>
+<div class="highlight-python"><pre>$ python signal_threads.py
+Waiting for signal in &lt;Thread(receiver, started)&gt;
+Sending signal in &lt;Thread(sender, started)&gt;
+Received signal 30 in &lt;_MainThread(MainThread, started)&gt;
+Waiting for &lt;Thread(receiver, started)&gt;
+Alarm clock</pre>
+</div>
+<p>アラームはスレッドの中でセットされていますが、そのシグナルもまたメインスレッドで受け取られます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="k">def</span> <span class="nf">signal_handler</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(),</span> <span class="s">&#39;Alarm in&#39;</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGALRM</span><span class="p">,</span> <span class="n">signal_handler</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">use_alarm</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(),</span> <span class="s">&#39;Setting alarm in&#39;</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+    <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(),</span> <span class="s">&#39;Sleeping in&#39;</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(),</span> <span class="s">&#39;Done with sleep&#39;</span>
+
+<span class="c"># シグナルを受け取らないスレッドを開始する</span>
+<span class="n">alarm_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">use_alarm</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;alarm_thread&#39;</span><span class="p">)</span>
+<span class="n">alarm_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c"># シグナルを確認するためにスレッドを待ちます(発生しない！)</span>
+<span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(),</span> <span class="s">&#39;Waiting for&#39;</span><span class="p">,</span> <span class="n">alarm_thread</span>
+<span class="n">alarm_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(),</span> <span class="s">&#39;Exiting normally&#39;</span>
+</pre></div>
+</div>
+<p>そのアラームは <tt class="xref py py-func docutils literal"><span class="pre">use_alarm()</span></tt> の <tt class="xref py py-func docutils literal"><span class="pre">sleep()</span></tt> 呼び出しを中断させないことに注意してください。</p>
+<div class="highlight-python"><pre>$ python signal_threads_alarm.py
+Sun Aug 17 12:06:00 2008 Setting alarm in &lt;Thread(alarm_thread, started)&gt;
+Sun Aug 17 12:06:00 2008 Sleeping in &lt;Thread(alarm_thread, started)&gt;
+Sun Aug 17 12:06:00 2008 Waiting for &lt;Thread(alarm_thread, started)&gt;;
+Sun Aug 17 12:06:03 2008 Done with sleep
+Sun Aug 17 12:06:03 2008 Alarm in &lt;_MainThread(MainThread, started)&gt;
+Sun Aug 17 12:06:03 2008 Exiting normally</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-signal.html">signal</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../os/index.html#creating-processes-with-os-fork"><em>Creating Processes with os.fork()</em></a></dt>
+<dd><tt class="xref py py-func docutils literal"><span class="pre">kill()</span></tt> 関数はプロセス間でシグナルを送るために使用されます。</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../subprocess/index.html" title="subprocess – プロセスを生成して連携する"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../asyncore/index.html" title="asyncore – 非同期 I/O ハンドラ"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../ipc.html" >プロセス間通信とネットワーキング</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

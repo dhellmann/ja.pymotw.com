@@ -1,0 +1,374 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>anydbm &#8211; DBM スタイルのデータベースへのアクセス - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データの永続化" href="../persistence.html" />
+    <link rel="next" title="dbhash – BSD データベースライブラリ向けの DBM スタイル API" href="../dbhash/index.html" />
+    <link rel="prev" title="データの永続化" href="../persistence.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">anydbm &#8211; DBM スタイルのデータベースへのアクセス</a><ul>
+<li><a class="reference internal" href="#id1">新たなデータベースを作成する</a></li>
+<li><a class="reference internal" href="#id2">既存のデータベースをオープンする</a></li>
+<li><a class="reference internal" href="#id3">エラーケース</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../persistence.html" title="前の章へ"><strong>前:</strong> データの永続化</a><br/>
+          <a href="../dbhash/index.html" title="次の章へ"><strong>次:</strong> dbhash &#8211; BSD データベースライブラリ向けの DBM スタイル API</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/anydbm/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dbhash/index.html" title="dbhash – BSD データベースライブラリ向けの DBM スタイル API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../persistence.html" title="データの永続化"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../persistence.html" accesskey="U">データの永続化</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="anydbm-dbm">
+<h1>anydbm &#8211; DBM スタイルのデータベースへのアクセス<a class="headerlink" href="#anydbm-dbm" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-anydbm"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a> モジュールは、文字列を含むレコードへアクセスするためにシンプルな文字列をキーとする DBM スタイルのデータベースのフロントエンドです。それは <a class="reference internal" href="../whichdb/index.html#module-whichdb" title="DBM スタイルのデータベースフォーマットを確認する"><tt class="xref py py-mod docutils literal"><span class="pre">whichdb</span></tt></a> モジュールで <a class="reference internal" href="../dbhash/index.html#module-dbhash" title="BSD データベースライブラリ向けの DBM スタイル API"><tt class="xref py py-mod docutils literal"><span class="pre">dbhash</span></tt></a>, <a class="reference internal" href="../gdbm/index.html#module-gdbm" title="dbm ライブラリの GNU バージョン"><tt class="xref py py-mod docutils literal"><span class="pre">gdbm</span></tt></a>, <a class="reference internal" href="../dbm/index.html#module-dbm" title="シンプルなデータベースインタフェース"><tt class="xref py py-mod docutils literal"><span class="pre">dbm</span></tt></a> の中からデータベースを識別して、その適切なモジュールでデータベースをオープンします。そして <a class="reference internal" href="../pickle/index.html#module-pickle" title="Python オブジェクトシリアライゼーション"><tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt></a> でオブジェクトを格納する <a class="reference internal" href="../shelve/index.html#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> モジュールのバックエンドとして使用されます。</p>
+<div class="section" id="id1">
+<h2>新たなデータベースを作成する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>新しいデータベースのストレージフォーマットは次の順番でそれぞれのモジュールを調べて選択されます。</p>
+<ul class="simple">
+<li><a class="reference internal" href="../dbhash/index.html#module-dbhash" title="BSD データベースライブラリ向けの DBM スタイル API"><tt class="xref py py-mod docutils literal"><span class="pre">dbhash</span></tt></a></li>
+<li><a class="reference internal" href="../gdbm/index.html#module-gdbm" title="dbm ライブラリの GNU バージョン"><tt class="xref py py-mod docutils literal"><span class="pre">gdbm</span></tt></a></li>
+<li><a class="reference internal" href="../dbm/index.html#module-dbm" title="シンプルなデータベースインタフェース"><tt class="xref py py-mod docutils literal"><span class="pre">dbm</span></tt></a></li>
+<li><a class="reference internal" href="../dumbdbm/index.html#module-dumbdbm" title="移植性の高い DBM 実装"><tt class="xref py py-mod docutils literal"><span class="pre">dumbdbm</span></tt></a></li>
+</ul>
+<p><tt class="xref py py-func docutils literal"><span class="pre">open()</span></tt> 関数は、データベースファイルを管理するために <em>flags</em> を取ります。必要に応じて新たなデータベースを作成するには <tt class="docutils literal"><span class="pre">'c'</span></tt> を、毎回新たなデータベースを作成するには <tt class="docutils literal"><span class="pre">'n'</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">anydbm</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">anydbm</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;/tmp/example.db&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="p">[</span><span class="s">&#39;key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;value&#39;</span>
+<span class="n">db</span><span class="p">[</span><span class="s">&#39;today&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Sunday&#39;</span>
+<span class="n">db</span><span class="p">[</span><span class="s">&#39;author&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Doug&#39;</span>
+<span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python anydbm_new.py</pre>
+</div>
+<p>このサンプルでは、example.db のファイルは毎回、初期化されます。どのデータベースが作成されるかを調べるには <a class="reference internal" href="../whichdb/index.html#module-whichdb" title="DBM スタイルのデータベースフォーマットを確認する"><tt class="xref py py-mod docutils literal"><span class="pre">whichdb</span></tt></a> を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">whichdb</span>
+
+<span class="k">print</span> <span class="n">whichdb</span><span class="o">.</span><span class="n">whichdb</span><span class="p">(</span><span class="s">&#39;/tmp/example.db&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>実行環境にインストールされたモジュール次第で実行結果は変わる可能性があります。</p>
+<div class="highlight-python"><pre>$ python anydbm_whichdb.py
+dbhash</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>既存のデータベースをオープンする<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>既存のデータベースをオープンするには、 <em>flags</em> に <tt class="docutils literal"><span class="pre">'r'</span></tt> (読み込み専用)か <tt class="docutils literal"><span class="pre">'w'</span></tt> (読み書き) のどちらかを指定してください。既存のデータベースは自動的に <a class="reference internal" href="../whichdb/index.html#module-whichdb" title="DBM スタイルのデータベースフォーマットを確認する"><tt class="xref py py-mod docutils literal"><span class="pre">whichdb</span></tt></a> で識別されるのでフォーマットに関して心配する必要はありません。ファイルが識別されると、適切なモジュールがそのファイルをオープンするために使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">anydbm</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">anydbm</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;/tmp/example.db&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;keys():&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;iterating:&#39;</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span>
+    <span class="k">print</span> <span class="s">&#39;db[&quot;author&quot;] =&#39;</span><span class="p">,</span> <span class="n">db</span><span class="p">[</span><span class="s">&#39;author&#39;</span><span class="p">]</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>オープンされた <tt class="docutils literal"><span class="pre">db</span></tt> はディクショナリによく似たオブジェクトで、ディクショナリで普通に使うメソッドをサポートしています。</p>
+<div class="highlight-python"><pre>$ python anydbm_existing.py
+keys(): ['author', 'key', 'today']
+iterating: author Doug
+iterating: key value
+iterating: today Sunday
+db["author"] = Doug</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>エラーケース<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>データベースのキーは文字列でなければなりません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">anydbm</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">anydbm</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;/tmp/example.db&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">db</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;one&#39;</span>
+<span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>文字列以外の型を渡すと <a class="reference internal" href="../exceptions/index.html#exceptions-typeerror"><em>TypeError</em></a> が発生します。</p>
+<div class="highlight-python"><pre>$ python anydbm_intkeys.py
+TypeError: Integer keys only allowed for Recno and Queue DB's</pre>
+</div>
+<p>値は文字列か <tt class="xref docutils literal"><span class="pre">None</span></tt> でなければなりません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">anydbm</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">anydbm</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;/tmp/example.db&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">db</span><span class="p">[</span><span class="s">&#39;one&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>値が文字列ではない場合も <a class="reference internal" href="../exceptions/index.html#exceptions-typeerror"><em>TypeError</em></a> が発生します。</p>
+<div class="highlight-python"><pre>$ python anydbm_intvalue.py
+TypeError: Data values must be of type string or None.</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt>Module <a class="reference internal" href="../shelve/index.html#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a></dt>
+<dd>データを格納するために <a class="reference internal" href="#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a> を使用する <a class="reference internal" href="../shelve/index.html#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> モジュールのサンプル</dd>
+<dt><a class="reference external" href="http://docs.python.org/library/anydbm.html">anydbm</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../articles/data_persistence.html#article-data-persistence"><em>データの永続化と変換</em></a></dt>
+<dd>データを格納するその他のモジュールの説明</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dbhash/index.html" title="dbhash – BSD データベースライブラリ向けの DBM スタイル API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../persistence.html" title="データの永続化"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../persistence.html" >データの永続化</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

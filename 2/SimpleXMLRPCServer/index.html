@@ -1,0 +1,690 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>SimpleXMLRPCServer &#8211; XML-RPC サーバを実装する - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="インターネットプロトコルとサポート" href="../internet_protocols.html" />
+    <link rel="next" title="smtpd – サンプル SMTP サーバ" href="../smtpd/index.html" />
+    <link rel="prev" title="imaplib - IMAP4 client library" href="../imaplib/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">SimpleXMLRPCServer &#8211; XML-RPC サーバを実装する</a><ul>
+<li><a class="reference internal" href="#id1">シンプルサーバ</a></li>
+<li><a class="reference internal" href="#id2">関数の別名</a></li>
+<li><a class="reference internal" href="#id3">ドット名</a></li>
+<li><a class="reference internal" href="#id4">任意の名前</a></li>
+<li><a class="reference internal" href="#id5">オブジェクトのメソッドを公開する</a></li>
+<li><a class="reference internal" href="#id6">呼び出しをディスパッチする</a></li>
+<li><a class="reference internal" href="#api">イントロスペクション API</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../imaplib/index.html" title="前の章へ"><strong>前:</strong> imaplib - IMAP4 client library</a><br/>
+          <a href="../smtpd/index.html" title="次の章へ"><strong>次:</strong> smtpd &#8211; サンプル SMTP サーバ</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/SimpleXMLRPCServer/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../smtpd/index.html" title="smtpd – サンプル SMTP サーバ"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../imaplib/index.html" title="imaplib - IMAP4 client library"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_protocols.html" accesskey="U">インターネットプロトコルとサポート</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="simplexmlrpcserver-xml-rpc">
+<h1>SimpleXMLRPCServer &#8211; XML-RPC サーバを実装する<a class="headerlink" href="#simplexmlrpcserver-xml-rpc" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-SimpleXMLRPCServer"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">XML-RPC サーバを実装する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.2 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-SimpleXMLRPCServer" title="XML-RPC サーバを実装する"><tt class="xref py py-mod docutils literal"><span class="pre">SimpleXMLRPCServer</span></tt></a> モジュールは XML-RPC プロトコルを使用してクロスプラットホーム、言語非依存なサーバを作成するためのクラスを提供します。多くのクライアントライブラリが多言語で存在するので RPC スタイルのサービスを構築するために XML-RPC を選択することは簡単な方法です。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">本稿で紹介する全てのサンプルはデモサーバとやり取りするクライアントモジュールを含めて提供します。もし、そのコードをダウンロードしてサンプルプログラムを実行したいなら、2つのシェルウィンドウを起動して、1つはサーバ、もう1つはクライアントにすると良いでしょう。</p>
+</div>
+<div class="section" id="id1">
+<h2>シンプルサーバ<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>このシンプルサーバのサンプルはディレクトリ名を受け取ってコンテンツを返す1つの関数を提供します。先ず <tt class="xref py py-class docutils literal"><span class="pre">SimpleXMLRPCServer</span></tt> インスタンスを作成して、入力となるリクエスト(このケースでは &#8216;localhost&#8217; の9000番ポート)を受信するサーバ/ポートを指定します。それから、そのサービスの一部となる関数を定義して、サーバへその関数の呼び出し方法を知らせるために登録を行います。最後にリクエストを受信するためにそのサーバを無限ループで実行してレスポンスを返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c"># ロギングをセットアップ</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">),</span> <span class="n">logRequests</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># 関数を公開する</span>
+<span class="k">def</span> <span class="nf">list_contents</span><span class="p">(</span><span class="n">dir_name</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;list_contents(</span><span class="si">%s</span><span class="s">)&#39;</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_name</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">list_contents</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p>サーバは <a class="reference internal" href="../xmlrpclib/index.html#module-xmlrpclib" title="XML-RPC 通信のためのクライアントライブラリ"><tt class="xref py py-mod docutils literal"><span class="pre">xmlrpclib</span></tt></a> を使用して <a class="reference external" href="http://localhost:9000">http://localhost:9000</a> の URL にアクセスされます。このクライアントコードは Python から <tt class="xref py py-func docutils literal"><span class="pre">list_contents()</span></tt> サービスを呼び出す方法を紹介します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">proxy</span><span class="o">.</span><span class="n">list_contents</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>そのベース URL を使用してサーバに対する <tt class="xref py py-class docutils literal"><span class="pre">ServerProxy</span></tt> へ単純に接続して、プロキシで直接メソッドを呼び出していることに注意してください。プロキシで実行される各メソッドはサーバへのリクエストに変換されます。その引数は XML でフォーマットされてサーバへ POST されます。サーバはその XML をアンパックして、クライアントから実行されたメソッド名からどの関数を呼び出すかを見つけ出します。その引数は関数へ渡されて、その返り値は XML に変換されてクライアントへ返されます。</p>
+<p>サーバを起動します。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_function.py
+Use Control-C to exit</pre>
+</div>
+<p>別のウィンドウでクライアントを実行すると <tt class="docutils literal"><span class="pre">/tmp</span></tt> ディレクトリの中身を表示します。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_function_client.py
+['.s.PGSQL.5432', '.s.PGSQL.5432.lock', '.X0-lock', '.X11-unix', 'ccc_exclude.1mkahl',
+'ccc_exclude.BKG3gb', 'ccc_exclude.M5jrgo', 'ccc_exclude.SPecwL', 'com.hp.launchport', 'emacs527',
+'hsperfdata_dhellmann', 'launch-8hGHUp', 'launch-RQnlcc', 'launch-trsdly', 'launchd-242.T5UzTy',
+'var_backups']</pre>
+</div>
+<p>そのリクエストに対する処理が完了した後でサーバのウィンドウにログが出力されます。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_function.py
+Use Control-C to exit
+DEBUG:root:list_contents(/tmp)
+localhost - - [29/Jun/2008 09:32:07] "POST /RPC2 HTTP/1.0" 200 -</pre>
+</div>
+<p>ログ出力の最初の行は <tt class="xref py py-func docutils literal"><span class="pre">list_contents()</span></tt> の内部で <tt class="docutils literal"><span class="pre">logging.debug()</span></tt> を呼び出して出力されます。2番目の行は <em>logRequests</em> が <tt class="xref docutils literal"><span class="pre">True</span></tt> なのでサーバのログが出力されます。</p>
+</div>
+<div class="section" id="id2">
+<h2>関数の別名<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>あなたのモジュール又はライブラリの内部で使用している関数名を外部 API で使用したくないときがあります。例えば、設定ファイルから動的にそのサービス API を構築して、プラットホームに特化した実装を読み込んだり、実際の関数をテスト用のスタブに置き換えたりする必要がある場合もあります。もし別の名前で関数を登録したいなら、次のように <tt class="xref py py-func docutils literal"><span class="pre">register_function()</span></tt> の2番目の引数にその名前を渡してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+
+<span class="c"># 別名で関数を公開する</span>
+<span class="k">def</span> <span class="nf">list_contents</span><span class="p">(</span><span class="n">dir_name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_name</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">list_contents</span><span class="p">,</span> <span class="s">&#39;dir&#39;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p>今、クライアントは <tt class="docutils literal"><span class="pre">list_contents()</span></tt> の代わりに <tt class="docutils literal"><span class="pre">dir()</span></tt> という名前を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;dir():&#39;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">.</span><span class="n">dir</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;list_contents():&#39;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">.</span><span class="n">list_contents</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サーバには <tt class="docutils literal"><span class="pre">list_contents()</span></tt> という名前でハンドラが登録されていないので <tt class="docutils literal"><span class="pre">list_contents()</span></tt> を呼び出すとエラーになります。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_alternate_name_client.py
+dir(): ['.s.PGSQL.5432', '.s.PGSQL.5432.lock', '.X0-lock', '.X11-unix', 'ccc_exclude.1mkahl', 'ccc_exclude.BKG3gb', 'ccc_exclude.M5jrgo', 'ccc_exclude.SPecwL', 'com.hp.launchport', 'emacs527', 'hsperfdata_dhellmann', 'launch-8hGHUp', 'launch-RQnlcc', 'launch-trsdly', 'launchd-242.T5UzTy', 'temp_textmate.V6YKzm', 'var_backups']
+list_contents():
+Traceback (most recent call last):
+  File "/Users/dhellmann/Documents/PyMOTW/in_progress/SimpleXMLRPCServer/SimpleXMLRPCServer_alternate_name_client.py", line 15, in &lt;module&gt;
+    print 'list_contents():', proxy.list_contents('/tmp')
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/xmlrpclib.py", line 1147, in __call__
+    return self.__send(self.__name, args)
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/xmlrpclib.py", line 1437, in __request
+    verbose=self.__verbose
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/xmlrpclib.py", line 1201, in request
+    return self._parse_response(h.getfile(), sock)
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/xmlrpclib.py", line 1340, in _parse_response
+    return u.close()
+  File "/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/xmlrpclib.py", line 787, in close
+    raise Fault(**self._stack[0])
+xmlrpclib.Fault: &lt;Fault 1: '&lt;type \'exceptions.Exception\'&gt;:method "list_contents" is not supported'&gt;</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>ドット名<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>個々の関数は Python の識別子のために通常は適切ではない名前で登録することができます。例えば、そのサービスの名前空間を分割するために名前に &#8216;.&#8217; を含めることができます。この例では &#8220;ディレクトリ&#8221; サービスに &#8220;create&#8221; と &#8220;remove&#8221; の関数呼び出しを追加して拡張します。同一サーバ上で違う接頭辞で他のサービスを提供できるように、全ての関数を &#8220;<tt class="docutils literal"><span class="pre">dir.</span></tt>&#8221; を接頭辞にして登録します。この例では他にも関数によって <tt class="xref docutils literal"><span class="pre">None</span></tt> を返しています。そのため <tt class="xref docutils literal"><span class="pre">None</span></tt> の値から nil の値へ変換するためにサーバへ教える必要があります( <a class="reference external" href="http://ontosys.com/xml-rpc/extensions.php">XML-RPC Extensions</a> を参照)。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">),</span> <span class="n">allow_none</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">,</span> <span class="s">&#39;dir.list&#39;</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">,</span> <span class="s">&#39;dir.create&#39;</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">,</span> <span class="s">&#39;dir.remove&#39;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p>クライアントからそのサービスの関数を呼び出すために単純にドット名で参照してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;BEFORE       :&#39;</span><span class="p">,</span> <span class="s">&#39;EXAMPLE&#39;</span> <span class="ow">in</span> <span class="n">proxy</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;CREATE       :&#39;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;/tmp/EXAMPLE&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;SHOULD EXIST :&#39;</span><span class="p">,</span> <span class="s">&#39;EXAMPLE&#39;</span> <span class="ow">in</span> <span class="n">proxy</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;REMOVE       :&#39;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;/tmp/EXAMPLE&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER        :&#39;</span><span class="p">,</span> <span class="s">&#39;EXAMPLE&#39;</span> <span class="ow">in</span> <span class="n">proxy</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>そして(システム上に <tt class="docutils literal"><span class="pre">/tmp/EXAMPLE</span></tt> ファイルがない場合)、クライアントのサンプルスクリプトの出力は次のようになります。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_dotted_name_client.py
+BEFORE       : False
+CREATE       : None
+SHOULD EXIST : True
+REMOVE       : None
+AFTER        : False</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>任意の名前<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>利便性は低いですが、無効な属性名を登録する機能が潜在的におもしろいです。この例のサービスは &#8220;<tt class="docutils literal"><span class="pre">multiply</span> <span class="pre">args</span></tt>&#8221; という名前で関数を登録します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">my_function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">my_function</span><span class="p">,</span> <span class="s">&#39;multiply args&#39;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p>登録された名前がスペースを含むので、プロキシからドット表記で直接その名前にアクセスすることはできません。 しかし <tt class="docutils literal"><span class="pre">getattr()</span></tt> を使用することでアクセスできます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">proxy</span><span class="p">,</span> <span class="s">&#39;multiply args&#39;</span><span class="p">)(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>アクセスはできますが、このような名前でサービスを作成しないようにしてください。この例はそれが良いアイディアだと言うわけではなく、あなたが任意の名前を持つ既存のサービスに遭遇して無効な名前で呼び出す必要があるときの方法を提供します。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_arbitrary_name_client.py
+25</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>オブジェクトのメソッドを公開する<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>前半のセクションでは優れた命名規則や名前空間を使用して API を開発するためのテクニックについて説明しました。API に名前空間を組み込む他の方法として、クラスのインスタンスを使用してそのメソッドを公開する方法があります。最初のサンプルを1つのメソッドを持つインスタンスで再作成することができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">),</span> <span class="n">logRequests</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">DirectoryService</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_name</span><span class="p">)</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="n">DirectoryService</span><span class="p">())</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p>クライアントは直接そのメソッドを呼び出すことができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">proxy</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>受け取った出力は次のようになります。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_instance_client.py
+['.s.PGSQL.5432', '.s.PGSQL.5432.lock', '.X0-lock', '.X11-unix', 'ccc_exclude.1mkahl',
+'ccc_exclude.BKG3gb', 'ccc_exclude.M5jrgo', 'ccc_exclude.SPecwL', 'com.hp.launchport',
+'emacs527', 'hsperfdata_dhellmann', 'launch-8hGHUp', 'launch-RQnlcc', 'launch-trsdly',
+'launchd-242.T5UzTy', 'temp_textmate.XNiIdy', 'var_backups']</pre>
+</div>
+<p>この方法はそのサービスから &#8220;<tt class="docutils literal"><span class="pre">dir.</span></tt>&#8221; の接頭辞をなくしましたが、そのためにクライアントから実行されるサービスツリーをセットアップするためのクラスを定義します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">),</span> <span class="n">logRequests</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ServiceRoot</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">DirectoryService</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_name</span><span class="p">)</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="n">ServiceRoot</span><span class="p">()</span>
+<span class="n">root</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">DirectoryService</span><span class="p">()</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">allow_dotted_names</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p><em>allow_dotted_names</em> を有効にした <tt class="xref py py-class docutils literal"><span class="pre">ServiceRoot</span></tt> インスタンスを登録することで <tt class="docutils literal"><span class="pre">getattr()</span></tt> でその名前のメソッドを見つけるためのリクエストを受け取ったとき、そのオブジェクトのツリーを辿る権限をサーバへ与えます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">proxy</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_instance_dotted_names_client.py
+['.s.PGSQL.5432', '.s.PGSQL.5432.lock', '.X0-lock', '.X11-unix', 'ccc_exclude.1mkahl', 'ccc_exclude.BKG3gb', 'ccc_exclude.M5jrgo', 'ccc_exclude.SPecwL', 'com.hp.launchport', 'emacs527', 'hsperfdata_dhellmann', 'launch-8hGHUp', 'launch-RQnlcc', 'launch-trsdly', 'launchd-242.T5UzTy', 'temp_textmate.adghkQ', 'var_backups']</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>呼び出しをディスパッチする<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>デフォルトでは <tt class="xref py py-func docutils literal"><span class="pre">register_instance()</span></tt> は &#8216;<tt class="docutils literal"><span class="pre">_</span></tt>&#8216; で始まらない名前を持つインスタンスの全ての呼び出し可能な属性を見つけます。そして見つけた名前をサービスに登録します。もしメソッドの公開を慎重に行いたいなら、独自のディスパッチロジックを提供することができます。例えば、</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">),</span> <span class="n">logRequests</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">expose</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="s">&quot;Decorator to set exposed flag on a function.&quot;</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">exposed</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="n">f</span>
+
+<span class="k">def</span> <span class="nf">is_exposed</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="s">&quot;Test whether another function should be publicly exposed.&quot;</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s">&#39;exposed&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyService</span><span class="p">:</span>
+    <span class="n">PREFIX</span> <span class="o">=</span> <span class="s">&#39;prefix&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="c"># メソッド名から接頭辞を削除する</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">method</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PREFIX</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;method &quot;</span><span class="si">%s</span><span class="s">&quot; is not supported&#39;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
+        
+        <span class="n">method_name</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>            
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_exposed</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;method &quot;</span><span class="si">%s</span><span class="s">&quot; is not supported&#39;</span> <span class="o">%</span> <span class="n">method</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="nd">@expose</span>
+    <span class="k">def</span> <span class="nf">public</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;This is public&#39;</span>
+        
+    <span class="k">def</span> <span class="nf">private</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;This is private&#39;</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="n">MyService</span><span class="p">())</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">MyService</span></tt> の <tt class="xref py py-func docutils literal"><span class="pre">public()</span></tt> メソッドは XML-RPC サービスへ公開する関数として expose としてマークします。一方 <tt class="xref py py-func docutils literal"><span class="pre">private()</span></tt> にはありません。クライアントが <tt class="xref py py-class docutils literal"><span class="pre">MyService</span></tt> にある関数へアクセスしようとするとき <tt class="xref py py-func docutils literal"><span class="pre">_dispatch()</span></tt> メソッドが実行されます。 <tt class="xref py py-func docutils literal"><span class="pre">_dispatch()</span></tt> メソッドは接頭辞の使用を強制します(このケースでは &#8220;<tt class="docutils literal"><span class="pre">prefix.</span></tt>&#8221; ですが、他の文字列も使用することができます)。それから <em>exposed</em> という属性が True である関数を要求します。exposed フラグはデコレータでセットすると便利です。</p>
+<p>クライアントからの呼び出しは次のようになります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;public():&#39;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">.</span><span class="n">prefix</span><span class="o">.</span><span class="n">public</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;private():&#39;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">.</span><span class="n">prefix</span><span class="o">.</span><span class="n">private</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;public() without prefix:&#39;</span><span class="p">,</span> <span class="n">proxy</span><span class="o">.</span><span class="n">public</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p>結果の出力は予想した通りトラップしたエラーメッセージが表示されます。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_instance_with_prefix_client.py
+public(): This is public
+private(): ERROR: &lt;Fault 1: '&lt;type \'exceptions.Exception\'&gt;:method "prefix.private" is not supported'&gt;
+public() without prefix: ERROR: &lt;Fault 1: '&lt;type \'exceptions.Exception\'&gt;:method "public" is not supported'&gt;</pre>
+</div>
+<p>SimpleXMLRPCServer から直接サブクラス化することも含めて、ディスパッチの仕組みをオーバーライドするために複数の方法があります。より詳細については SimpleXMLRPCServer の docstring を確認してください。</p>
+</div>
+<div class="section" id="api">
+<h2>イントロスペクション API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p>多くのネットワークサービスと同様に、どんなメソッドがサポートされているかとその使用方法を尋ねるために XML-RPC サーバへクエリすることができます。 <tt class="xref py py-class docutils literal"><span class="pre">SimpleXMLRPCServer</span></tt> はこのイントロスペクションを実行する公開メソッドのセットを提供します。デフォルトではその機能は無効になっていますが、 <tt class="xref py py-func docutils literal"><span class="pre">register_introspection_functions()</span></tt> で有効にすることができます。サービスを行うクラスで <tt class="xref py py-func docutils literal"><span class="pre">_listMethods()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">_methodHelp()</span></tt> を定義することで <tt class="xref py py-func docutils literal"><span class="pre">system.listMethods()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">system.methodHelp()</span></tt> を明示的にサポートするように追加することができます。例えば、</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span><span class="p">,</span> <span class="n">list_public_methods</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">((</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">9000</span><span class="p">),</span> <span class="n">logRequests</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_introspection_functions</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">DirectoryService</span><span class="p">:</span>
+    
+    <span class="k">def</span> <span class="nf">_listMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">list_public_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_methodHelp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;list(dir_name) =&gt; [&lt;filenames&gt;]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns a list containing the contents of the named directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dir_name</span><span class="p">)</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="n">DirectoryService</span><span class="p">())</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Use Control-C to exit&#39;</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Exiting&#39;</span>
+</pre></div>
+</div>
+<p>このケースでは、便利な関数 <tt class="xref py py-func docutils literal"><span class="pre">list_public_methods()</span></tt> が呼び出し可能な &#8216;<tt class="docutils literal"><span class="pre">_</span></tt>&#8216; で始まらない属性名を返すためにインスタンスを調べます。あなた好みにどんなルールでも <tt class="xref py py-func docutils literal"><span class="pre">_listMethods()</span></tt> を再定義することで適用することができます。同様にこの基本サンプルの <tt class="xref py py-func docutils literal"><span class="pre">_methodHelp()</span></tt> はその関数の docstring を返しますが、他のソースからのヘルプを返すようにはなっていません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+
+<span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:9000&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="n">proxy</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">listMethods</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="k">print</span> <span class="n">method_name</span>
+    <span class="k">print</span> <span class="s">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">60</span>
+    <span class="k">print</span> <span class="n">proxy</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">methodHelp</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
+    <span class="k">print</span>
+</pre></div>
+</div>
+<p>その system メソッドが実行結果に含まれることに注意してください。</p>
+<div class="highlight-python"><pre>$ python SimpleXMLRPCServer_introspection_client.py
+============================================================
+list
+------------------------------------------------------------
+list(dir_name) =&gt; [&lt;filenames&gt;]
+
+Returns a list containing the contents of the named directory.
+
+============================================================
+system.listMethods
+------------------------------------------------------------
+system.listMethods() =&gt; ['add', 'subtract', 'multiple']
+
+Returns a list of the methods supported by the server.
+
+============================================================
+system.methodHelp
+------------------------------------------------------------
+system.methodHelp('add') =&gt; "Adds two integers together"
+
+Returns a string containing documentation for the specified method.
+
+============================================================
+system.methodSignature
+------------------------------------------------------------
+system.methodSignature('add') =&gt; [double, int, int]
+
+Returns a list describing the signature of the method. In the
+above example, the add method takes two integers as arguments
+and returns a double result.
+
+This server does NOT support system.methodSignature.</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-SimpleXMLRPCServer.html">SimpleXMLRPCServer</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference external" href="http://www.tldp.org/HOWTO/XML-RPC-HOWTO/index.html">XML-RPC 入門</a></dt>
+<dd>様々な言語でクライアントとサーバを実装するために XML-RPC の使用方法を説明します</dd>
+<dt><a class="reference external" href="http://ontosys.com/xml-rpc/extensions.php">XML-RPC Extensions</a></dt>
+<dd>XML-RPC プロトコルの機能拡張に特化した内容です</dd>
+<dt><a class="reference internal" href="../xmlrpclib/index.html#module-xmlrpclib" title="XML-RPC 通信のためのクライアントライブラリ"><tt class="xref py py-mod docutils literal"><span class="pre">xmlrpclib</span></tt></a></dt>
+<dd>XML-RPC クライアントライブラリ</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../smtpd/index.html" title="smtpd – サンプル SMTP サーバ"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../imaplib/index.html" title="imaplib - IMAP4 client library"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_protocols.html" >インターネットプロトコルとサポート</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

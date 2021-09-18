@@ -1,0 +1,537 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>shutil &#8211; 高レベルなファイル操作 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="ファイルとディレクトリアクセス" href="../file_access.html" />
+    <link rel="next" title="dircache – ディレクトリの内容をキャッシュする" href="../dircache/index.html" />
+    <link rel="prev" title="linecache – テキストファイルを効率的に読み込む" href="../linecache/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">shutil &#8211; 高レベルなファイル操作</a><ul>
+<li><a class="reference internal" href="#id1">ファイルをコピーする</a></li>
+<li><a class="reference internal" href="#id2">ファイルのメタデータをコピーする</a></li>
+<li><a class="reference internal" href="#id3">ディレクトリツリーを扱う</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../linecache/index.html" title="前の章へ"><strong>前:</strong> linecache &#8211; テキストファイルを効率的に読み込む</a><br/>
+          <a href="../dircache/index.html" title="次の章へ"><strong>次:</strong> dircache &#8211; ディレクトリの内容をキャッシュする</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/shutil/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dircache/index.html" title="dircache – ディレクトリの内容をキャッシュする"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../linecache/index.html" title="linecache – テキストファイルを効率的に読み込む"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../file_access.html" accesskey="U">ファイルとディレクトリアクセス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="shutil">
+<h1>shutil &#8211; 高レベルなファイル操作<a class="headerlink" href="#shutil" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-shutil"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">高レベルなファイル操作</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-shutil" title="高レベルなファイル操作"><tt class="xref py py-mod docutils literal"><span class="pre">shutil</span></tt></a> モジュールは、コピーやパーミッション設定といった高レベルなファイル操作を提供します。</p>
+<div class="section" id="id1">
+<h2>ファイルをコピーする<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-func docutils literal"><span class="pre">copyfile()</span></tt> はコピー元ファイルの内容をコピー先ファイルへコピーします。もしコピー先ファイルへの書き込みパーミッションがない場合、 <a class="reference internal" href="../exceptions/index.html#exceptions-ioerror"><em>IOError</em></a> が発生します。この理由は、ファイル種別に関わらず、そのコピー元ファイルをオープンして読み込もうとしますが、 <tt class="xref py py-func docutils literal"><span class="pre">copyfile()</span></tt> では特殊ファイルが新たなファイルとしてコピーされないからです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+
+<span class="k">print</span> <span class="s">&#39;BEFORE:&#39;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">&#39;shutil_copyfile.*&#39;</span><span class="p">)</span>
+<span class="n">copyfile</span><span class="p">(</span><span class="s">&#39;shutil_copyfile.py&#39;</span><span class="p">,</span> <span class="s">&#39;shutil_copyfile.py.copy&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER:&#39;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">&#39;shutil_copyfile.*&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python shutil_copyfile.py
+BEFORE: ['shutil_copyfile.py']
+AFTER: ['shutil_copyfile.py', 'shutil_copyfile.py.copy']</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">copyfile()</span></tt> は、低レベル関数に <tt class="xref py py-func docutils literal"><span class="pre">copyfileobj()</span></tt> を使用して書き込みます。 <tt class="xref py py-func docutils literal"><span class="pre">copyfile()</span></tt> への引数はファイル名であるのに対して、 <tt class="xref py py-func docutils literal"><span class="pre">copyfileobj()</span></tt> への引数はオープンされたファイルハンドラです。オプションである3番目の引数はチャンクの読み込みに使用するバッファ長です(デフォルトでは、一度にファイル全てを読み込む)。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">class</span> <span class="nc">VerboseStringIO</span><span class="p">(</span><span class="n">StringIO</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="n">StringIO</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;read(</span><span class="si">%d</span><span class="s">) =&gt;&#39;</span> <span class="o">%</span> <span class="n">n</span><span class="p">,</span> <span class="nb">next</span>
+        <span class="k">return</span> <span class="nb">next</span>
+
+<span class="n">lorem_ipsum</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;Lorem ipsum dolor sit amet, consectetuer adipiscing elit. </span>
+<span class="s">Vestibulum aliquam mollis dolor. Donec vulputate nunc ut diam. </span>
+<span class="s">Ut rutrum mi vel sem. Vestibulum ante ipsum.&#39;&#39;&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;Default:&#39;</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">VerboseStringIO</span><span class="p">(</span><span class="n">lorem_ipsum</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="n">copyfileobj</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+<span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;All at once:&#39;</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">VerboseStringIO</span><span class="p">(</span><span class="n">lorem_ipsum</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="n">copyfileobj</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;Blocks of 20:&#39;</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">VerboseStringIO</span><span class="p">(</span><span class="n">lorem_ipsum</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="n">copyfileobj</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>デフォルトの動作は大きなブロックで読み込みます。その入力の全てを一度に読み込むには <tt class="docutils literal"><span class="pre">-1</span></tt> を、独自のブロックサイズで読み込むには自然数を指定してください。</p>
+<div class="highlight-python"><pre>$ python shutil_copyfileobj.py
+Default:
+read(16384) =&gt; Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+Vestibulum aliquam mollis dolor. Donec vulputate nunc ut diam.
+Ut rutrum mi vel sem. Vestibulum ante ipsum.
+read(16384) =&gt;
+
+All at once:
+read(-1) =&gt; Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+Vestibulum aliquam mollis dolor. Donec vulputate nunc ut diam.
+Ut rutrum mi vel sem. Vestibulum ante ipsum.
+read(-1) =&gt;
+
+Blocks of 20:
+read(20) =&gt; Lorem ipsum dolor si
+read(20) =&gt; t amet, consectetuer
+read(20) =&gt;  adipiscing elit.
+V
+read(20) =&gt; estibulum aliquam mo
+read(20) =&gt; llis dolor. Donec vu
+read(20) =&gt; lputate nunc ut diam
+read(20) =&gt; .
+Ut rutrum mi vel
+read(20) =&gt; sem. Vestibulum ante
+read(20) =&gt;  ipsum.
+read(20) =&gt;</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">copy()</span></tt> 関数は、Unix コマンドラインツールの <tt class="docutils literal"><span class="pre">cp</span></tt> のように出力ファイルの名前を解釈します。コピー先ファイルの名前がファイルではなくディレクトリなら、ソースファイルのベース名を使用してそのディレクトリ配下に新たなファイルが作成されます。そのファイルのパーミッションはコピー元ファイルと同じになります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;BEFORE:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="n">copy</span><span class="p">(</span><span class="s">&#39;shutil_copy.py&#39;</span><span class="p">,</span> <span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python shutil_copy.py
+BEFORE: []
+AFTER: ['shutil_copy.py']</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">copy2()</span></tt> は <tt class="xref py py-func docutils literal"><span class="pre">copy()</span></tt> のように動作しますが、コピー元ファイルのアクセス時刻と更新時刻のメタデータもコピー先ファイルへ保持されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">show_file_info</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">stat_info</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Mode    :&#39;</span><span class="p">,</span> <span class="n">stat_info</span><span class="o">.</span><span class="n">st_mode</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Created :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">stat_info</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Accessed:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">stat_info</span><span class="o">.</span><span class="n">st_atime</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Modified:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">stat_info</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;SOURCE:&#39;</span>
+<span class="n">show_file_info</span><span class="p">(</span><span class="s">&#39;shutil_copy2.py&#39;</span><span class="p">)</span>
+<span class="n">copy2</span><span class="p">(</span><span class="s">&#39;shutil_copy2.py&#39;</span><span class="p">,</span> <span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;DEST:&#39;</span>
+<span class="n">show_file_info</span><span class="p">(</span><span class="s">&#39;example/shutil_copy2.py&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python shutil_copy2.py
+SOURCE:
+        Mode    : 33188
+        Created : Sat Jul 16 12:19:08 2011
+        Accessed: Sun Feb 17 11:33:33 2013
+        Modified: Fri Feb 11 08:38:29 2011
+DEST:
+        Mode    : 33188
+        Created : Sun Feb 17 11:33:33 2013
+        Accessed: Sun Feb 17 11:33:33 2013
+        Modified: Fri Feb 11 08:38:29 2011</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>ファイルのメタデータをコピーする<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>デフォルトでは、Unix 環境で新たなファイルを作成するとき、そのファイルはカレントユーザの umask に基づいてパーミッションが決まります。あるファイルから別のファイルへそのパーミッションをコピーするには <tt class="xref py py-func docutils literal"><span class="pre">copymode()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">,</span> <span class="s">&#39;wt&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;content&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">,</span> <span class="mo">0444</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;BEFORE:&#39;</span><span class="p">,</span> <span class="n">getstatus</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">)</span>
+<span class="n">copymode</span><span class="p">(</span><span class="s">&#39;shutil_copymode.py&#39;</span><span class="p">,</span> <span class="s">&#39;file_to_change.txt&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER :&#39;</span><span class="p">,</span> <span class="n">getstatus</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>まず変更対象のファイルを作成します。</p>
+<div class="highlight-python"><pre>#!/bin/sh
+# Set up file needed by shutil_copymode.py
+touch file_to_change.txt
+chmod ugo+w file_to_change.txt
+</pre>
+</div>
+<p>パーミッションを変更するサンプルスクリプトを実行します。</p>
+<div class="highlight-python"><pre>$ python shutil_copymode.py
+BEFORE: -r--r--r--  1 dhellmann  dhellmann  7 Feb 17 11:33 file_to_change.txt
+AFTER : -rw-r--r--  1 dhellmann  dhellmann  7 Feb 17 11:33 file_to_change.txt</pre>
+</div>
+<p>その他のファイルに関するメタデータ(パーミッション、最終アクセス時刻、最終更新時刻)をコピーするには <tt class="xref py py-func docutils literal"><span class="pre">copystat()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">show_file_info</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">stat_info</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Mode    :&#39;</span><span class="p">,</span> <span class="n">stat_info</span><span class="o">.</span><span class="n">st_mode</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Created :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">stat_info</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Accessed:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">stat_info</span><span class="o">.</span><span class="n">st_atime</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">Modified:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">stat_info</span><span class="o">.</span><span class="n">st_mtime</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">,</span> <span class="s">&#39;wt&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;content&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">,</span> <span class="mo">0444</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;BEFORE:&#39;</span>
+<span class="n">show_file_info</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">)</span>
+<span class="n">copystat</span><span class="p">(</span><span class="s">&#39;shutil_copystat.py&#39;</span><span class="p">,</span> <span class="s">&#39;file_to_change.txt&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER :&#39;</span>
+<span class="n">show_file_info</span><span class="p">(</span><span class="s">&#39;file_to_change.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python shutil_copystat.py
+BEFORE:
+        Mode    : 33060
+        Created : Sun Feb 17 11:33:33 2013
+        Accessed: Sun Feb 17 11:33:33 2013
+        Modified: Sun Feb 17 11:33:33 2013
+AFTER :
+        Mode    : 33188
+        Created : Sun Feb 17 11:33:33 2013
+        Accessed: Sun Feb 17 11:33:33 2013
+        Modified: Fri Feb 11 08:38:29 2011</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>ディレクトリツリーを扱う<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-shutil" title="高レベルなファイル操作"><tt class="xref py py-mod docutils literal"><span class="pre">shutil</span></tt></a> モジュールは、ディレクトリツリーを扱う3つの関数を提供します。ある場所から別の場所へディレクトリをコピーするには、 <tt class="xref py py-func docutils literal"><span class="pre">copytree()</span></tt> を使用してください。それはコピー元のディレクトリツリーを再帰的に辿り、コピー先へファイルをコピーします。コピー先のディレクトリは前もって存在していなければなりません。 <em>symlinks</em> 引数は、シンボリックリンクをリンクとしてコピーするか、ファイルとしてコピーするかを制御します。デフォルトは新しいファイルとしてコピーします。そのオプションが True の場合、コピー先ツリーに新たなシンボリックリンクが作成されます。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="xref py py-func docutils literal"><span class="pre">copytree()</span></tt> のドキュメントには、この関数はツールというよりサンプル実装と見なすようにと説明されています。その実装をコピーして、もっと堅牢にするか、進捗が分かるような機能を追加してください。</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">print</span> <span class="s">&#39;BEFORE:&#39;</span>
+<span class="k">print</span> <span class="n">getoutput</span><span class="p">(</span><span class="s">&#39;ls -rlast /tmp/example&#39;</span><span class="p">)</span>
+<span class="n">copytree</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">,</span> <span class="s">&#39;/tmp/example&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER:&#39;</span>
+<span class="k">print</span> <span class="n">getoutput</span><span class="p">(</span><span class="s">&#39;ls -rlast /tmp/example&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python shutil_copytree.py
+BEFORE:
+ls: /tmp/example: No such file or directory
+AFTER:
+total 8
+8 -rw-r--r--   1 dhellmann  wheel  1595 Feb 11  2011 shutil_copy2.py
+0 drwxrwxrwt  18 root       wheel   612 Feb 17 11:33 ..
+0 drwxr-xr-x   3 dhellmann  wheel   102 Feb 17 11:33 .</pre>
+</div>
+<p>ディレクトリとその中にあるファイルを削除するには <tt class="xref py py-func docutils literal"><span class="pre">rmtree()</span></tt> を使用してください。デフォルトでは例外としてエラーが発生しますが、2番目の引数を True にすることでそのエラーは無視されます。そして、特殊なエラーハンドラ関数が3番目の引数で提供されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">commands</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">print</span> <span class="s">&#39;BEFORE:&#39;</span>
+<span class="k">print</span> <span class="n">getoutput</span><span class="p">(</span><span class="s">&#39;ls -rlast /tmp/example&#39;</span><span class="p">)</span>
+<span class="n">rmtree</span><span class="p">(</span><span class="s">&#39;/tmp/example&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER:&#39;</span>
+<span class="k">print</span> <span class="n">getoutput</span><span class="p">(</span><span class="s">&#39;ls -rlast /tmp/example&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python shutil_rmtree.py
+BEFORE:
+total 8
+8 -rw-r--r--   1 dhellmann  wheel  1595 Feb 11  2011 shutil_copy2.py
+0 drwxrwxrwt  18 root       wheel   612 Feb 17 11:33 ..
+0 drwxr-xr-x   3 dhellmann  wheel   102 Feb 17 11:33 .
+AFTER:
+ls: /tmp/example: No such file or directory</pre>
+</div>
+<p>ある場所から別の場所へファイルやディレクトリを移動するには <tt class="xref py py-func docutils literal"><span class="pre">move()</span></tt> を使用してください。Unix コマンドの <tt class="docutils literal"><span class="pre">mv</span></tt> とほとんど同じ仕組みで動作します。同じファイルシステム上にコピー元とコピー先のファイルがある場合、そのコピー元が単純にリネームされます。それ以外の場合は、コピー先へコピーされた後でコピー元が削除されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;example.txt&#39;</span><span class="p">,</span> <span class="s">&#39;wt&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;contents&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;BEFORE: &#39;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">&#39;example*&#39;</span><span class="p">)</span>
+<span class="n">move</span><span class="p">(</span><span class="s">&#39;example.txt&#39;</span><span class="p">,</span> <span class="s">&#39;example.out&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;AFTER : &#39;</span><span class="p">,</span> <span class="n">glob</span><span class="p">(</span><span class="s">&#39;example*&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python shutil_move.py
+BEFORE:  ['example.txt']
+AFTER :  ['example.out']</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-shutil.html">shutil</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../articles/file_access.html#article-file-access"><em>ファイルアクセス</em></a></dt>
+<dd>ファイルを扱うその他のモジュール</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dircache/index.html" title="dircache – ディレクトリの内容をキャッシュする"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../linecache/index.html" title="linecache – テキストファイルを効率的に読み込む"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../file_access.html" >ファイルとディレクトリアクセス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,466 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Queue &#8211; スレッドセーフな FIFO の実装 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データタイプ" href="../data_types.html" />
+    <link rel="next" title="weakref – オブジェクトのガベージコレクション可能な参照" href="../weakref/index.html" />
+    <link rel="prev" title="sched – 汎用イベントスケジューラ" href="../sched/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">Queue &#8211; スレッドセーフな FIFO の実装</a><ul>
+<li><a class="reference internal" href="#fifo">基本的な FIFO キュー</a></li>
+<li><a class="reference internal" href="#lifo">LIFO キュー</a></li>
+<li><a class="reference internal" href="#queue-priorityqueue">優先キュー</a></li>
+<li><a class="reference internal" href="#id2">スレッドでキューを使用する</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../sched/index.html" title="前の章へ"><strong>前:</strong> sched &#8211; 汎用イベントスケジューラ</a><br/>
+          <a href="../weakref/index.html" title="次の章へ"><strong>次:</strong> weakref &#8211; オブジェクトのガベージコレクション可能な参照</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/Queue/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../weakref/index.html" title="weakref – オブジェクトのガベージコレクション可能な参照"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../sched/index.html" title="sched – 汎用イベントスケジューラ"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" accesskey="U">データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="queue-fifo">
+<h1>Queue &#8211; スレッドセーフな FIFO の実装<a class="headerlink" href="#queue-fifo" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-Queue"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">スレッドセーフな FIFO の実装を提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-Queue" title="スレッドセーフな FIFO の実装を提供する"><tt class="xref py py-mod docutils literal"><span class="pre">Queue</span></tt></a> モジュールは、マルチスレッドプログラミングに適した FIFO の実装を提供します。それはメッセージかその他のデータを渡して安全にスレッドを実行するために使用されます。呼び出し側をロックすることで、同じキューインスタンスで多くのスレッドと連携するのが簡単になります。Queue のサイズ(要素数)は、メモリ使用量または処理を調整するために制限される可能性があります。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">この記事はあなたが既に一般的なキューの特性を理解していることを前提としています。もしそうではないなら、この後の記事を読む前に他の参考文献を読んでみてください。</p>
+</div>
+<div class="section" id="fifo">
+<h2>基本的な FIFO キュー<a class="headerlink" href="#fifo" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">Queue</span></tt> クラスは基本的な先入先出のコンテナを実装します。要素は <tt class="xref py py-func docutils literal"><span class="pre">put()</span></tt> でシーケンスの &#8220;一端&#8221; に追加され、 <tt class="xref py py-func docutils literal"><span class="pre">get()</span></tt> でもう一方の端から削除されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">Queue</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="ow">not</span> <span class="n">q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このサンプルは、追加された順番でキューから要素が削除されるのを説明するためにシングルスレッドで実行します。</p>
+<div class="highlight-python"><pre>$ python Queue_fifo.py
+0
+1
+2
+3
+4</pre>
+</div>
+</div>
+<div class="section" id="lifo">
+<h2>LIFO キュー<a class="headerlink" href="#lifo" title="Permalink to this headline">¶</a></h2>
+<p>標準的な <tt class="docutils literal"><span class="pre">Queue</span></tt> の FIFO 実装と比較して、 <tt class="docutils literal"><span class="pre">LifoQueue</span></tt> は後入先出の順番になります(通常はスタックのデータ構造と関連します)。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">Queue</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">LifoQueue</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="ow">not</span> <span class="n">q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">put()</span></tt> でキューへ追加された最新の要素が <tt class="xref py py-func docutils literal"><span class="pre">get()</span></tt> で削除されます。</p>
+<div class="highlight-python"><pre>$ python Queue_lifo.py
+4
+3
+2
+1
+0</pre>
+</div>
+</div>
+<div class="section" id="queue-priorityqueue">
+<span id="id1"></span><h2>優先キュー<a class="headerlink" href="#queue-priorityqueue" title="Permalink to this headline">¶</a></h2>
+<p>その要素が作成されてキューへ追加された順番よりも、そのキュー内の要素の特性に基づいて処理しなければならないときがあります。例えば、人事部からのお仕事の表示は、開発者が優先度を高くしてリストに表示するかもしれません。 <tt class="docutils literal"><span class="pre">PriorityQueue</span></tt> は、要素の取り出しを決定するキューのコンテンツのソート順序を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">Queue</span>
+
+<span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="k">print</span> <span class="s">&#39;New job:&#39;</span><span class="p">,</span> <span class="n">description</span>
+        <span class="k">return</span>
+    <span class="k">def</span> <span class="nf">__cmp__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="o">.</span><span class="n">PriorityQueue</span><span class="p">()</span>
+
+<span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#39;Mid-level job&#39;</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s">&#39;Low-level job&#39;</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;Important job&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="k">while</span> <span class="ow">not</span> <span class="n">q</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+    <span class="n">next_job</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;Processing job:&#39;</span><span class="p">,</span> <span class="n">next_job</span><span class="o">.</span><span class="n">description</span>
+    
+</pre></div>
+</div>
+<p>このシングルスレッドのサンプルでは、そのお仕事は厳密に優先順序をもってキューから取り出されます。マルチスレッドでそのお仕事を処理する場合、 <tt class="xref py py-func docutils literal"><span class="pre">get()</span></tt> が呼び出されたときにキューの要素の優先順序に基づいて処理されます。</p>
+<div class="highlight-python"><pre>$ python Queue_priority.py
+New job: Mid-level job
+New job: Low-level job
+New job: Important job
+Processing job: Important job
+Processing job: Mid-level job
+Processing job: Low-level job</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>スレッドでキューを使用する<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>マルチスレッドで Queue クラスを使用するサンプルとして、とてもシンプルな podcast クライアントを作成します。このクライアントは、1つかそれ以上の RSS フィードを読み込み、ダウンロードするためにそのエンクロージャをキューに追加します。そして、スレッドを使用して複数のコンテンツを並行にダウンロードします。これは実用においては単純過ぎて不適切ですが、そのプロトタイプ実装は <a class="reference internal" href="#module-Queue" title="スレッドセーフな FIFO の実装を提供する"><tt class="xref py py-mod docutils literal"><span class="pre">Queue</span></tt></a> モジュールと連携するサンプルコードとして十分です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># システムモジュール</span>
+<span class="kn">from</span> <span class="nn">Queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c"># ローカルモジュール</span>
+<span class="kn">import</span> <span class="nn">feedparser</span>
+
+<span class="c"># グローバル変数をセット</span>
+<span class="n">num_fetch_threads</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">enclosure_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+
+<span class="c"># 実際のアプリではハードコーディングしない...</span>
+<span class="n">feed_urls</span> <span class="o">=</span> <span class="p">[</span> <span class="s">&#39;http://www.castsampler.com/cast/feed/rss/guest&#39;</span><span class="p">,</span>
+             <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">downloadEnclosures</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This is the worker thread function.</span>
+<span class="sd">    It processes items in the queue one after</span>
+<span class="sd">    another.  These daemon threads go into an</span>
+<span class="sd">    infinite loop, and only exit when</span>
+<span class="sd">    the main thread ends.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">: Looking for the next enclosure&#39;</span> <span class="o">%</span> <span class="n">i</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">: Downloading:&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">url</span>
+        <span class="c"># URL から実際にダウンロードせずに sleep で欺く</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
+
+
+<span class="c"># エンクロージャを取得してスレッドを設定する</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_fetch_threads</span><span class="p">):</span>
+    <span class="n">worker</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">downloadEnclosures</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">enclosure_queue</span><span class="p">,))</span>
+    <span class="n">worker</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="c"># フィードをダウンロードしてキューへエンクロージャの URL を追加する</span>
+<span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">feed_urls</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">feedparser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="s">&#39;fetch_podcasts.py&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s">&#39;entries&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">enclosure</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;enclosures&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">print</span> <span class="s">&#39;Queuing:&#39;</span><span class="p">,</span> <span class="n">enclosure</span><span class="p">[</span><span class="s">&#39;url&#39;</span><span class="p">]</span>
+            <span class="n">enclosure_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">enclosure</span><span class="p">[</span><span class="s">&#39;url&#39;</span><span class="p">])</span>
+
+<span class="c"># 全てのダウンロード処理が完了したことを表す、キューが空になるまで待つ</span>
+<span class="k">print</span> <span class="s">&#39;*** Main thread waiting&#39;</span>
+<span class="n">enclosure_queue</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;*** Done&#39;</span>
+</pre></div>
+</div>
+<p>まず操作用のパラメータを設計します。通常はユーザ入力(優先度、データベース、対象)です。サンプルでは、取得する URL リストとスレッドの数をハードコーディングしています。</p>
+<p>次に ワーカースレッドで実行して、ダウンロードを行う <tt class="xref py py-func docutils literal"><span class="pre">downloadEnclosures()</span></tt> を定義する必要があります。今回は説明目的なのでこの処理はダウンロードを模倣します。実際にはエンクロージャをダウンロードするために <a class="reference internal" href="../urllib/index.html#module-urllib" title="認証や cookie が必要ないリモートのリソースへアクセスする"><tt class="xref py py-mod docutils literal"><span class="pre">urllib</span></tt></a> か <a class="reference internal" href="../urllib2/index.html#module-urllib2" title="URL をオープンするライブラリ"><tt class="xref py py-mod docutils literal"><span class="pre">urllib2</span></tt></a> を使用すると良いです。このサンプルでは、スレッド ID からその秒を sleep することでダウンロードによる遅延を模倣します。</p>
+<p>スレッドの target 引数に関数を指定すると、ワーカースレッドが開始します。 <tt class="xref py py-func docutils literal"><span class="pre">downloadEnclosures()</span></tt> は、キューが何か返すまで <tt class="docutils literal"><span class="pre">url</span> <span class="pre">=</span> <span class="pre">q.get()</span></tt> のコードをブロックすることに注意してください。そのため、キューに何かある状態で安全にそのスレッドを開始します。</p>
+<p>次のステップは、フィードコンテンツを取り出して(Mark Pilgrim の <a class="reference external" href="http://www.feedparser.org/">feedparser</a> モジュールを使用します)、エンクロージャの URL をキューへ追加することです。最初の URL がキューへ追加されると同時に、ワーカースレッドの1つがその要素を取り出してダウンロードを開始します。そのループ処理はフィードがなくなるまで要素を追加し続けます。そして、ワーカースレッドは、ダウンロードするために URL をキューから取り出して終了します。</p>
+<p>最後に残された唯一の処理は <tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> でキューが空になるまで待つことです。</p>
+<p>サンプルスクリプトを実行すると、次のような実行結果を確認できます。</p>
+<div class="highlight-python"><pre>0: Looking for the next enclosure
+1: Looking for the next enclosure
+Queuing: http://http.earthcache.net/htc-01.media.globix.net/COMP009996MOD1/Danny_Meyer.mp3
+Queuing: http://feeds.feedburner.com/~r/drmoldawer/~5/104445110/moldawerinthemorning_show34_032607.mp3
+Queuing: http://www.podtrac.com/pts/redirect.mp3/twit.cachefly.net/MBW-036.mp3
+Queuing: http://media1.podtech.net/media/2007/04/PID_010848/Podtech_calacaniscast22_ipod.mp4
+Queuing: http://media1.podtech.net/media/2007/03/PID_010592/Podtech_SXSW_KentBrewster_ipod.mp4
+Queuing: http://media1.podtech.net/media/2007/02/PID_010171/Podtech_IDM_ChrisOBrien2.mp3
+Queuing: http://feeds.feedburner.com/~r/drmoldawer/~5/96188661/moldawerinthemorning_show30_022607.mp3
+*** Main thread waiting
+0: Downloading: http://http.earthcache.net/htc-01.media.globix.net/COMP009996MOD1/Danny_Meyer.mp3
+1: Downloading: http://feeds.feedburner.com/~r/drmoldawer/~5/104445110/moldawerinthemorning_show34_032607.mp3
+0: Looking for the next enclosure
+0: Downloading: http://www.podtrac.com/pts/redirect.mp3/twit.cachefly.net/MBW-036.mp3
+1: Looking for the next enclosure
+1: Downloading: http://media1.podtech.net/media/2007/04/PID_010848/Podtech_calacaniscast22_ipod.mp4
+0: Looking for the next enclosure
+0: Downloading: http://media1.podtech.net/media/2007/03/PID_010592/Podtech_SXSW_KentBrewster_ipod.mp4
+0: Looking for the next enclosure
+0: Downloading: http://media1.podtech.net/media/2007/02/PID_010171/Podtech_IDM_ChrisOBrien2.mp3
+1: Looking for the next enclosure
+1: Downloading: http://feeds.feedburner.com/~r/drmoldawer/~5/96188661/moldawerinthemorning_show30_022607.mp3
+0: Looking for the next enclosure
+1: Looking for the next enclosure
+*** Done</pre>
+</div>
+<p>実際の実行結果は <a class="reference external" href="http://www.CastSampler.com">http://www.CastSampler.com</a> のゲストアカウントのサブスクリプションを誰かが変更すると変わります。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-Queue.html">Queue</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../collections/deque.html#deque"><em>Deque</em></a> from <a class="reference internal" href="../collections/index.html#module-collections" title="コンテナデータ型"><tt class="xref py py-mod docutils literal"><span class="pre">collections</span></tt></a></dt>
+<dd>deque (両端キュー) クラスを提供する <a class="reference internal" href="../collections/index.html#module-collections" title="コンテナデータ型"><tt class="xref py py-mod docutils literal"><span class="pre">collections</span></tt></a> モジュール</dd>
+<dt><em>Wikipedia: Queue data structures</em></dt>
+<dd><a class="reference external" href="http://en.wikipedia.org/wiki/Queue_(data_structure">http://en.wikipedia.org/wiki/Queue_(data_structure</a>)</dd>
+<dt><em>Wikipedia: FIFO</em></dt>
+<dd><a class="reference external" href="http://en.wikipedia.org/wiki/FIFO">http://en.wikipedia.org/wiki/FIFO</a></dd>
+<dt><a class="reference external" href="http://www.feedparser.org/">feedparser</a></dt>
+<dd>Mark Pilgrim の feedparser モジュール (<a class="reference external" href="http://www.feedparser.org/">http://www.feedparser.org/</a>).</dd>
+<dt><a class="reference internal" href="../articles/data_structures.html#article-data-structures"><em>インメモリデータ構造</em></a></dt>
+<dd>標準ライブラリのその他の複雑なデータ構造</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../weakref/index.html" title="weakref – オブジェクトのガベージコレクション可能な参照"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../sched/index.html" title="sched – 汎用イベントスケジューラ"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" >データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

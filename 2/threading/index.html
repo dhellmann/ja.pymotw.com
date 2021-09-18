@@ -1,0 +1,1148 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>threading &#8211; スレッドによる並列処理を管理する - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="オプション OS サービス" href="../optional_os.html" />
+    <link rel="next" title="mmap – メモリマップファイル" href="../mmap/index.html" />
+    <link rel="prev" title="オプション OS サービス" href="../optional_os.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">threading &#8211; スレッドによる並列処理を管理する</a><ul>
+<li><a class="reference internal" href="#thread">Thread オブジェクト</a></li>
+<li><a class="reference internal" href="#id1">カレントスレッドを決める</a></li>
+<li><a class="reference internal" href="#id2">デーモンと非デーモンスレッド</a></li>
+<li><a class="reference internal" href="#id3">全てのスレッドを列挙する</a></li>
+<li><a class="reference internal" href="#id4">スレッドをサブクラス化する</a></li>
+<li><a class="reference internal" href="#id5">タイマースレッド</a></li>
+<li><a class="reference internal" href="#id6">スレッド間でシグナルを送る</a></li>
+<li><a class="reference internal" href="#id7">リソースへのアクセスを制御する</a><ul>
+<li><a class="reference internal" href="#id8">再入可能なロック</a></li>
+<li><a class="reference internal" href="#id9">コンテキストマネージャとしてのロック</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id10">スレッドを同期する</a></li>
+<li><a class="reference internal" href="#id11">リソースへの同時アクセスを制限する</a></li>
+<li><a class="reference internal" href="#id12">スレッド固有のデータ</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../optional_os.html" title="前の章へ"><strong>前:</strong> オプション OS サービス</a><br/>
+          <a href="../mmap/index.html" title="次の章へ"><strong>次:</strong> mmap &#8211; メモリマップファイル</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/threading/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../mmap/index.html" title="mmap – メモリマップファイル"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../optional_os.html" title="オプション OS サービス"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../optional_os.html" accesskey="U">オプション OS サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="threading">
+<h1>threading &#8211; スレッドによる並列処理を管理する<a class="headerlink" href="#threading" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-threading"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body"><tt class="xref py py-mod docutils literal"><span class="pre">thread</span></tt> モジュールを使用して複数スレッドの実行を簡単に管理する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.5.2 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-threading" title="スレッドによる並列処理を管理する"><tt class="xref py py-mod docutils literal"><span class="pre">threading</span></tt></a> モジュールは、スレッドを扱う <tt class="xref py py-mod docutils literal"><span class="pre">thread</span></tt> の低レベルな機能をさらに簡単で <em>pythonic</em> に提供します。スレッドを使用すると、プログラムは1つのプロセス空間で複数の処理を並行に実行できます。</p>
+<div class="section" id="thread">
+<h2>Thread オブジェクト<a class="headerlink" href="#thread" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> を使用する最も簡単な方法は、実行させる関数と共に <tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> クラスをインスタンス化して、処理を開始させるために <tt class="xref py py-func docutils literal"><span class="pre">start()</span></tt> を呼び出します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;thread worker function&quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;Worker&#39;</span>
+    <span class="k">return</span>
+
+<span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">)</span>
+    <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>それぞれのスレッドで出力される <tt class="docutils literal"><span class="pre">&quot;Worker&quot;</span></tt> が5行出力されます。</p>
+<div class="highlight-python"><pre>$ python threading_simple.py
+
+Worker
+Worker
+Worker
+Worker
+Worker</pre>
+</div>
+<p>スレッドを生成して、そのスレッドへどんな処理を実行させるのかを引数で渡せるのは便利です。このサンプルは数字を渡して、それぞれのスレッドが引数で渡された数を表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;thread worker function&quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;Worker: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">num</span>
+    <span class="k">return</span>
+
+<span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span>
+    <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>引数の数字は、それぞれのスレッドが出力するメッセージに含まれています。</p>
+<div class="highlight-python"><pre>    $ python -u threading_simpleargs.py
+
+Worker: 0
+Worker: 1
+Worker: 2
+Worker: 3
+Worker: 4</pre>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>カレントスレッドを決める<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>引数を使用してスレッドを識別したり名前付けしたりすることは、面倒であり不要です。それぞれの <tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> インスタンスは、デフォルトで名前をもっていて、スレッド生成時に変更できます。スレッドに名前を付けることは、別の処理を扱う複数のサービスをもつサーバプロセスで便利です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span> <span class="s">&#39;Starting&#39;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span> <span class="s">&#39;Exiting&#39;</span>
+
+<span class="k">def</span> <span class="nf">my_service</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span> <span class="s">&#39;Starting&#39;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span> <span class="s">&#39;Exiting&#39;</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;my_service&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">my_service</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;worker&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">)</span>
+<span class="n">w2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">)</span> <span class="c"># デフォルト名を使う</span>
+
+<span class="n">w</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">w2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>デバッグ出力にカレントスレッドの名前が含まれます。スレッド名のカラムに <tt class="docutils literal"><span class="pre">&quot;Thread-1&quot;</span></tt> がある行は、名前を付けていない <tt class="xref py py-data docutils literal"><span class="pre">w2</span></tt> に対応するスレッドです。</p>
+<div class="highlight-python"><pre>$ python -u threading_names.py
+worker Thread-1 Starting
+Startingmy_service Starting
+
+Thread-1 workerExiting
+ Exiting
+my_service Exiting</pre>
+</div>
+<p>ほとんどのプログラムは、デバッグに <strong class="command">print</strong> を使用しません。 <a class="reference internal" href="../logging/index.html#module-logging" title="ステータス、エラー、その他の情報をログ出力する"><tt class="xref py py-mod docutils literal"><span class="pre">logging</span></tt></a> モジュールは、 <tt class="docutils literal"><span class="pre">%(threadName)s</span></tt> というフォーマッタを使用して全てのログメッセージにスレッド名を組み込みます。ログメッセージにスレッド名を含めると、ソースを見返してトレースするのが簡単になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;[</span><span class="si">%(levelname)s</span><span class="s">] (</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">my_service</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;my_service&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">my_service</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;worker&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">)</span>
+<span class="n">w2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">)</span> <span class="c"># デフォルト名を使う</span>
+
+<span class="n">w</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">w2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../logging/index.html#module-logging" title="ステータス、エラー、その他の情報をログ出力する"><tt class="xref py py-mod docutils literal"><span class="pre">logging</span></tt></a> もまたスレッドセーフなので、別のスレッドからのメッセージは区別して出力します。</p>
+<div class="highlight-python"><pre>$ python threading_names_log.py
+[DEBUG] (worker    ) Starting
+[DEBUG] (Thread-1  ) Starting
+[DEBUG] (my_service) Starting
+[DEBUG] (worker    ) Exiting
+[DEBUG] (Thread-1  ) Exiting
+[DEBUG] (my_service) Exiting</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>デーモンと非デーモンスレッド<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>これまでのサンプルプログラムは、全てのスレッドの処理が完了するまで明示的に終了するのを待っていました。終了しなくてもメインプログラムをブロッキングすることなく <em>daemon</em> としてスレッドを生成するときがあります。デーモンスレッドを使用することは、スレッドを中断する簡単な方法がない、もしくはデータを破損したり失ったりせずに処理の途中でスレッドを終了させるようなサービスで便利です(例えば、サービス監視ツールで &#8220;心電図&#8221; を生成するスレッド)。スレッドをデーモンにするには、その <tt class="xref py py-func docutils literal"><span class="pre">setDaemon()</span></tt> メソッドにブーリアン値を渡して呼び出します。デフォルトでは、スレッドはデーモンではないので、デーモンモードを有効にするために True を渡します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">daemon</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;daemon&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">daemon</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">non_daemon</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;non-daemon&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">non_daemon</span><span class="p">)</span>
+
+<span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>デーモンスレッドは2秒間の sleep から起きる前に全ての非デーモンスレッドは終了するので、結果の出力には、デーモンスレッドの <tt class="docutils literal"><span class="pre">&quot;Exiting&quot;</span></tt> のメッセージが含まれていないことに注意してください。</p>
+<div class="highlight-python"><pre>$ python threading_daemon.py
+(daemon    ) Starting
+(non-daemon) Starting
+(non-daemon) Exiting</pre>
+</div>
+<p>デーモンスレッドの処理が完了するまで待つには、 <tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> メソッドを使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">daemon</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;daemon&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">daemon</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">non_daemon</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;non-daemon&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">non_daemon</span><span class="p">)</span>
+
+<span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">d</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> でデーモンスレッドの終了を待つことで <tt class="docutils literal"><span class="pre">&quot;Exiting&quot;</span></tt> メッセージを出力する機会ができました。</p>
+<div class="highlight-python"><pre>$ python threading_daemon_join.py
+(daemon    ) Starting
+(non-daemon) Starting
+(non-daemon) Exiting
+(daemon    ) Exiting</pre>
+</div>
+<p>デフォルトでは <tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> は無期限にブロックします。また引数で <tt class="docutils literal"><span class="pre">timeout</span></tt> (スレッドが非アクティブになるために待つ秒を小数で表す)も渡せます。スレッドが <tt class="docutils literal"><span class="pre">timeout</span></tt> で設定した時間内に完了しなくても <tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> が返されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">daemon</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;daemon&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">daemon</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">non_daemon</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Exiting&#39;</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;non-daemon&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">non_daemon</span><span class="p">)</span>
+
+<span class="n">d</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">d</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;d.isAlive()&#39;</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">isAlive</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>渡された <tt class="docutils literal"><span class="pre">timeout</span></tt> は、デーモンスレッドが sleep する時間よりも小さいので、 <tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> が返された後でもスレッドはまだ &#8220;生きています&#8221; 。</p>
+<div class="highlight-python"><pre>$ python threading_daemon_join_timeout.py
+(daemon    ) Starting
+(non-daemon) Starting
+(non-daemon) Exiting
+d.isAlive() True</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>全てのスレッドを列挙する<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>メインプロセスが終了する前に、全てのデーモンスレッドが完了していることを保証するためにそういったデーモンスレッドの明示的なハンドラを保持する必要はありません。 <tt class="xref py py-func docutils literal"><span class="pre">enumerate()</span></tt> は、アクティブな <tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> インスタンスのリストを返します。このリストには、カレントスレッドも含まれています。カレントスレッドを <tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> することはできないので(デッドロックを発生させる)、カレントスレッドは読み飛ばさなければなりません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;thread worker function&quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+    <span class="n">pause</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;sleeping </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">pause</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;ending&#39;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">main_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threading</span><span class="o">.</span><span class="n">enumerate</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="n">main_thread</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;joining </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>ワーカースレッドは乱数で与えた時間を sleep するので、このプログラムの出力結果は変わる可能性があります。例えば、次のようになります。</p>
+<div class="highlight-python"><pre>$ python threading_enumerate.py
+(Thread-1  ) sleeping 3
+(Thread-2  ) sleeping 2
+(Thread-3  ) sleeping 4
+(MainThread) joining Thread-1
+(Thread-2  ) ending
+(Thread-1  ) ending
+(MainThread) joining Thread-2
+(MainThread) joining Thread-3
+(Thread-3  ) ending</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>スレッドをサブクラス化する<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>開始時に <tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> は、基本的な初期化を行ってからコンストラクタへ渡された関数を呼び出す <tt class="xref py py-func docutils literal"><span class="pre">run()</span></tt> メソッドを呼び出します。 <tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> のサブクラスを作成するには、必要な処理を行う <tt class="xref py py-func docutils literal"><span class="pre">run()</span></tt> をオーバーライドしてください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyThread</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;running&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">MyThread</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">run()</span></tt> の返り値は無視されます。</p>
+<div class="highlight-python"><pre>$ python threading_subclass.py
+(Thread-1  ) running
+(Thread-2  ) running
+(Thread-3  ) running
+(Thread-4  ) running
+(Thread-5  ) running</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> コンストラクタへ渡される <em>args</em> と <em>kwargs</em> の値はプライベートな変数に保存されるので、そういった引数はサブクラスから簡単にアクセスできません。カスタムスレッドへ引数を渡すには、サブクラスからみえるようにインスタンス変数に値を保存するようにコンストラクタを再定義します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyThreadWithArgs</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                  <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;running with </span><span class="si">%s</span><span class="s"> and </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">MyThreadWithArgs</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:</span><span class="s">&#39;B&#39;</span><span class="p">})</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">MyThreadWithArgs</span></tt> は <tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> と同じ API を使用しますが、別のクラスです。そのコンストラクタメソッドはさらに引数を取る、もしくは任意のクラスのようにスレッドの目的に直結した別の引数を取るように簡単に変更できます。</p>
+<div class="highlight-python"><pre>$ python threading_subclass_args.py
+(Thread-1  ) running with (0,) and {'a': 'A', 'b': 'B'}
+(Thread-2  ) running with (1,) and {'a': 'A', 'b': 'B'}
+(Thread-3  ) running with (2,) and {'a': 'A', 'b': 'B'}
+(Thread-4  ) running with (3,) and {'a': 'A', 'b': 'B'}
+(Thread-5  ) running with (4,) and {'a': 'A', 'b': 'B'}</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>タイマースレッド<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> は <tt class="xref py py-class docutils literal"><span class="pre">Thread</span></tt> をサブクラス化する理由の1つでもあり、 <a class="reference internal" href="#module-threading" title="スレッドによる並列処理を管理する"><tt class="xref py py-mod docutils literal"><span class="pre">threading</span></tt></a> で提供されています。 <tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> は処理の開始を遅延させて、遅延時間内であればいつでも中止できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">delayed</span><span class="p">():</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;worker running&#39;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">delayed</span><span class="p">)</span>
+<span class="n">t1</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="s">&#39;t1&#39;</span><span class="p">)</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">delayed</span><span class="p">)</span>
+<span class="n">t2</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="s">&#39;t2&#39;</span><span class="p">)</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;starting timers&#39;</span><span class="p">)</span>
+<span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;waiting before canceling </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">t2</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;canceling </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">t2</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
+<span class="n">t2</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;done&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>2番目のタイマーは決して実行されず、メインプログラムの残りの部分が終了した後で最初のタイマーが実行されて表示されることに注意してください。これはデーモンスレッドではないので、メインスレッドが終了したときに、暗黙的に <tt class="docutils literal"><span class="pre">join</span></tt> されます。</p>
+<div class="highlight-python"><pre>$ python threading_timer.py
+(MainThread) starting timers
+(MainThread) waiting before canceling t2
+(MainThread) canceling t2
+(MainThread) done
+(t1        ) worker running</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>スレッド間でシグナルを送る<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>複数スレッドを使用する本質的なところは、並列に実行するために処理を分離させることです。しかし、2つ以上のスレッドで処理を同期するのが重要なときがあります。スレッド間で通信する簡単な方法として <tt class="xref py py-class docutils literal"><span class="pre">Event</span></tt> オブジェクトを使用します。 <tt class="xref py py-class docutils literal"><span class="pre">Event</span></tt> は、 <tt class="xref py py-func docutils literal"><span class="pre">set()</span></tt> か <tt class="xref py py-func docutils literal"><span class="pre">clear()</span></tt> のどちらかで内部でフラグを管理します。他のスレッドは、後続の処理ができるようになるまで効率的にブロッキングして、そのフラグが <tt class="xref py py-func docutils literal"><span class="pre">set()</span></tt> になるまで <tt class="xref py py-func docutils literal"><span class="pre">wait()</span></tt> できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    
+<span class="k">def</span> <span class="nf">wait_for_event</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wait for the event to be set before doing anything&quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;wait_for_event starting&#39;</span><span class="p">)</span>
+    <span class="n">event_is_set</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;event set: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">event_is_set</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">wait_for_event_timeout</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wait t seconds and then timeout&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">e</span><span class="o">.</span><span class="n">isSet</span><span class="p">():</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;wait_for_event_timeout starting&#39;</span><span class="p">)</span>
+        <span class="n">event_is_set</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;event set: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">event_is_set</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event_is_set</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;processing event&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;doing other work&#39;</span><span class="p">)</span>
+
+
+<span class="n">e</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;block&#39;</span><span class="p">,</span> 
+                      <span class="n">target</span><span class="o">=</span><span class="n">wait_for_event</span><span class="p">,</span>
+                      <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="p">,))</span>
+<span class="n">t1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;non-block&#39;</span><span class="p">,</span> 
+                      <span class="n">target</span><span class="o">=</span><span class="n">wait_for_event_timeout</span><span class="p">,</span> 
+                      <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">t2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting before calling Event.set()&#39;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">e</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Event is set&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">wait()</span></tt> メソッドは、タイムアウトする前にイベントを待つ時間を表す秒を引数で取ります。これはイベントがセットされているかどうかを示すブーリアン値を返すので、呼び出し側は <tt class="xref py py-func docutils literal"><span class="pre">wait()</span></tt> が返された理由が分かります。 <tt class="xref py py-func docutils literal"><span class="pre">isSet()</span></tt> メソッドは、ブロッキングせずに個別のイベントで使用できます。</p>
+<p>このサンプルでは、 <tt class="xref py py-func docutils literal"><span class="pre">wait_for_event_timeout()</span></tt> はずっとブロッキングせずにイベントステータスを確認します。 <tt class="xref py py-func docutils literal"><span class="pre">wait_for_event()</span></tt> は、イベントステータスが変更されるまで返ってこない <tt class="xref py py-func docutils literal"><span class="pre">wait()</span></tt> の呼び出しをブロックします。</p>
+<div class="highlight-python"><pre>$ python threading_event.py
+(block     ) wait_for_event starting
+(non-block ) wait_for_event_timeout starting
+(MainThread) Waiting before calling Event.set()
+(non-block ) event set: False
+(non-block ) doing other work
+(non-block ) wait_for_event_timeout starting
+(MainThread) Event is set
+(block     ) event set: True
+(non-block ) event set: True
+(non-block ) processing event</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>リソースへのアクセスを制御する<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>スレッドの処理を同期することに加えて、データを破壊したり失わないように共有リソースへのアクセスを制御することも重要です。Python の組み込みデータ構造は、バイトコードの扱いがアトミックになる副作用からスレッドセーフです(GIL は途中で解放しません)。Python で実装された別のデータ構造、または整数や小数のようなシンプルな型はそういった保護機構がありません。そういったオブジェクトへの同時アクセスを防ぐには <tt class="xref py py-class docutils literal"><span class="pre">Lock</span></tt> オブジェクトを使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    
+<span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">start</span>
+    <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting for lock&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Acquired lock&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">pause</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Sleeping </span><span class="si">%0.02f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">pause</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">pause</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">increment</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Done&#39;</span><span class="p">)</span>
+
+<span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">counter</span><span class="p">,))</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting for worker threads&#39;</span><span class="p">)</span>
+<span class="n">main_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threading</span><span class="o">.</span><span class="n">enumerate</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">main_thread</span><span class="p">:</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Counter: </span><span class="si">%d</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">counter</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルでは、 <tt class="xref py py-func docutils literal"><span class="pre">worker()</span></tt> 関数は <tt class="xref py py-class docutils literal"><span class="pre">Counter</span></tt> インスタンスを増加させます。これは2つのスレッドが同時にその内部状態を変更しないように <tt class="xref py py-class docutils literal"><span class="pre">Lock</span></tt> を管理します。 <tt class="xref py py-class docutils literal"><span class="pre">Lock</span></tt> を使用しないと <tt class="xref py py-attr docutils literal"><span class="pre">value</span></tt> 属性の変更が失われる可能性があります。</p>
+<div class="highlight-python"><pre>$ python threading_lock.py
+(Thread-1  ) Sleeping 0.90
+(Thread-2  ) Sleeping 0.16
+(MainThread) Waiting for worker threads
+(Thread-2  ) Waiting for lock
+(Thread-2  ) Acquired lock
+(Thread-2  ) Sleeping 0.25
+(Thread-2  ) Waiting for lock
+(Thread-2  ) Acquired lock
+(Thread-2  ) Done
+(Thread-1  ) Waiting for lock
+(Thread-1  ) Acquired lock
+(Thread-1  ) Sleeping 0.42
+(Thread-1  ) Waiting for lock
+(Thread-1  ) Acquired lock
+(Thread-1  ) Done
+(MainThread) Counter: 4</pre>
+</div>
+<p>別のスレッドがカレントスレッドを待たせずにロックを獲得しているかどうかを確認するには、 <tt class="xref py py-func docutils literal"><span class="pre">acquire()</span></tt> の <em>blocking</em> 引数に False を渡してください。次のサンプルでは、 <tt class="xref py py-func docutils literal"><span class="pre">worker()</span></tt> が3回ロックを獲得しようとして、何回そうしようとしたかを数えます。その一方で <tt class="xref py py-func docutils literal"><span class="pre">lock_holder()</span></tt> は負荷を模倣するためにロックを獲得したときと解放したときに少し一時停止して、ロックの獲得と解法を繰り返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    
+<span class="k">def</span> <span class="nf">lock_holder</span><span class="p">(</span><span class="n">lock</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Holding&#39;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Not holding&#39;</span><span class="p">)</span>
+            <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">return</span>
+                    
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">lock</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting&#39;</span><span class="p">)</span>
+    <span class="n">num_tries</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">num_acquires</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">num_acquires</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Trying to acquire&#39;</span><span class="p">)</span>
+        <span class="n">have_it</span> <span class="o">=</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">num_tries</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">have_it</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Iteration </span><span class="si">%d</span><span class="s">: Acquired&#39;</span><span class="p">,</span>  <span class="n">num_tries</span><span class="p">)</span>
+                <span class="n">num_acquires</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Iteration </span><span class="si">%d</span><span class="s">: Not acquired&#39;</span><span class="p">,</span> <span class="n">num_tries</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">have_it</span><span class="p">:</span>
+                <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Done after </span><span class="si">%d</span><span class="s"> iterations&#39;</span><span class="p">,</span> <span class="n">num_tries</span><span class="p">)</span>
+
+
+<span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+<span class="n">holder</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">lock_holder</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">lock</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;LockHolder&#39;</span><span class="p">)</span>
+<span class="n">holder</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">holder</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="n">worker</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">lock</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;Worker&#39;</span><span class="p">)</span>
+<span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">worker()</span></tt> は、3回のロックを獲得するために3回以上のループを繰り返します。</p>
+<div class="highlight-python"><pre>$ python threading_lock_noblock.py
+(LockHolder) Starting
+(LockHolder) Holding
+(Worker    ) Starting
+(LockHolder) Not holding
+(Worker    ) Trying to acquire
+(Worker    ) Iteration 1: Acquired
+(LockHolder) Holding
+(Worker    ) Trying to acquire
+(Worker    ) Iteration 2: Not acquired
+(LockHolder) Not holding
+(Worker    ) Trying to acquire
+(Worker    ) Iteration 3: Acquired
+(LockHolder) Holding
+(Worker    ) Trying to acquire
+(Worker    ) Iteration 4: Not acquired
+(LockHolder) Not holding
+(Worker    ) Trying to acquire
+(Worker    ) Iteration 5: Acquired
+(Worker    ) Done after 5 iterations</pre>
+</div>
+<div class="section" id="id8">
+<h3>再入可能なロック<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>普通の <tt class="xref py py-class docutils literal"><span class="pre">Lock</span></tt> オブジェクトは、同じスレッドであっても複数回、獲得できません。ロックが同じコールチェーン内の複数の関数からアクセスされる場合、望ましくない副作用が発生します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;First try :&#39;</span><span class="p">,</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Second try:&#39;</span><span class="p">,</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この場合、両方の関数は同じグローバルロックを使用するので、一方が他方を呼び出すと、2番目のロック獲得が失敗して <tt class="xref py py-func docutils literal"><span class="pre">acquire()</span></tt> へのデフォルト引数を使用してブロックされます。</p>
+<div class="highlight-python"><pre>$ python threading_lock_reacquire.py
+First try : True
+Second try: False</pre>
+</div>
+<p>同じスレッドから別のコードがロックを獲得する必要がある状況では、代わりに <tt class="xref py py-class docutils literal"><span class="pre">RLock</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;First try :&#39;</span><span class="p">,</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Second try:&#39;</span><span class="p">,</span> <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>前のサンプルコードからの変更は <tt class="xref py py-class docutils literal"><span class="pre">Lock</span></tt> を <tt class="xref py py-class docutils literal"><span class="pre">RLock</span></tt> に置き換えただけです。</p>
+<div class="highlight-python"><pre>$ python threading_rlock.py
+First try : True
+Second try: 1</pre>
+</div>
+</div>
+<div class="section" id="id9">
+<h3>コンテキストマネージャとしてのロック<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>ロックは、コンテキストマネージャ API を実装して <strong class="command">with</strong> 文と互換性があります。 <strong class="command">with</strong> 文を使用すると、明示的にロックを獲得して解放する必要がなくなります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">worker_with</span><span class="p">(</span><span class="n">lock</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Lock acquired via with&#39;</span><span class="p">)</span>
+        
+<span class="k">def</span> <span class="nf">worker_no_with</span><span class="p">(</span><span class="n">lock</span><span class="p">):</span>
+    <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Lock acquired directly&#39;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker_with</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">lock</span><span class="p">,))</span>
+<span class="n">nw</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker_no_with</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">lock</span><span class="p">,))</span>
+
+<span class="n">w</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">nw</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">worker_with()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">worker_no_with()</span></tt> の2つの関数は、同等の方法でロックを管理します。</p>
+<div class="highlight-python"><pre>$ python threading_lock_with.py
+(Thread-1  ) Lock acquired via with
+(Thread-2  ) Lock acquired directly</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id10">
+<h2>スレッドを同期する<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Events</span></tt> を使用することに加えて、 <tt class="xref py py-class docutils literal"><span class="pre">Condition</span></tt> オブジェクトを使用してスレッドを同期する別の方法があります。 <tt class="xref py py-class docutils literal"><span class="pre">Condition</span></tt> は <tt class="xref py py-class docutils literal"><span class="pre">Lock</span></tt> を使用するので共有リソースに関連しています。これはスレッドにリソースが更新されるのを待たせます。このサンプルでは、 <tt class="xref py py-func docutils literal"><span class="pre">consumer()</span></tt> スレッドは、処理を継続する前にセットされる <tt class="xref py py-class docutils literal"><span class="pre">Condition</span></tt> を <tt class="xref py py-func docutils literal"><span class="pre">wait()</span></tt> します。 <tt class="xref py py-func docutils literal"><span class="pre">producer()</span></tt> スレッドは、状態をセットして別のスレッドが処理を継続できるように変更する責任をもちます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(asctime)s</span><span class="s"> (</span><span class="si">%(threadName)-2s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">cond</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;wait for the condition and use the resource&quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting consumer thread&#39;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">cond</span><span class="p">:</span>
+        <span class="n">cond</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Resource is available to consumer&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">producer</span><span class="p">(</span><span class="n">cond</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;set up the resource to be used by the consumer&quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Starting producer thread&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">cond</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Making resource available&#39;</span><span class="p">)</span>
+        <span class="n">cond</span><span class="o">.</span><span class="n">notifyAll</span><span class="p">()</span>
+
+<span class="n">condition</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;c1&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">condition</span><span class="p">,))</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;c2&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">condition</span><span class="p">,))</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;p&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">producer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">condition</span><span class="p">,))</span>
+
+<span class="n">c1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">c2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>スレッドは <tt class="xref py py-class docutils literal"><span class="pre">Condition</span></tt> に関連付けられたロックを獲得する <strong class="command">with</strong> 文を使用します。 <tt class="xref py py-func docutils literal"><span class="pre">acquire()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">release()</span></tt> メソッドを明示的に使用しても同様に動作します。</p>
+<div class="highlight-python"><pre>$ python threading_condition.py
+2013-02-17 11:34:26,422 (c1) Starting consumer thread
+2013-02-17 11:34:28,423 (c2) Starting consumer thread
+2013-02-17 11:34:30,425 (p ) Starting producer thread
+2013-02-17 11:34:30,425 (p ) Making resource available
+2013-02-17 11:34:30,425 (c1) Resource is available to consumer
+2013-02-17 11:34:30,425 (c2) Resource is available to consumer</pre>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>リソースへの同時アクセスを制限する<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>アクセスできる全体の数を制限しながら、複数のワーカーから1つのリソースへ同時にアクセスできると便利なときがあります。例えば、コネクションプールは同時接続数の最大数を制限したり、ネットワークアプリケーションは同時ダウンロード数の最大数を制限します。 <tt class="xref py py-class docutils literal"><span class="pre">Semaphore</span></tt> はそういったコネクション数を制御する方法の1つです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(asctime)s</span><span class="s"> (</span><span class="si">%(threadName)-2s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ActivePool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ActivePool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">makeActive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Running: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">makeInactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Running: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pool</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting to join the pool&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">s</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">makeActive</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">makeInactive</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+<span class="n">pool</span> <span class="o">=</span> <span class="n">ActivePool</span><span class="p">()</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pool</span><span class="p">))</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このサンプルでは、 <tt class="xref py py-class docutils literal"><span class="pre">ActivePool</span></tt> クラスは、どのスレッドがあるタイミングで実行できるかを追跡する簡単で便利な方法を提供します。実際のリソースプールはコネクションか、新たなアクティブスレッドへの他の値を割り合てて、スレッドが終了したときにその値を再利用します。2つのスレッドのみ並列に実行されているのを表すために、アクティブなスレッドの名前を保持するだけのサンプルがあります。</p>
+<div class="highlight-python"><pre>$ python threading_semaphore.py
+2013-02-17 11:34:30,494 (0 ) Waiting to join the pool
+2013-02-17 11:34:30,494 (0 ) Running: ['0']
+2013-02-17 11:34:30,494 (1 ) Waiting to join the pool
+2013-02-17 11:34:30,494 (1 ) Running: ['0', '1']
+2013-02-17 11:34:30,495 (2 ) Waiting to join the pool
+2013-02-17 11:34:30,495 (3 ) Waiting to join the pool
+2013-02-17 11:34:30,595 (0 ) Running: ['1']
+2013-02-17 11:34:30,595 (1 ) Running: []
+2013-02-17 11:34:30,596 (3 ) Running: ['3']
+2013-02-17 11:34:30,596 (2 ) Running: ['3', '2']
+2013-02-17 11:34:30,696 (3 ) Running: ['2']
+2013-02-17 11:34:30,697 (2 ) Running: []</pre>
+</div>
+</div>
+<div class="section" id="id12">
+<h2>スレッド固有のデータ<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>リソースによってはロックにより複数のスレッドでも利用できますが、その他のリソースを &#8220;所有&#8221; していないスレッドからみえないように保護する必要があります。 <tt class="xref py py-func docutils literal"><span class="pre">local()</span></tt> 関数は、別のスレッドからみえない値を保持するオブジェクトを作成します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">show_value</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;No value yet&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;value=</span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">show_value</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">show_value</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="n">local_data</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
+<span class="n">show_value</span><span class="p">(</span><span class="n">local_data</span><span class="p">)</span>
+<span class="n">local_data</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">show_value</span><span class="p">(</span><span class="n">local_data</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">local_data</span><span class="p">,))</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">local_data.value</span></tt> は、そのスレッドでセットされるまで他のスレッドからみると存在しないことに注意してください。</p>
+<div class="highlight-python"><pre>$ python threading_local.py
+(MainThread) No value yet
+(MainThread) value=1000
+(Thread-1  ) No value yet
+(Thread-2  ) No value yet
+(Thread-1  ) value=60
+(Thread-2  ) value=10</pre>
+</div>
+<p>全てのスレッドが同じ値で開始されるように設定を初期化するには、サブクラス化して <tt class="xref py py-func docutils literal"><span class="pre">__init__()</span></tt> で <tt class="xref py py-attr docutils literal"><span class="pre">value</span></tt> 属性をセットしてください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;(</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">show_value</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;No value yet&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;value=</span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">show_value</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">show_value</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyLocal</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Initializing </span><span class="si">%r</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+<span class="n">local_data</span> <span class="o">=</span> <span class="n">MyLocal</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">show_value</span><span class="p">(</span><span class="n">local_data</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">local_data</span><span class="p">,))</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">__init__()</span></tt> は、それぞれのスレッドで一度だけ同じオブジェクト(<tt class="xref py py-func docutils literal"><span class="pre">id()</span></tt> の値に着目)で実行されます。</p>
+<div class="highlight-python"><pre>$ python threading_local_defaults.py
+(MainThread) Initializing &lt;__main__.MyLocal object at 0x1005191f0&gt;
+(MainThread) value=1000
+(Thread-1  ) Initializing &lt;__main__.MyLocal object at 0x1005191f0&gt;
+(Thread-1  ) value=1000
+(Thread-1  ) value=70
+(Thread-2  ) Initializing &lt;__main__.MyLocal object at 0x1005191f0&gt;
+(Thread-2  ) value=1000
+(Thread-2  ) value=63</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-threading.html">threading</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><tt class="xref py py-mod docutils literal"><span class="pre">thread</span></tt></dt>
+<dd>低レベルスレッド API</dd>
+<dt><a class="reference internal" href="../Queue/index.html#module-Queue" title="スレッドセーフな FIFO の実装を提供する"><tt class="xref py py-mod docutils literal"><span class="pre">Queue</span></tt></a></dt>
+<dd>スレッド間でメッセージパッシングに便利なスレッドセーフなキュー</dd>
+<dt><a class="reference internal" href="../multiprocessing/index.html#module-multiprocessing" title="スレッドのようにプロセスを管理する"><tt class="xref py py-mod docutils literal"><span class="pre">multiprocessing</span></tt></a></dt>
+<dd><a class="reference internal" href="#module-threading" title="スレッドによる並列処理を管理する"><tt class="xref py py-mod docutils literal"><span class="pre">threading</span></tt></a> API のようにマルチプロセスで動作する API</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../mmap/index.html" title="mmap – メモリマップファイル"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../optional_os.html" title="オプション OS サービス"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../optional_os.html" >オプション OS サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

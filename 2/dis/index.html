@@ -1,0 +1,908 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>dis &#8211; Python バイトコードディスアセンブラ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="Python 言語サービス" href="../language.html" />
+    <link rel="next" title="pyclbr – Python クラスブラウザサポート" href="../pyclbr/index.html" />
+    <link rel="prev" title="compileall – ソースファイルをバイトコンパイルする" href="../compileall/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">dis &#8211; Python バイトコードディスアセンブラ</a><ul>
+<li><a class="reference internal" href="#id1">基本的なディスアセンブル処理</a></li>
+<li><a class="reference internal" href="#id2">関数をディスアセンブルする</a></li>
+<li><a class="reference internal" href="#id3">クラス</a></li>
+<li><a class="reference internal" href="#id4">デバッグのためにディスアセンブルする</a></li>
+<li><a class="reference internal" href="#id5">ループのパフォーマンス解析</a></li>
+<li><a class="reference internal" href="#id6">コンパイラの最適化</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../compileall/index.html" title="前の章へ"><strong>前:</strong> compileall &#8211; ソースファイルをバイトコンパイルする</a><br/>
+          <a href="../pyclbr/index.html" title="次の章へ"><strong>次:</strong> pyclbr &#8211; Python クラスブラウザサポート</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/dis/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../pyclbr/index.html" title="pyclbr – Python クラスブラウザサポート"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../compileall/index.html" title="compileall – ソースファイルをバイトコンパイルする"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../language.html" accesskey="U">Python 言語サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="dis-python">
+<h1>dis &#8211; Python バイトコードディスアセンブラ<a class="headerlink" href="#dis-python" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-dis"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">解析のためにコードオブジェクトを人間が読めるバイトコードに変換する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-dis" title="Python バイトコードディスアセンブラ"><tt class="xref py py-mod docutils literal"><span class="pre">dis</span></tt></a> モジュールは Python バイトコードを &#8220;ディスアセンブル&#8221; して人間が読める形態にする機能を提供します。インタープリタが実行するバイトコードをレビューすることは、タイトループを手作業で調整したり、その他の最適化のために効率化したりする良い方法です。さらにスレッド制御が切り替わる位置を推定できるのでマルチスレッドアプリケーションの競合状態を見つけることにも役立ちます。</p>
+<div class="section" id="id1">
+<h2>基本的なディスアセンブル処理<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">dis.dis()</span></tt> という関数はディスアセンブルされた Python ソースコード(モジュール、クラス、メソッド、関数やコードオブジェクト)を表示します。次のようなモジュールに対して、</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="n">my_dict</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="mi">1</span> <span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+<p>コマンドラインから <a class="reference internal" href="#module-dis" title="Python バイトコードディスアセンブラ"><tt class="xref py py-mod docutils literal"><span class="pre">dis</span></tt></a> モジュールを実行することでディスアセンブルすることができます。その出力はオリジナルソースの行番号、コードオブジェクト内の命令 &#8220;アドレス&#8221;、オペコード名、オペコードに渡される引数でカラムが構成されます。</p>
+<div class="highlight-python"><pre>$ python -m dis dis_simple.py
+  4           0 BUILD_MAP                1
+              3 LOAD_CONST               0 (1)
+              6 LOAD_CONST               1 ('a')
+              9 STORE_MAP
+             10 STORE_NAME               0 (my_dict)
+             13 LOAD_CONST               2 (None)
+             16 RETURN_VALUE</pre>
+</div>
+<p>このケースでは、サンプルソースはディクショナリを作成して、そこで存在するために5つの異なるオペレーションに変換されます。それからローカル変数へその結果を保存します。Python インタープリタはスタックベースなので、最初のステップは LOAD_CONST を使用して正しい順番でスタックの中に定数を追加することです。それからディクショナリに追加される新たなキーと値をスタックから取り出すために STORE_MAP を使用します。その結果のオブジェクトは STORE_NAME で &#8220;my_dict&#8221; という名前に束縛されます。</p>
+</div>
+<div class="section" id="id2">
+<h2>関数をディスアセンブルする<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>不幸にも、モジュール全体をディスアセンブルしても自動的に関数の内部を取り出すことはできません。例えば、次のようなモジュールを実行します。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">nargs</span><span class="p">,</span> <span class="n">args</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dis</span>
+    <span class="n">dis</span><span class="o">.</span><span class="n">dis</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>その出力結果はスタック上にコードオブジェクトが読み込まれることを表示して、そのコードオブジェクトが関数(LOAD_CONST, MAKE_FUNCTION)に変わりますが、それはその関数の内部では <em>ありません</em> 。</p>
+<div class="highlight-python"><pre>$ python -m dis dis_function.py
+  4           0 LOAD_CONST               0 (&lt;code object f at 0x10046fb30, file "dis_function.py", line 4&gt;)
+              3 MAKE_FUNCTION            0
+              6 STORE_NAME               0 (f)
+
+  8           9 LOAD_NAME                1 (__name__)
+             12 LOAD_CONST               1 ('__main__')
+             15 COMPARE_OP               2 (==)
+             18 POP_JUMP_IF_FALSE       49
+
+  9          21 LOAD_CONST               2 (-1)
+             24 LOAD_CONST               3 (None)
+             27 IMPORT_NAME              2 (dis)
+             30 STORE_NAME               2 (dis)
+
+ 10          33 LOAD_NAME                2 (dis)
+             36 LOAD_ATTR                2 (dis)
+             39 LOAD_NAME                0 (f)
+             42 CALL_FUNCTION            1
+             45 POP_TOP
+             46 JUMP_FORWARD             0 (to 49)
+        &gt;&gt;   49 LOAD_CONST               3 (None)
+             52 RETURN_VALUE</pre>
+</div>
+<p>関数の内部を見るためには <tt class="docutils literal"><span class="pre">dis.dis()</span></tt> にその関数を渡す必要があります。</p>
+<div class="highlight-python"><pre>$ python dis_function.py
+  5           0 LOAD_GLOBAL              0 (len)
+              3 LOAD_FAST                0 (args)
+              6 CALL_FUNCTION            1
+              9 STORE_FAST               1 (nargs)
+
+  6          12 LOAD_FAST                1 (nargs)
+             15 PRINT_ITEM
+             16 LOAD_FAST                0 (args)
+             19 PRINT_ITEM
+             20 PRINT_NEWLINE
+             21 LOAD_CONST               0 (None)
+             24 RETURN_VALUE</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>クラス<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>同様にコードオブジェクトに変わる全てのメソッドがディスアセンブルされるように <tt class="docutils literal"><span class="pre">dis</span></tt> へクラスを渡すこともできます。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">dis</span>
+
+<span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Example for dis.&quot;&quot;&quot;</span>
+    
+    <span class="n">CLASS_ATTRIBUTE</span> <span class="o">=</span> <span class="s">&#39;some value&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;MyObject(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<span class="n">dis</span><span class="o">.</span><span class="n">dis</span><span class="p">(</span><span class="n">MyObject</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="highlight-python"><pre>$ python dis_class.py
+Disassembly of __init__:
+ 12           0 LOAD_FAST                1 (name)
+              3 LOAD_FAST                0 (self)
+              6 STORE_ATTR               0 (name)
+              9 LOAD_CONST               0 (None)
+             12 RETURN_VALUE
+
+Disassembly of __str__:
+ 15           0 LOAD_CONST               1 ('MyObject(%s)')
+              3 LOAD_FAST                0 (self)
+              6 LOAD_ATTR                0 (name)
+              9 BINARY_MODULO
+             10 RETURN_VALUE</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>デバッグのためにディスアセンブルする<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>例外をデバッグするとき、バイトコードが問題を引き起こすことを確認するために役に立つときがあります。エラーが発生する付近のコードをディスアセンブルする方法があります。</p>
+<p>1つ目は最後に発生した例外に関するレポートのためにインタープリタで <tt class="docutils literal"><span class="pre">dis.distb()</span></tt> を使用します。 <tt class="docutils literal"><span class="pre">dis.distb()</span></tt> に引数が渡されなかったら最後に発生した例外を探して、その例外を引き起こしたスタックをディスアセンブルして表示します。</p>
+<div class="highlight-python"><pre>$ python
+Python 2.6.2 (r262:71600, Apr 16 2009, 09:17:39)
+[GCC 4.0.1 (Apple Computer, Inc. build 5250)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; import dis
+&gt;&gt;&gt; j = 4
+&gt;&gt;&gt; i = i + 4
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+NameError: name 'i' is not defined
+&gt;&gt;&gt; dis.distb()
+  1 --&gt;       0 LOAD_NAME                0 (i)
+              3 LOAD_CONST               0 (4)
+              6 BINARY_ADD
+              7 STORE_NAME               0 (i)
+             10 LOAD_CONST               1 (None)
+             13 RETURN_VALUE
+&gt;&gt;&gt;</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">--&gt;</span></tt> はエラーを引き起こしたオペコードを指していることに注意してください。 <tt class="docutils literal"><span class="pre">i</span></tt> という変数が定義されていないので、その名前で関連付けられた値をスタック上にロードすることができません。</p>
+<p>コード内で <tt class="docutils literal"><span class="pre">dis.distb()</span></tt> に直接アクティブなトレースバックを渡すことでそれに関する情報を表示することもできます。このサンプルでは DivideByZero 例外が発生しますが、コード内の数式は2つの除算があるので、どちらがゼロかは分かりません。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c"># ... 多くの行が削除される ...</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">k</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">dis</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_tb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+    <span class="n">dis</span><span class="o">.</span><span class="n">distb</span><span class="p">(</span><span class="n">exc_tb</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>ディスアセンブルされたソースでスタック上に問題のある値がロードされるとき、その値を見つけることは簡単です。問題のあるオペレーションは <tt class="docutils literal"><span class="pre">--&gt;</span></tt> でハイライトされます。そして <tt class="docutils literal"><span class="pre">j</span></tt> に格納されている <tt class="docutils literal"><span class="pre">0</span></tt> という値がスタック上に追加された場所を見つけるためにほんの数行前を探すだけです。</p>
+<div class="highlight-python"><pre>$ python dis_traceback.py
+  4           0 LOAD_CONST               0 (1)
+              3 STORE_NAME               0 (i)
+
+  5           6 LOAD_CONST               1 (0)
+              9 STORE_NAME               1 (j)
+
+  6          12 LOAD_CONST               2 (3)
+             15 STORE_NAME               2 (k)
+
+ 10          18 SETUP_EXCEPT            26 (to 47)
+
+ 11          21 LOAD_NAME                2 (k)
+             24 LOAD_NAME                0 (i)
+             27 LOAD_NAME                1 (j)
+    --&gt;      30 BINARY_DIVIDE
+             31 BINARY_MULTIPLY
+             32 LOAD_NAME                0 (i)
+             35 LOAD_NAME                2 (k)
+             38 BINARY_DIVIDE
+             39 BINARY_ADD
+             40 STORE_NAME               3 (result)
+             43 POP_BLOCK
+             44 JUMP_FORWARD            65 (to 112)
+
+ 12     &gt;&gt;   47 POP_TOP
+             48 POP_TOP
+             49 POP_TOP
+
+ 13          50 LOAD_CONST               3 (-1)
+             53 LOAD_CONST               4 (None)
+             56 IMPORT_NAME              4 (dis)
+             59 STORE_NAME               4 (dis)
+
+ 14          62 LOAD_CONST               3 (-1)
+             65 LOAD_CONST               4 (None)
+             68 IMPORT_NAME              5 (sys)
+             71 STORE_NAME               5 (sys)
+
+ 15          74 LOAD_NAME                5 (sys)
+             77 LOAD_ATTR                6 (exc_info)
+             80 CALL_FUNCTION            0
+             83 UNPACK_SEQUENCE          3
+             86 STORE_NAME               7 (exc_type)
+             89 STORE_NAME               8 (exc_value)
+             92 STORE_NAME               9 (exc_tb)
+
+ 16          95 LOAD_NAME                4 (dis)
+             98 LOAD_ATTR               10 (distb)
+            101 LOAD_NAME                9 (exc_tb)
+            104 CALL_FUNCTION            1
+            107 POP_TOP
+            108 JUMP_FORWARD             1 (to 112)
+            111 END_FINALLY
+        &gt;&gt;  112 LOAD_CONST               4 (None)
+            115 RETURN_VALUE</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>ループのパフォーマンス解析<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>エラーをデバッグすることとは別に <a class="reference internal" href="#module-dis" title="Python バイトコードディスアセンブラ"><tt class="xref py py-mod docutils literal"><span class="pre">dis</span></tt></a> はパフォーマンスの問題を特定することにも役立ちます。ディスアセンブルされたコードを調べることは、数少ない Python のバイトコード命令が非効率なバイトコードセットへ変換するタイトループで特に役に立ちます。単語のリストを読み込み、その最初の文字で単語をグループ分けするクラス <tt class="docutils literal"><span class="pre">Dictionary</span></tt> の異なる実装を数個調べることで、ディスアセンブルすることがどのように役に立つかを理解できます。</p>
+<p>先ずはテストドライバアプリケーションです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">dis</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">timeit</span>
+
+<span class="n">module_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+<span class="n">Dictionary</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">Dictionary</span>
+
+<span class="n">dis</span><span class="o">.</span><span class="n">dis</span><span class="p">(</span><span class="n">Dictionary</span><span class="o">.</span><span class="n">load_data</span><span class="p">)</span>
+<span class="k">print</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span>
+    <span class="s">&#39;d = Dictionary(words)&#39;</span><span class="p">,</span> 
+    <span class="sd">&quot;&quot;&quot;from %(module_name)s import Dictionary</span>
+<span class="sd">words = [l.strip() for l in open(&#39;/usr/share/dict/words&#39;, &#39;rt&#39;)]</span>
+<span class="sd">    &quot;&quot;&quot;</span> <span class="o">%</span> <span class="nb">locals</span><span class="p">()</span>
+    <span class="p">)</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="k">print</span> <span class="s">&#39;TIME: </span><span class="si">%0.4f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span><span class="o">/</span><span class="n">iterations</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">Dictionary</span></tt> クラスの個々の実体化を処理するために <tt class="docutils literal"><span class="pre">dis_test_loop.py</span></tt> を使用します。</p>
+<p>率直に考えた <tt class="docutils literal"><span class="pre">Dictionary</span></tt> の実装は次のように単語を探すかもしれません。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="k">class</span> <span class="nc">Dictionary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span><span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span><span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="p">]</span>
+</pre></div>
+</td></tr></table></div>
+<p>このソースの出力結果は Mac OS X で <tt class="docutils literal"><span class="pre">/usr/share/dict/words</span></tt> のコピーである 234936 単語を読み込むために 0.1074 秒かかりました。それはあまり悪い結果ではありませんが、次のようにディスアセンブルして、必要ならもっと効率的に動作することを理解できます。オペコード13でループに入ると、例外コンテキスト(<tt class="docutils literal"><span class="pre">SETUP_EXCEPT</span></tt>)をセットアップします。それからリストへ <tt class="docutils literal"><span class="pre">word</span></tt> を追加する前に <tt class="docutils literal"><span class="pre">self.by_letter[word[0]]</span></tt> を見つけるために6個のオペコードを取ります。ディクショナリにまだ <tt class="docutils literal"><span class="pre">word[0]</span></tt> が存在しないために例外が発生するなら、その例外ハンドラは <tt class="docutils literal"><span class="pre">word[0]</span></tt> (3 オペコード) を調べるために全て同じように動作します。そして、その単語を含む新たなリストに対して <tt class="docutils literal"><span class="pre">self.by_letter[word[0]]</span></tt> をセットします。</p>
+<div class="highlight-python"><pre>$ python dis_test_loop.py dis_slow_loop
+ 11           0 SETUP_LOOP              84 (to 87)
+              3 LOAD_FAST                1 (words)
+              6 GET_ITER
+        &gt;&gt;    7 FOR_ITER                76 (to 86)
+             10 STORE_FAST               2 (word)
+
+ 12          13 SETUP_EXCEPT            28 (to 44)
+
+ 13          16 LOAD_FAST                0 (self)
+             19 LOAD_ATTR                0 (by_letter)
+             22 LOAD_FAST                2 (word)
+             25 LOAD_CONST               1 (0)
+             28 BINARY_SUBSCR
+             29 BINARY_SUBSCR
+             30 LOAD_ATTR                1 (append)
+             33 LOAD_FAST                2 (word)
+             36 CALL_FUNCTION            1
+             39 POP_TOP
+             40 POP_BLOCK
+             41 JUMP_ABSOLUTE            7
+
+ 14     &gt;&gt;   44 DUP_TOP
+             45 LOAD_GLOBAL              2 (KeyError)
+             48 COMPARE_OP              10 (exception match)
+             51 JUMP_IF_FALSE           27 (to 81)
+             54 POP_TOP
+             55 POP_TOP
+             56 POP_TOP
+             57 POP_TOP
+
+ 15          58 LOAD_FAST                2 (word)
+             61 BUILD_LIST               1
+             64 LOAD_FAST                0 (self)
+             67 LOAD_ATTR                0 (by_letter)
+             70 LOAD_FAST                2 (word)
+             73 LOAD_CONST               1 (0)
+             76 BINARY_SUBSCR
+             77 STORE_SUBSCR
+             78 JUMP_ABSOLUTE            7
+        &gt;&gt;   81 POP_TOP
+             82 END_FINALLY
+             83 JUMP_ABSOLUTE            7
+        &gt;&gt;   86 POP_BLOCK
+        &gt;&gt;   87 LOAD_CONST               0 (None)
+             90 RETURN_VALUE
+
+TIME: 0.1074</pre>
+</div>
+<p>例外のセットアップを取り除くための1つのテクニックは全てのアルファベット <tt class="docutils literal"><span class="pre">self.by_letter</span></tt> を事前に1つのリスト内に存在させることです。それはつまり、新たな単語はいつもそのリストで見つかるので、最初の文字の値の探索と単語の保存処理だけになります。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="k">class</span> <span class="nc">Dictionary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="p">(</span><span class="n">letter</span><span class="p">,</span> <span class="p">[])</span> 
+                                <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">letters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span><span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>その変更はオペコード数を半分に減らしますが、たった 0.0984 秒に実行時間を短縮できただけです。例外の扱いは明らかにオーバヘッドになりますが、そう大きなものではありません。</p>
+<div class="highlight-python"><pre>$ python dis_test_loop.py dis_faster_loop
+ 14           0 SETUP_LOOP              38 (to 41)
+              3 LOAD_FAST                1 (words)
+              6 GET_ITER
+        &gt;&gt;    7 FOR_ITER                30 (to 40)
+             10 STORE_FAST               2 (word)
+
+ 15          13 LOAD_FAST                0 (self)
+             16 LOAD_ATTR                0 (by_letter)
+             19 LOAD_FAST                2 (word)
+             22 LOAD_CONST               1 (0)
+             25 BINARY_SUBSCR
+             26 BINARY_SUBSCR
+             27 LOAD_ATTR                1 (append)
+             30 LOAD_FAST                2 (word)
+             33 CALL_FUNCTION            1
+             36 POP_TOP
+             37 JUMP_ABSOLUTE            7
+        &gt;&gt;   40 POP_BLOCK
+        &gt;&gt;   41 LOAD_CONST               0 (None)
+             44 RETURN_VALUE
+
+TIME: 0.0984</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">self.by_letter</span></tt> の名前のルックアップをループの外側に移動することで、そのパフォーマンスを大幅に改善することができます(そうしても、その値は変更しません)。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="k">class</span> <span class="nc">Dictionary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="n">by_letter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="n">by_letter</span><span class="p">[</span><span class="n">word</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>今、オペコード0-6は <tt class="docutils literal"><span class="pre">self.by_letter</span></tt> の値を見つけます。そして <tt class="docutils literal"><span class="pre">self.by_letter</span></tt> の値をローカル変数 <tt class="docutils literal"><span class="pre">by_letter</span></tt> に保存します。
+2つのオペコードの代わりに、ローカル変数を使用することで1つのオペコードのみを取ります(ステートメント22はそのディクショナリをスタック上に追加するために <tt class="docutils literal"><span class="pre">LOAD_FAST</span></tt> を使用する)。この変更後に実行時間は 0.0842 秒へ減少します。</p>
+<div class="highlight-python"><pre>$ python dis_test_loop.py dis_fastest_loop
+ 13           0 LOAD_FAST                0 (self)
+              3 LOAD_ATTR                0 (by_letter)
+              6 STORE_FAST               2 (by_letter)
+
+ 14           9 SETUP_LOOP              35 (to 47)
+             12 LOAD_FAST                1 (words)
+             15 GET_ITER
+        &gt;&gt;   16 FOR_ITER                27 (to 46)
+             19 STORE_FAST               3 (word)
+
+ 15          22 LOAD_FAST                2 (by_letter)
+             25 LOAD_FAST                3 (word)
+             28 LOAD_CONST               1 (0)
+             31 BINARY_SUBSCR
+             32 BINARY_SUBSCR
+             33 LOAD_ATTR                1 (append)
+             36 LOAD_FAST                3 (word)
+             39 CALL_FUNCTION            1
+             42 POP_TOP
+             43 JUMP_ABSOLUTE           16
+        &gt;&gt;   46 POP_BLOCK
+        &gt;&gt;   47 LOAD_CONST               0 (None)
+             50 RETURN_VALUE
+
+TIME: 0.0842</pre>
+</div>
+<p>Brandon Rhodes が提案したさらなる最適化は Python のソースから <tt class="docutils literal"><span class="pre">for</span></tt> ループを完全に排除することです。もし入力の単語を配置するために <a class="reference internal" href="../itertools/index.html#itertools-groupby"><em>itertools.groupby()</em></a> を使用するなら、その繰り返し処理は C 言語側へ移動されます。このサンプルではその入力の単語が既にソートされていることが分かっているので安全に実行することができます。もし入力の単語がソートされているか分からなかったら、先に入力の単語をソートする必要があります。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="k">class</span> <span class="nc">Dictionary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">):</span>
+        <span class="c"># 文字で配置する</span>
+        <span class="n">grouped</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="c"># 配置された単語セットを保存する</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">by_letter</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">group</span><span class="p">)</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">grouped</span><span class="p">)</span>
+        
+</pre></div>
+</td></tr></table></div>
+<p><a class="reference internal" href="../itertools/index.html#module-itertools" title="効率的なループ処理のためのイテレータ関数"><tt class="xref py py-mod docutils literal"><span class="pre">itertools</span></tt></a> を使用すると実行時間はたった 0.0543 秒です。オリジナルの実行時間のちょうど半分です。</p>
+<div class="highlight-python"><pre>$ python dis_test_loop.py dis_eliminate_loop
+ 15           0 LOAD_GLOBAL              0 (itertools)
+              3 LOAD_ATTR                1 (groupby)
+              6 LOAD_FAST                1 (words)
+              9 LOAD_CONST               1 ('key')
+             12 LOAD_GLOBAL              2 (operator)
+             15 LOAD_ATTR                3 (itemgetter)
+             18 LOAD_CONST               2 (0)
+             21 CALL_FUNCTION            1
+             24 CALL_FUNCTION          257
+             27 STORE_FAST               2 (grouped)
+
+ 17          30 LOAD_GLOBAL              4 (dict)
+             33 LOAD_CONST               3 (&lt;code object &lt;genexpr&gt; at 0x7e7b8, file "/Users/dhellmann/Documents/PyMOTW/dis/PyMOTW/dis/dis_eliminate_loop.py", line 17&gt;)
+             36 MAKE_FUNCTION            0
+             39 LOAD_FAST                2 (grouped)
+             42 GET_ITER
+             43 CALL_FUNCTION            1
+             46 CALL_FUNCTION            1
+             49 LOAD_FAST                0 (self)
+             52 STORE_ATTR               5 (by_letter)
+             55 LOAD_CONST               0 (None)
+             58 RETURN_VALUE
+
+TIME: 0.0543</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>コンパイラの最適化<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>コンパイルされたソースをディスアセンブルすることはコンパイラによって最適化が行われたことを表します。例えば、リテラル表記はコンパイル中にできるだけ折り畳まれます。</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="c"># 折り畳む</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="n">f</span> <span class="o">=</span> <span class="mf">3.4</span> <span class="o">*</span> <span class="mf">5.6</span>
+<span class="n">s</span> <span class="o">=</span> <span class="s">&#39;Hello,&#39;</span> <span class="o">+</span> <span class="s">&#39; World!&#39;</span>
+
+<span class="c"># 折り畳まれない</span>
+<span class="n">I</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">*</span> <span class="mi">4</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">f</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="s">&#39;Fantastic!&#39;</span>
+</pre></div>
+</td></tr></table></div>
+<p>5-7行目のリテラル表記はオペレーションが実行されている途中で変更されないのでコンパイル時に1つの LOAD_CONST 命令に折り畳まれて算出されます。10-12行目に関してはそうではありません。というのは、変数は評価されて、その変数が実行したオペレータをオーバーロードするオブジェクトを参照する可能性があるからです。そのため、変数の評価は実行時に遅延させる必要があります。</p>
+<div class="highlight-python"><pre>$ python -m dis dis_constant_folding.py
+  5           0 LOAD_CONST              11 (3)
+              3 STORE_NAME               0 (i)
+
+  6           6 LOAD_CONST              12 (19.04)
+              9 STORE_NAME               1 (f)
+
+  7          12 LOAD_CONST              13 ('Hello, World!')
+             15 STORE_NAME               2 (s)
+
+ 10          18 LOAD_NAME                0 (i)
+             21 LOAD_CONST               6 (3)
+             24 BINARY_MULTIPLY
+             25 LOAD_CONST               7 (4)
+             28 BINARY_MULTIPLY
+             29 STORE_NAME               3 (I)
+
+ 11          32 LOAD_NAME                1 (f)
+             35 LOAD_CONST               1 (2)
+             38 BINARY_DIVIDE
+             39 LOAD_CONST               6 (3)
+             42 BINARY_DIVIDE
+             43 STORE_NAME               4 (F)
+
+ 12          46 LOAD_NAME                2 (s)
+             49 LOAD_CONST               8 ('\n')
+             52 BINARY_ADD
+             53 LOAD_CONST               9 ('Fantastic!')
+             56 BINARY_ADD
+             57 STORE_NAME               5 (S)
+             60 LOAD_CONST              10 (None)
+             63 RETURN_VALUE</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/dis.html">dis</a></dt>
+<dd><a class="reference external" href="http://docs.python.org/library/dis.html#python-bytecode-instructions">バイトコード命令</a> を含む本モジュールの標準ライブラリドキュメント</dd>
+<dt><em>Python Essential Reference</em>, 4th Edition, David M. Beazley</dt>
+<dd><a class="reference external" href="http://www.informit.com/store/product.aspx?isbn=0672329786">http://www.informit.com/store/product.aspx?isbn=0672329786</a></dd>
+<dt><a class="reference external" href="http://thomas.apestaart.org/log/?p=927">thomas.apestaart.org &#8220;Python Disassembly&#8221;</a></dt>
+<dd>Python 2.5 と 2.6 でディクショナリへ値を格納することの違いに関する短い議論</dd>
+</dl>
+<dl class="docutils">
+<dt><a class="reference external" href="http://stackoverflow.com/questions/869229/why-is-looping-over-range-in-python-faster-than-using-a-while-loop">Python の range() 上のループは while ループを使用するよりなぜ速いか？</a></dt>
+<dd>ディスアセンブルされたバイトコードを通して2つのループのサンプルを比較する StackOverflow.com の議論</dd>
+</dl>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://code.activestate.com/recipes/277940/">コンパイル時に定数を束縛するためのデコレータ</a></dt>
+<dd>Raymond Hettinger と Skip Montanaro による Python クックブックのレシピで実行時に名前を検索しないようにグローバル定数を追加する関数のバイトコードを書き直すデコレータ</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../pyclbr/index.html" title="pyclbr – Python クラスブラウザサポート"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../compileall/index.html" title="compileall – ソースファイルをバイトコンパイルする"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../language.html" >Python 言語サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,576 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>os.path &#8211; プラットホーム独自のファイル名を操作する - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="ファイルとディレクトリアクセス" href="../file_access.html" />
+    <link rel="next" title="fileinput – 入力ストリームを行単位で処理する" href="../fileinput/index.html" />
+    <link rel="prev" title="ファイルとディレクトリアクセス" href="../file_access.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">os.path &#8211; プラットホーム独自のファイル名を操作する</a><ul>
+<li><a class="reference internal" href="#id1">パスを解析する</a></li>
+<li><a class="reference internal" href="#id2">パスを構築する</a></li>
+<li><a class="reference internal" href="#id3">パスを標準化する</a></li>
+<li><a class="reference internal" href="#id4">ファイル日付</a></li>
+<li><a class="reference internal" href="#id5">ファイルをテストする</a></li>
+<li><a class="reference internal" href="#id6">ディレクトリツリーを移動する</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../file_access.html" title="前の章へ"><strong>前:</strong> ファイルとディレクトリアクセス</a><br/>
+          <a href="../fileinput/index.html" title="次の章へ"><strong>次:</strong> fileinput &#8211; 入力ストリームを行単位で処理する</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/ospath/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../fileinput/index.html" title="fileinput – 入力ストリームを行単位で処理する"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../file_access.html" title="ファイルとディレクトリアクセス"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../file_access.html" accesskey="U">ファイルとディレクトリアクセス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="os-path">
+<h1>os.path &#8211; プラットホーム独自のファイル名を操作する<a class="headerlink" href="#os-path" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-os.path"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">ファイル名やパスに関連する解析、構築、テスト、その他</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p>複数プラットホーム上のファイルを操作するコードを書くには <a class="reference internal" href="#module-os.path" title="プラットホーム独自のファイル名を操作する"><tt class="xref py py-mod docutils literal"><span class="pre">os.path</span></tt></a> モジュールに含まれる関数を使用すると簡単です。そのプログラムが他プラットホーム間の移植性を考慮していなくても信頼性の高いファイル名の解析のために <a class="reference internal" href="#module-os.path" title="プラットホーム独自のファイル名を操作する"><tt class="xref py py-mod docutils literal"><span class="pre">os.path</span></tt></a> を使用すべきです。</p>
+<div class="section" id="id1">
+<h2>パスを解析する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>os.path の関数の第1セットはファイル名をその要素の部品を表す文字列へ解析することに使用されます。これらの関数群は対象のパスが実際に存在するかどうかに関係なく、ただ単に文字列操作であることを理解することが重要です。</p>
+<p>解析するパスは <a class="reference internal" href="../os/index.html#module-os" title="Portable access to operating system specific features."><tt class="xref py py-mod docutils literal"><span class="pre">os</span></tt></a> で定義されている少しの変数に依存します。</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">os.sep</span></tt> - パスの区切りを表すセパレータ (例, &#8220;<tt class="docutils literal"><span class="pre">/</span></tt>&#8221; 又は &#8220;<tt class="docutils literal"><span class="pre">\</span></tt>&#8220;)</li>
+</ul>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">os.extsep</span></tt> - ファイル名とその &#8220;拡張子&#8221; の間のセパレータ (例, &#8220;<tt class="docutils literal"><span class="pre">.</span></tt>&#8220;)</li>
+</ul>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">os.pardir</span></tt> - 1階層上のディレクトリへ移動するパス要素 (例, &#8220;<tt class="docutils literal"><span class="pre">..</span></tt>&#8220;)</li>
+</ul>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">os.curdir</span></tt> - カレントディレクトリを参照するパス要素 (例, &#8220;<tt class="docutils literal"><span class="pre">.</span></tt>&#8220;)</li>
+</ul>
+<p><tt class="docutils literal"><span class="pre">split()</span></tt> はパスを2つに分割してそのタプルを返します。2番目の要素はパスの最後の要素で、最初の要素はその前に来るパス全部です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;/one/two/three&#39;</span><span class="p">,</span> 
+              <span class="s">&#39;/one/two/three/&#39;</span><span class="p">,</span>
+              <span class="s">&#39;/&#39;</span><span class="p">,</span>
+              <span class="s">&#39;.&#39;</span><span class="p">,</span>
+              <span class="s">&#39;&#39;</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; : &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_split.py
+"/one/two/three" : "('/one/two', 'three')"
+"/one/two/three/" : "('/one/two/three', '')"
+"/" : "('/', '')"
+"." : "('', '.')"
+"" : "('', '')"</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">basename()</span></tt> は <tt class="docutils literal"><span class="pre">split()</span></tt> した値の2番目の要素と同じ値を返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;/one/two/three&#39;</span><span class="p">,</span> 
+              <span class="s">&#39;/one/two/three/&#39;</span><span class="p">,</span>
+              <span class="s">&#39;/&#39;</span><span class="p">,</span>
+              <span class="s">&#39;.&#39;</span><span class="p">,</span>
+              <span class="s">&#39;&#39;</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; : &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_basename.py
+"/one/two/three" : "three"
+"/one/two/three/" : ""
+"/" : ""
+"." : "."
+"" : ""</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">dirname()</span></tt> は <tt class="docutils literal"><span class="pre">split()</span></tt> したパスの最初の要素を返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;/one/two/three&#39;</span><span class="p">,</span> 
+              <span class="s">&#39;/one/two/three/&#39;</span><span class="p">,</span>
+              <span class="s">&#39;/&#39;</span><span class="p">,</span>
+              <span class="s">&#39;.&#39;</span><span class="p">,</span>
+              <span class="s">&#39;&#39;</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; : &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_dirname.py
+"/one/two/three" : "/one/two"
+"/one/two/three/" : "/one/two/three"
+"/" : "/"
+"." : ""
+"" : ""</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">splitext()</span></tt> は <tt class="docutils literal"><span class="pre">split()</span></tt> のように動作しますが、ディレクトリではなく拡張子をセパレータとしてパスを分割します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;filename.txt&#39;</span><span class="p">,</span> <span class="s">&#39;filename&#39;</span><span class="p">,</span> <span class="s">&#39;/path/to/filename.txt&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span> <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; :&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_splitext.py
+"filename.txt" : ('filename', '.txt')
+"filename" : ('filename', '')
+"/path/to/filename.txt" : ('/path/to/filename', '.txt')
+"/" : ('/', '')
+"" : ('', '')</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">commonprefix()</span></tt> は引数としてパスのリストを受け取り、その全てのパスに共通する接頭辞である1つの文字列を返します。その値は実際に存在しないパスを表したり、パスセパレータを考慮していなかったりするかもしれません。そのため、その接頭辞として使用する文字列はセパレータの境界で停止しない可能性があります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;/one/two/three/four&#39;</span><span class="p">,</span>
+         <span class="s">&#39;/one/two/threefold&#39;</span><span class="p">,</span>
+         <span class="s">&#39;/one/two/three/&#39;</span><span class="p">,</span>
+         <span class="p">]</span>
+<span class="k">print</span> <span class="n">paths</span>
+<span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonprefix</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルでは、あるパスは <tt class="docutils literal"><span class="pre">three</span></tt> という名前のディレクトリを含まないけれど、共通の接頭辞は <tt class="docutils literal"><span class="pre">/one/two/three</span></tt> です。</p>
+<div class="highlight-python"><pre>$ python ospath_commonprefix.py
+['/one/two/three/four', '/one/two/threefold', '/one/two/three/']
+/one/two/three</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>パスを構築する<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>既存パスを分解した上で他の文字列からパスを構築する機会がよくあります。</p>
+<p>複数のパスの要素を1つの文字列に結合するために <tt class="docutils literal"><span class="pre">join()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">parts</span> <span class="ow">in</span> <span class="p">[</span> <span class="p">(</span><span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;three&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;three&#39;</span><span class="p">),</span>
+               <span class="p">(</span><span class="s">&#39;/one&#39;</span><span class="p">,</span> <span class="s">&#39;/two&#39;</span><span class="p">,</span> <span class="s">&#39;/three&#39;</span><span class="p">),</span>
+               <span class="p">]:</span>
+    <span class="k">print</span> <span class="n">parts</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">parts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_join.py
+('one', 'two', 'three') : one/two/three
+('/', 'one', 'two', 'three') : /one/two/three
+('/one', '/two', '/three') : /three</pre>
+</div>
+<p>さらに自動的に展開される &#8220;変数&#8221; 要素を含むパスを操作することも簡単です。例えば <tt class="docutils literal"><span class="pre">expanduser()</span></tt> はチルダ (<tt class="docutils literal"><span class="pre">~</span></tt>) 文字をユーザのホームディレクトリに変換します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;dhellmann&#39;</span><span class="p">,</span> <span class="s">&#39;postgres&#39;</span> <span class="p">]:</span>
+    <span class="n">lookup</span> <span class="o">=</span> <span class="s">&#39;~&#39;</span> <span class="o">+</span> <span class="n">user</span>
+    <span class="k">print</span> <span class="n">lookup</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">lookup</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_expanduser.py
+~ : /Users/dhellmann
+~dhellmann : /Users/dhellmann
+~postgres : /Library/PostgreSQL/9.0</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">expandvars()</span></tt> はもっと一般的に、パスに存在するシェルの環境変数を展開します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;MYVAR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;VALUE&#39;</span>
+
+<span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="s">&#39;/path/to/$MYVAR&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_expandvars.py
+/path/to/VALUE</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>パスを標準化する<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>分割された文字列から <tt class="docutils literal"><span class="pre">join()</span></tt> を使用する、又は組み込み変数と共に最後に余分なセパレータが付く、又は要素の相対パスからパスが構成されたとします。そういったパスをクリーンアップするには <tt class="docutils literal"><span class="pre">normpath()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;one//two//three&#39;</span><span class="p">,</span> 
+              <span class="s">&#39;one/./two/./three&#39;</span><span class="p">,</span> 
+              <span class="s">&#39;one/../one/two/three&#39;</span><span class="p">,</span>
+              <span class="p">]:</span>
+    <span class="k">print</span> <span class="n">path</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_normpath.py
+one//two//three : one/two/three
+one/./two/./three : one/two/three
+one/../one/two/three : one/two/three</pre>
+</div>
+<p>相対パスから絶対パスのファイル名に変換するには <tt class="docutils literal"><span class="pre">abspath()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;..&#39;</span><span class="p">,</span> <span class="s">&#39;./one/two/three&#39;</span><span class="p">,</span> <span class="s">&#39;../one/two/three&#39;</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot; : &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_abspath.py
+"." : "/Users/dhellmann/Devel/pymotw-ja/t2y/PyMOTW/ospath"
+".." : "/Users/dhellmann/Devel/pymotw-ja/t2y/PyMOTW"
+"./one/two/three" : "/Users/dhellmann/Devel/pymotw-ja/t2y/PyMOTW/ospath/one/two/three"
+"../one/two/three" : "/Users/dhellmann/Devel/pymotw-ja/t2y/PyMOTW/one/two/three"</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>ファイル日付<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>パスの操作に加えて os.path は <tt class="docutils literal"><span class="pre">os.stat()</span></tt> を呼び出すよりももっと便利なファイルプロパティを取り出す関数も含みます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">print</span> <span class="s">&#39;File         :&#39;</span><span class="p">,</span> <span class="n">__file__</span>
+<span class="k">print</span> <span class="s">&#39;Access time  :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getatime</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Modified time:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Change time  :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getctime</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Size         :&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_properties.py
+File         : ospath_properties.py
+Access time  : Sun Feb 17 11:33:08 2013
+Modified time: Fri Feb 11 08:38:29 2011
+Change time  : Sat Jul 16 12:19:07 2011
+Size         : 495</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>ファイルをテストする<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>あなたのプログラムがパス名に遭遇したとき、そのパス名はファイルかディレクトリを参照しているか調べる必要があることがよくあります。あなたがファイルかディレクトリの調査をサポートするプラットホーム上で操作するなら、そのパスはシンボリックリンクを参照するかマウントポイントかを知る必要があるかもしれません。さらにパスが存在するかどうかをテストしたいときもあるでしょう。 <a class="reference internal" href="#module-os.path" title="プラットホーム独自のファイル名を操作する"><tt class="xref py py-mod docutils literal"><span class="pre">os.path</span></tt></a> はこういった全ての条件をテストする関数を提供します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="k">for</span> <span class="nb">file</span> <span class="ow">in</span> <span class="p">[</span> <span class="n">__file__</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="s">&#39;./broken_link&#39;</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;File        :&#39;</span><span class="p">,</span> <span class="nb">file</span>
+    <span class="k">print</span> <span class="s">&#39;Absolute    :&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Is File?    :&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Is Dir?     :&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Is Link?    :&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">islink</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Mountpoint? :&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">ismount</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Exists?     :&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Link Exists?:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">lexists</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+    <span class="k">print</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ ln -s /does/not/exist broken_link
+$ python ospath_tests.py
+File        : ospath_tests.py
+Absolute    : False
+Is File?    : True
+Is Dir?     : False
+Is Link?    : False
+Mountpoint? : False
+Exists?     : True
+Link Exists?: True
+
+File        :
+Absolute    : False
+Is File?    : False
+Is Dir?     : False
+Is Link?    : False
+Mountpoint? : False
+Exists?     : False
+Link Exists?: False
+
+File        : /
+Absolute    : True
+Is File?    : False
+Is Dir?     : True
+Is Link?    : False
+Mountpoint? : True
+Exists?     : True
+Link Exists?: True
+
+File        : ./broken_link
+Absolute    : False
+Is File?    : False
+Is Dir?     : False
+Is Link?    : True
+Mountpoint? : False
+Exists?     : False
+Link Exists?: True</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>ディレクトリツリーを移動する<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">os.path.walk()</span></tt> はツリーの全ディレクトリを移動して、ディレクトリ名を渡してそのディレクトリのコンテンツの名前を提供する関数を呼び出します。このサンプルは <tt class="docutils literal"><span class="pre">.svn</span></tt> ディレクトリを無視して再起的にディレクトリを辿ってコンテンツを生成します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">arg</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">subname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">subname</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&#39;  </span><span class="si">%s</span><span class="s">/&#39;</span> <span class="o">%</span> <span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;  </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">name</span>
+    <span class="k">print</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s">&#39;example/one&#39;</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;example/one/file.txt&#39;</span><span class="p">,</span> <span class="s">&#39;wt&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;contents&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;example/two.txt&#39;</span><span class="p">,</span> <span class="s">&#39;wt&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;contents&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">,</span> <span class="n">visit</span><span class="p">,</span> <span class="s">&#39;(User data)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python ospath_walk.py
+example (User data)
+  one/
+  two.txt
+
+example/one (User data)
+  file.txt</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-os.path.html">os.path</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../os/index.html#module-os" title="Portable access to operating system specific features."><tt class="xref py py-mod docutils literal"><span class="pre">os</span></tt></a></dt>
+<dd>os.path の親にあたる os モジュール</dd>
+<dt><a class="reference internal" href="../articles/file_access.html#article-file-access"><em>ファイルアクセス</em></a></dt>
+<dd>ファイルを操作する他のツール</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../fileinput/index.html" title="fileinput – 入力ストリームを行単位で処理する"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../file_access.html" title="ファイルとディレクトリアクセス"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../file_access.html" >ファイルとディレクトリアクセス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

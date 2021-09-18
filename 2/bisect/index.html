@@ -1,0 +1,362 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bisect &#8211; ソート済みのリストを保持する - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データタイプ" href="../data_types.html" />
+    <link rel="next" title="sched – 汎用イベントスケジューラ" href="../sched/index.html" />
+    <link rel="prev" title="heapq – インプレースヒープソートアルゴリズム" href="../heapq/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">bisect &#8211; ソート済みのリストを保持する</a><ul>
+<li><a class="reference internal" href="#id1">サンプル</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../heapq/index.html" title="前の章へ"><strong>前:</strong> heapq &#8211; インプレースヒープソートアルゴリズム</a><br/>
+          <a href="../sched/index.html" title="次の章へ"><strong>次:</strong> sched &#8211; 汎用イベントスケジューラ</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/bisect/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../sched/index.html" title="sched – 汎用イベントスケジューラ"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../heapq/index.html" title="heapq – インプレースヒープソートアルゴリズム"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" accesskey="U">データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="bisect">
+<h1>bisect &#8211; ソート済みのリストを保持する<a class="headerlink" href="#bisect" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-bisect"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">リストへ要素が追加されたときにソートせずにリスト内の順序を保持する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-bisect" title="リストへ要素が追加されたときにソートせずにリスト内の順序を保持する"><tt class="xref py py-mod docutils literal"><span class="pre">bisect</span></tt></a> モジュールは、ソート済みのリストへ挿入する要素のアルゴリズムを実装します。これはリストを繰り返しソートする、もしくは作成後に巨大なリストを明示的にソートするよりもかなり効率が良いです。</p>
+<div class="section" id="id1">
+<h2>サンプル<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>ソート済みのリストへ要素を挿入する <tt class="xref py py-func docutils literal"><span class="pre">bisect.insort()</span></tt> を使用する簡単なサンプルを見てみましょう。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">bisect</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c"># ループの実行時に同じ疑似乱数になるように定数を使用する</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># 20個の乱数を生成してソート順序を保持してリストへ挿入する</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">bisect</span><span class="o">.</span><span class="n">insort</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> </span><span class="si">%2d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">position</span><span class="p">),</span> <span class="n">l</span>
+</pre></div>
+</div>
+<p>このスクリプトの実行結果は次のようになります。</p>
+<div class="highlight-python"><pre>$ python bisect_example.py
+14  0 [14]
+85  1 [14, 85]
+77  1 [14, 77, 85]
+26  1 [14, 26, 77, 85]
+50  2 [14, 26, 50, 77, 85]
+45  2 [14, 26, 45, 50, 77, 85]
+66  4 [14, 26, 45, 50, 66, 77, 85]
+79  6 [14, 26, 45, 50, 66, 77, 79, 85]
+10  0 [10, 14, 26, 45, 50, 66, 77, 79, 85]
+ 3  0 [3, 10, 14, 26, 45, 50, 66, 77, 79, 85]
+84  9 [3, 10, 14, 26, 45, 50, 66, 77, 79, 84, 85]
+44  4 [3, 10, 14, 26, 44, 45, 50, 66, 77, 79, 84, 85]
+77  9 [3, 10, 14, 26, 44, 45, 50, 66, 77, 77, 79, 84, 85]
+ 1  0 [1, 3, 10, 14, 26, 44, 45, 50, 66, 77, 77, 79, 84, 85]
+45  7 [1, 3, 10, 14, 26, 44, 45, 45, 50, 66, 77, 77, 79, 84, 85]
+73 10 [1, 3, 10, 14, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85]
+23  4 [1, 3, 10, 14, 23, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85]
+95 17 [1, 3, 10, 14, 23, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85, 95]
+91 17 [1, 3, 10, 14, 23, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85, 91, 95]</pre>
+</div>
+<p>1番目の列は生成された乱数を、2番目の列はリストへ挿入された位置を表示します。行毎にカレントのソート済みリストも表示します。</p>
+<p>これは簡単なサンプルで、いま扱っているデータ量では、単純にリストを作成してソートする方が速いかもしれません。しかし、巨大なリストでは、このような挿入ソートアルゴリズムを使用すると処理時間とメモリが節約できます。</p>
+<p>上述した結果セットは重複する値(45 と 77)を含んでいることに気付きます。 <a class="reference internal" href="#module-bisect" title="リストへ要素が追加されたときにソートせずにリスト内の順序を保持する"><tt class="xref py py-mod docutils literal"><span class="pre">bisect</span></tt></a> モジュールは重複値を扱うのに2つの方法を提供します。新たな値が既存の値の左側か右側に挿入されます。 <tt class="xref py py-func docutils literal"><span class="pre">insert()</span></tt> 関数は、実際に既存の値の後に挿入する <tt class="xref py py-func docutils literal"><span class="pre">insort_right()</span></tt> のエイリアスです。対応する <tt class="xref py py-func docutils literal"><span class="pre">insort_left()</span></tt> は既存の値の前に挿入します。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">insort_right()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">insort_left()</span></tt> で同じデータを扱う場合、結局は同じソート済みのリストになりますが、重複した値の挿入位置が違っていることに気付きます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">bisect</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c"># シードをリセットする</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># bisect_left と insort_left を使用する</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect_left</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="n">bisect</span><span class="o">.</span><span class="n">insort_left</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> </span><span class="si">%2d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">position</span><span class="p">),</span> <span class="n">l</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python bisect_example2.py
+14  0 [14]
+85  1 [14, 85]
+77  1 [14, 77, 85]
+26  1 [14, 26, 77, 85]
+50  2 [14, 26, 50, 77, 85]
+45  2 [14, 26, 45, 50, 77, 85]
+66  4 [14, 26, 45, 50, 66, 77, 85]
+79  6 [14, 26, 45, 50, 66, 77, 79, 85]
+10  0 [10, 14, 26, 45, 50, 66, 77, 79, 85]
+ 3  0 [3, 10, 14, 26, 45, 50, 66, 77, 79, 85]
+84  9 [3, 10, 14, 26, 45, 50, 66, 77, 79, 84, 85]
+44  4 [3, 10, 14, 26, 44, 45, 50, 66, 77, 79, 84, 85]
+77  8 [3, 10, 14, 26, 44, 45, 50, 66, 77, 77, 79, 84, 85]
+ 1  0 [1, 3, 10, 14, 26, 44, 45, 50, 66, 77, 77, 79, 84, 85]
+45  6 [1, 3, 10, 14, 26, 44, 45, 45, 50, 66, 77, 77, 79, 84, 85]
+73 10 [1, 3, 10, 14, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85]
+23  4 [1, 3, 10, 14, 23, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85]
+95 17 [1, 3, 10, 14, 23, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85, 95]
+91 17 [1, 3, 10, 14, 23, 26, 44, 45, 45, 50, 66, 73, 77, 77, 79, 84, 85, 91, 95]</pre>
+</div>
+<p>Python 実装に加えて、より高速な C 言語実装も利用できます。C 言語実装が存在するなら <a class="reference internal" href="#module-bisect" title="リストへ要素が追加されたときにソートせずにリスト内の順序を保持する"><tt class="xref py py-mod docutils literal"><span class="pre">bisect</span></tt></a> をインポートするときにピュア Python 実装がオーバーライドされます。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/bisect.html">bisect</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference external" href="http://en.wikipedia.org/wiki/Insertion_sort">WikiPedia: Insertion Sort</a></dt>
+<dd>挿入ソートアルゴリズムの説明</dd>
+</dl>
+<p class="last"><a class="reference internal" href="../articles/data_structures.html#article-data-structures"><em>インメモリデータ構造</em></a></p>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../sched/index.html" title="sched – 汎用イベントスケジューラ"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../heapq/index.html" title="heapq – インプレースヒープソートアルゴリズム"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" >データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

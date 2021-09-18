@@ -1,0 +1,1801 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>sqlite3 &#8211; 組み込み関係データベース - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データの永続化" href="../persistence.html" />
+    <link rel="next" title="汎用 OS サービス" href="../generic_os.html" />
+    <link rel="prev" title="whichdb – DBM スタイルのデータベースフォーマットを確認する" href="../whichdb/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">sqlite3 &#8211; 組み込み関係データベース</a><ul>
+<li><a class="reference internal" href="#id1">データベースを作成する</a></li>
+<li><a class="reference internal" href="#id2">データを取り出す</a><ul>
+<li><a class="reference internal" href="#id3">クエリメタデータ</a></li>
+<li><a class="reference internal" href="#id4">行オブジェクト</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5">クエリで変数を使用する</a><ul>
+<li><a class="reference internal" href="#id6">位置パラメータ</a></li>
+<li><a class="reference internal" href="#id7">名前付きパラメータ</a></li>
+<li><a class="reference internal" href="#id8">バルクロード</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">列の型</a><ul>
+<li><a class="reference internal" href="#id10">カスタム型</a></li>
+<li><a class="reference internal" href="#id11">列名から型を派生する</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id12">トランザクション</a><ul>
+<li><a class="reference internal" href="#id13">変更を保存する</a></li>
+<li><a class="reference internal" href="#id14">変更を放棄する</a></li>
+<li><a class="reference internal" href="#id15">分離レベル</a><ul>
+<li><a class="reference internal" href="#deferred">遅延(Deferred)</a></li>
+<li><a class="reference internal" href="#immediate">即時(Immediate)</a></li>
+<li><a class="reference internal" href="#exclusive">排他(Exclusive)</a></li>
+<li><a class="reference internal" href="#id16">自動コミット</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id17">ユーザ定義の振る舞い</a><ul>
+<li><a class="reference internal" href="#sql-python">SQL で Python 関数を使用する</a></li>
+<li><a class="reference internal" href="#id18">カスタム集約</a></li>
+<li><a class="reference internal" href="#id19">カスタムソート</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id20">データへのアクセスを制限する</a></li>
+<li><a class="reference internal" href="#id21">インメモリデータベース</a></li>
+<li><a class="reference internal" href="#id22">データベースのコンテンツをエクスポートする</a></li>
+<li><a class="reference internal" href="#id23">スレッドとコネクションの共有</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../whichdb/index.html" title="前の章へ"><strong>前:</strong> whichdb &#8211; DBM スタイルのデータベースフォーマットを確認する</a><br/>
+          <a href="../generic_os.html" title="次の章へ"><strong>次:</strong> 汎用 OS サービス</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/sqlite3/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../generic_os.html" title="汎用 OS サービス"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../whichdb/index.html" title="whichdb – DBM スタイルのデータベースフォーマットを確認する"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../persistence.html" accesskey="U">データの永続化</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="sqlite3">
+<h1>sqlite3 &#8211; 組み込み関係データベース<a class="headerlink" href="#sqlite3" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-sqlite3"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">SQL をサポートした組み込み関係データベースを実装する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.5 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> モジュールは <a class="reference external" href="http://www.sqlite.org/">SQLite</a> 関係データベースに対する DB-API 2.0 準拠のインタフェースを提供します。SQLite はアプリケーション内に組み込むように設計された、インプロセスデータベースであり、MySQL, PostgreSQL や Oracle のような独立したサーバプログラムではありません。SQLite は高速且つ柔軟で徹底的にテストされており、プロトタイピングのみならず、アプリケーションによっては本番環境にも使用できます。</p>
+<div class="section" id="id1">
+<h2>データベースを作成する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>SQLite データベースはファイルシステム上の1つのファイルに格納されます。ライブラリはそのファイルへのアクセスを管理し、複数のプログラムがそのファイルへ書き込むときにデータが破損しないようにロックします。そのファイルへの初回アクセス時にデータベースが作成されますが、アプリケーションはデータベース内のテーブル定義もしくは <em>スキーマ</em> を管理する責任があります。</p>
+<p>このサンプルは <tt class="xref py py-func docutils literal"><span class="pre">connect()</span></tt> でデータベースファイルをオープンする前にデータベースファイルの存在を調べるので、新しいデータベースのスキーマを作成するかどうかが分かります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="n">db_is_new</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">db_is_new</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Need to create schema&#39;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Database exists, assume schema does, too.&#39;</span>
+
+<span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このスクリプトを２回実行すると、そのデータベースファイルが存在しなければ空のファイルを作成することが分かります。</p>
+<div class="highlight-python"><pre>$ ls *.db
+ls: *.db: No such file or directory
+
+$ python sqlite3_createdb.py
+Need to create schema
+
+$ ls *.db
+todo.db
+
+$ python sqlite3_createdb.py
+Database exists, assume schema does, too.</pre>
+</div>
+<p>新しいデータベースファイルを作成した後、その次のステップはデータベース内のテーブルを定義するスキーマを作成します。このセクションのこの後の全サンプルは、タスク管理テーブルを持つ同じデータベーススキーマを使用します。テーブルは次の通りです。</p>
+<p><strong>project</strong></p>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="11%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">列</th>
+<th class="head">型</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>name</td>
+<td>text</td>
+<td>プロジェクト名</td>
+</tr>
+<tr><td>description</td>
+<td>text</td>
+<td>プロジェクトの説明</td>
+</tr>
+<tr><td>deadline</td>
+<td>date</td>
+<td>プロジェクト全体の期限</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p><strong>task</strong></p>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="8%" />
+<col width="74%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">列</th>
+<th class="head">型</th>
+<th class="head">説明</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>id</td>
+<td>number</td>
+<td>ユニークなタスク識別子</td>
+</tr>
+<tr><td>priority</td>
+<td>integer</td>
+<td>優先度の数値、低いほど優先度が高い</td>
+</tr>
+<tr><td>details</td>
+<td>text</td>
+<td>タスクの詳細</td>
+</tr>
+<tr><td>status</td>
+<td>text</td>
+<td>タスクの状況 (&#8216;new&#8217;, &#8216;pending&#8217;, &#8216;done&#8217; 又は &#8216;canceled&#8217; のどれか)</td>
+</tr>
+<tr><td>deadline</td>
+<td>date</td>
+<td>タスクの期限</td>
+</tr>
+<tr><td>completed_on</td>
+<td>date</td>
+<td>タスクの完了を表す</td>
+</tr>
+<tr><td>project</td>
+<td>text</td>
+<td>タスクのプロジェクト名</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>テーブルを作成する <em>データ定義言語</em> (DDL) 文は次の通りです。</p>
+<div class="highlight-sql"><div class="highlight"><pre><span class="c1">-- Schema for to-do application examples.</span>
+
+<span class="c1">-- Projects are high-level activities made up of tasks</span>
+<span class="k">create</span> <span class="k">table</span> <span class="n">project</span> <span class="p">(</span>
+    <span class="n">name</span>        <span class="nb">text</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
+    <span class="n">description</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="n">deadline</span>    <span class="nb">date</span>
+<span class="p">);</span>
+
+<span class="c1">-- Tasks are steps that can be taken to complete a project</span>
+<span class="k">create</span> <span class="k">table</span> <span class="n">task</span> <span class="p">(</span>
+    <span class="n">id</span>           <span class="nb">integer</span> <span class="k">primary</span> <span class="k">key</span> <span class="n">autoincrement</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
+    <span class="n">priority</span>     <span class="nb">integer</span> <span class="k">default</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">details</span>      <span class="nb">text</span><span class="p">,</span>
+    <span class="n">status</span>       <span class="nb">text</span><span class="p">,</span>
+    <span class="n">deadline</span>     <span class="nb">date</span><span class="p">,</span>
+    <span class="n">completed_on</span> <span class="nb">date</span><span class="p">,</span>
+    <span class="n">project</span>      <span class="nb">text</span> <span class="k">not</span> <span class="k">null</span> <span class="k">references</span> <span class="n">project</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> クラスの <tt class="xref py py-func docutils literal"><span class="pre">executescript()</span></tt> メソッドはそのスキーマを作成する DDL 命令を実行するために使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="n">schema_filename</span> <span class="o">=</span> <span class="s">&#39;todo_schema.sql&#39;</span>
+
+<span class="n">db_is_new</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">db_is_new</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Creating schema&#39;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_filename</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+
+        <span class="k">print</span> <span class="s">&#39;Inserting initial data&#39;</span>
+        
+        <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into project (name, description, deadline)</span>
+<span class="s">        values (&#39;pymotw&#39;, &#39;Python Module of the Week&#39;, &#39;2010-11-01&#39;)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into task (details, status, deadline, project)</span>
+<span class="s">        values (&#39;write about select&#39;, &#39;done&#39;, &#39;2010-10-03&#39;, &#39;pymotw&#39;)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into task (details, status, deadline, project)</span>
+<span class="s">        values (&#39;write about random&#39;, &#39;waiting&#39;, &#39;2010-10-10&#39;, &#39;pymotw&#39;)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">)</span>
+        
+        <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into task (details, status, deadline, project)</span>
+<span class="s">        values (&#39;write about sqlite3&#39;, &#39;active&#39;, &#39;2010-10-17&#39;, &#39;pymotw&#39;)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Database exists, assume schema does, too.&#39;</span>
+</pre></div>
+</div>
+<p>そのテーブルを作成した後、数個の <strong class="command">insert</strong> 文がサンプルプロジェクトと関連タスクを作成します。 <strong class="command">sqlite3</strong> コマンドラインプログラムをデータベースのコンテンツを調べるために使用します。</p>
+<div class="highlight-python"><pre>$ python sqlite3_create_schema.py
+Creating schema
+Inserting initial data
+
+$ sqlite3 todo.db 'select * from task'
+1|1|write about select|done|2010-10-03||pymotw
+2|1|write about random|waiting|2010-10-10||pymotw
+3|1|write about sqlite3|active|2010-10-17||pymotw</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>データを取り出す<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Python プログラムから <tt class="xref py py-data docutils literal"><span class="pre">task</span></tt> テーブルに保存された値を取り出すには <tt class="xref py py-func docutils literal"><span class="pre">cursor()</span></tt> メソッドでデータベースコネクションから <tt class="xref py py-class docutils literal"><span class="pre">Cursor</span></tt> を作成します。カーソルはデータの一貫したビューを生成して、SQLite のようなトランザクションデータベースシステムで対話的にやり取りする基本的な方法です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select id, priority, details, status, deadline from task where project = &#39;pymotw&#39;</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">=</span> <span class="n">row</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> {</span><span class="si">%d</span><span class="s">} </span><span class="si">%-20s</span><span class="s"> [</span><span class="si">%-8s</span><span class="s">] (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>クエリの実行は2つのステップで行われます。最初にカーソルの <tt class="xref py py-func docutils literal"><span class="pre">execute()</span></tt> メソッドを実行して、どんなデータを取得するかをデータベースエンジンに伝えます。それから、その結果を取り出すために <tt class="xref py py-func docutils literal"><span class="pre">fetchall()</span></tt> を使用します。返り値はクエリの <strong class="command">select</strong> 句に記述された列の値を含むタプルのシーケンスです。</p>
+<div class="highlight-python"><pre>$ python sqlite3_select_tasks.py
+ 1 {1} write about select   [done    ] (2010-10-03)
+ 2 {1} write about random   [waiting ] (2010-10-10)
+ 3 {1} write about sqlite3  [active  ] (2010-10-17)</pre>
+</div>
+<p>その結果は <tt class="xref py py-func docutils literal"><span class="pre">fetchone()</span></tt> で一度に1つだけ取り出したり、 <tt class="xref py py-func docutils literal"><span class="pre">fetchmany()</span></tt> で固定サイズ分まとめて取り出すこともできます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select name, description, deadline from project where name = &#39;pymotw&#39;</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="k">print</span> <span class="s">&#39;Project details for </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">) due </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select id, priority, details, status, deadline from task</span>
+<span class="s">    where project = &#39;pymotw&#39; order by deadline</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Next 5 tasks:&#39;</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchmany</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">=</span> <span class="n">row</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> {</span><span class="si">%d</span><span class="s">} </span><span class="si">%-25s</span><span class="s"> [</span><span class="si">%-8s</span><span class="s">] (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">fetchmany()</span></tt> へ渡された値は返す要素の最大数です。もし指定した最大数よりも要素が少ないなら、その最大数よりも小さいシーケンスが返されます。</p>
+<div class="highlight-python"><pre>$ python sqlite3_select_variations.py
+Project details for Python Module of the Week (pymotw) due 2010-11-01
+
+Next 5 tasks:
+ 1 {1} write about select        [done    ] (2010-10-03)
+ 2 {1} write about random        [waiting ] (2010-10-10)
+ 3 {1} write about sqlite3       [active  ] (2010-10-17)</pre>
+</div>
+<div class="section" id="id3">
+<h3>クエリメタデータ<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>DB-API 2.0 の仕様では <tt class="xref py py-func docutils literal"><span class="pre">execute()</span></tt> が呼び出された後、 <tt class="xref py py-class docutils literal"><span class="pre">Cursor</span></tt> はその <tt class="xref py py-attr docutils literal"><span class="pre">description</span></tt> 属性をセットして、fetch メソッドが返すデータに関する情報を保持します。API の仕様では、その description の値は列名、型、表示サイズ、内部サイズ、精度、スケールや NULL 値を許容するかどうかのフラグを含むタプルのシーケンスになります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select * from task where project = &#39;pymotw&#39;</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;Task table has these columns:&#39;</span>
+    <span class="k">for</span> <span class="n">colinfo</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">colinfo</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> はデータベースへ追加するデータの型やサイズの制約を強制しないので、列名のみがセットされます。</p>
+<div class="highlight-python"><pre>$ python sqlite3_cursor_description.py
+Task table has these columns:
+('id', None, None, None, None, None, None)
+('priority', None, None, None, None, None, None)
+('details', None, None, None, None, None, None)
+('status', None, None, None, None, None, None)
+('deadline', None, None, None, None, None, None)
+('completed_on', None, None, None, None, None, None)
+('project', None, None, None, None, None, None)</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>行オブジェクト<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>デフォルトでは、データベースから &#8220;行&#8221; として fetch メソッドが返す値はタプルです。呼び出し側はクエリ内の列の順番を覚えておいて、タプルから対応する個々の値を展開する責任があります。あるクエリの値の数が増加する、もしくはそのデータと連携するコードがライブラリに展開されるとき、1つのオブジェクトに列名でその列の値にアクセスすると簡単です。その理由は、そのタプルの要素の順番と数はクエリが修正されると変更され、クエリの結果に依存するコードが壊れにくくなるからです。</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> オブジェクトは <tt class="xref py py-data docutils literal"><span class="pre">row_factory</span></tt> プロパティを持ち、クエリの結果セットの各行を表すのに作成されたオブジェクトの型を制御します。さらに <a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> は1行のファクトリとして使用することを目的とした <tt class="xref py py-class docutils literal"><span class="pre">Row</span></tt> クラスもあります。 <tt class="xref py py-class docutils literal"><span class="pre">Row</span></tt> インスタンスは列のインデックスや名前でアクセスできます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="c"># Row を使用するために行ファクトリを変更する</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+    
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select name, description, deadline from project where name = &#39;pymotw&#39;</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+    <span class="k">print</span> <span class="s">&#39;Project details for </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">) due </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select id, priority, status, deadline, details from task</span>
+<span class="s">    where project = &#39;pymotw&#39; order by deadline</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Next 5 tasks:&#39;</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchmany</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> {</span><span class="si">%d</span><span class="s">} </span><span class="si">%-25s</span><span class="s"> [</span><span class="si">%-8s</span><span class="s">] (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">row</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;priority&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;details&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;deadline&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<p>この <tt class="docutils literal"><span class="pre">sqlite3_select_variations.py</span></tt> のサンプルは、タプルの代わりに <tt class="xref py py-class docutils literal"><span class="pre">Row</span></tt> インスタンスを使用して書き直しています。project テーブルの行はクエリの列名の位置でその値へアクセスして表示しますが、task テーブルの行を表示する <strong class="command">print</strong> 文はその代わりにキーワードを使用します。そのため、クエリの列の順番が変更されても問題にはなりません。</p>
+<div class="highlight-python"><pre>$ python sqlite3_row_factory.py
+Project details for Python Module of the Week (pymotw) due 2010-11-01
+
+Next 5 tasks:
+ 1 {1} write about select        [done    ] (2010-10-03)
+ 2 {1} write about random        [waiting ] (2010-10-10)
+ 3 {1} write about sqlite3       [active  ] (2010-10-17)</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>クエリで変数を使用する<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>プログラム内に組み込まれた文字列リテラルで定義されたクエリを使用することは柔軟性に欠けます。例えば、別のプロジェクトをデータベースに追加するとき、トップ5のタスクを表示するクエリを実行するにはどちらか一方のプロジェクトを更新すべきです。より柔軟性を確保するための1つの方法は、Python の変数を組み合わせて設計したクエリで SQL 文を構築することです。しかし、この方法を使用して文字列でクエリを構築することは危険なので止めた方が良いです。クエリで扱う変数の特殊文字のエスケープ処理を正しく行わないと、SQL の構文解析エラーか、もっと悪い <em>SQL インジェクション攻撃</em> として知られるセキュリティ上の脆弱性を引き起こします。</p>
+<p>クエリで動的な値を使用する適切な方法は、SQL 命令に従い <tt class="xref py py-func docutils literal"><span class="pre">execute()</span></tt> へ渡す <em>ホスト変数</em> を経由することです。SQL のプレースホルダ値はその SQL 文の実行時にホスト変数の値で置き換えられます。SQL 内に任意の値を追加する代わりに、SQL が構文解析される前でホスト変数を使用することはインジェクション攻撃を避けます。その理由は信頼できない値が SQL 文の構文解析で影響を与える可能性がないからです。SQLite はプレースホルダを用いる2つのクエリ形態、位置と名前をサポートします。</p>
+<div class="section" id="id6">
+<h3>位置パラメータ<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>クエスチョンマーク (<tt class="docutils literal"><span class="pre">?</span></tt>) は位置引数を表します。それはタプルの要素として <tt class="xref py py-func docutils literal"><span class="pre">execute()</span></tt> に渡されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="n">project_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;select id, priority, details, status, deadline from task where project = ?&quot;</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">project_name</span><span class="p">,))</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">=</span> <span class="n">row</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> {</span><span class="si">%d</span><span class="s">} </span><span class="si">%-20s</span><span class="s"> [</span><span class="si">%-8s</span><span class="s">] (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>コマンドライン引数は位置引数として安全にクエリへ渡されて、データベースを汚染するデータにはなりません。</p>
+<div class="highlight-python"><pre>$ python sqlite3_argument_positional.py pymotw
+ 1 {1} write about select   [done    ] (2010-10-03)
+ 2 {1} write about random   [waiting ] (2010-10-10)
+ 3 {1} write about sqlite3  [active  ] (2010-10-17)</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>名前付きパラメータ<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>多くのパラメータを持つ、または複数のパラメータがクエリ内で何回か繰り返される複雑なクエリには名前付きパラメータを使用してください。名前付きパラメータは <tt class="docutils literal"><span class="pre">:param_name</span></tt> のようにコロンを接頭辞に取ります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="n">project_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;select id, priority, details, status, deadline from task</span>
+<span class="s">            where project = :project_name</span>
+<span class="s">            order by deadline, priority</span>
+<span class="s">            &quot;&quot;&quot;</span>
+
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;project_name&#39;</span><span class="p">:</span><span class="n">project_name</span><span class="p">})</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">=</span> <span class="n">row</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> {</span><span class="si">%d</span><span class="s">} </span><span class="si">%-25s</span><span class="s"> [</span><span class="si">%-8s</span><span class="s">] (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">task_id</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">details</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">deadline</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>位置パラメータも名前付きパラメータも、クエリパーサにより特別な処理が行われるのでクォートやエスケープ処理が必要ありません。</p>
+<div class="highlight-python"><pre>$ python sqlite3_argument_named.py pymotw
+ 1 {1} write about select        [done    ] (2010-10-03)
+ 2 {1} write about random        [waiting ] (2010-10-10)
+ 3 {1} write about sqlite3       [active  ] (2010-10-17)</pre>
+</div>
+<p>クエリパラメータは <strong class="command">select</strong>, <strong class="command">insert</strong> や <strong class="command">update</strong> 文で使用できます。クエリパラメータはリテラル値が正しく処理されるクエリ内のどこでも使用できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="nb">id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;update task set status = :status where id = :id&quot;</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;status&#39;</span><span class="p">:</span><span class="n">status</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span><span class="nb">id</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>この <strong class="command">update</strong> 文は2つの名前付きパラメータを使用します。 <tt class="xref py py-data docutils literal"><span class="pre">id</span></tt> 値は変更する行を見つけるために使用され <tt class="xref py py-data docutils literal"><span class="pre">status</span></tt> 値がテーブルに書き込まれます。</p>
+<div class="highlight-python"><pre>$ python sqlite3_argument_update.py 2 done
+$ python sqlite3_argument_named.py pymotw
+ 1 {1} write about select        [done    ] (2010-10-03)
+ 2 {1} write about random        [done    ] (2010-10-10)
+ 3 {1} write about sqlite3       [active  ] (2010-10-17)</pre>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>バルクロード<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>大量データに対して同じ SQL 命令を適用するには <tt class="xref py py-func docutils literal"><span class="pre">executemany()</span></tt> を使用します。Python で入力のループを行わず低レイヤのライブラリでループを最適化するので、これはデータを読み込むのに便利です。このサンプルプログラムは <a class="reference internal" href="../csv/index.html#module-csv" title="カンマ区切りのファイルを読み書きする"><tt class="xref py py-mod docutils literal"><span class="pre">csv</span></tt></a> モジュールを用いて、カンマで区切られた値を持つファイルからタスクのリストを読み込みます。そして、データベースへその読み込んだ値をロードします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="n">data_filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">SQL</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;insert into task (details, priority, status, deadline, project)</span>
+<span class="s">         values (:details, :priority, &#39;active&#39;, :deadline, :project)</span>
+<span class="s">      &quot;&quot;&quot;</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_filename</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+    <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+    
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">SQL</span><span class="p">,</span> <span class="n">csv_reader</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サンプルのデータファイル <tt class="docutils literal"><span class="pre">tasks.csv</span></tt> は次のデータを含みます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">deadline</span><span class="p">,</span><span class="n">project</span><span class="p">,</span><span class="n">priority</span><span class="p">,</span><span class="n">details</span>
+<span class="mi">2010</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mo">02</span><span class="p">,</span><span class="n">pymotw</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s">&quot;finish reviewing markup&quot;</span>
+<span class="mi">2010</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mo">03</span><span class="p">,</span><span class="n">pymotw</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s">&quot;revise chapter intros&quot;</span>
+<span class="mi">2010</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mo">03</span><span class="p">,</span><span class="n">pymotw</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s">&quot;subtitle&quot;</span>
+</pre></div>
+</div>
+<p>プログラムを実行すると次のようになります。</p>
+<div class="highlight-python"><pre>$ python sqlite3_load_csv.py tasks.csv
+$ python sqlite3_argument_named.py pymotw
+ 4 {2} finish reviewing markup   [active  ] (2010-10-02)
+ 6 {1} subtitle                  [active  ] (2010-10-03)
+ 1 {1} write about select        [done    ] (2010-10-03)
+ 5 {2} revise chapter intros     [active  ] (2010-10-03)
+ 2 {1} write about random        [done    ] (2010-10-10)
+ 3 {1} write about sqlite3       [active  ] (2010-10-17)</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id9">
+<h2>列の型<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>SQLite は整数、浮動小数点やテキストの列をネイティブにサポートします。これらの型のデータは Python における表現からデータベースへ格納できる値へ <a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> により 自動的に変換されます。また必要に応じて元に戻せます。整数値はその値のサイズによりデータベースから <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> か <tt class="xref py py-class docutils literal"><span class="pre">long</span></tt> 変数へ読み込まれます。
+テキストは <tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> の <tt class="xref py py-attr docutils literal"><span class="pre">text_factory</span></tt> 属性に変更していない限り <tt class="xref py py-class docutils literal"><span class="pre">unicode</span></tt> として取り出されて保存されます。</p>
+<p>SQLite は内部的には少しのデータ型のみをサポートしますが、 <a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> には、どんなデータでも列に格納するために Python アプリケーションがカスタム型を定義できます。デフォルトでサポートされていない型の変換は、 <tt class="xref py py-data docutils literal"><span class="pre">detect_types</span></tt> フラグを使用したデータベースコネクションで有効です。 <tt class="xref py py-const docutils literal"><span class="pre">PARSE_DECLTYPES</span></tt> を使用すると、そのテーブルが定義されたときにカスタム型で定義された列になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;select id, details, deadline from task&quot;</span>
+
+<span class="k">def</span> <span class="nf">show_deadline</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;details&#39;</span><span class="p">,</span> <span class="s">&#39;deadline&#39;</span><span class="p">]:</span>
+        <span class="k">print</span> <span class="s">&#39;  column:&#39;</span><span class="p">,</span> <span class="n">col</span>
+        <span class="k">print</span> <span class="s">&#39;    value :&#39;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;    type  :&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+    <span class="k">return</span>
+
+<span class="k">print</span> <span class="s">&#39;Without type detection:&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">show_deadline</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">With type detection:&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">detect_types</span><span class="o">=</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">PARSE_DECLTYPES</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">show_deadline</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> は <a class="reference internal" href="../datetime/index.html#module-datetime" title="日付/時間の操作"><tt class="xref py py-mod docutils literal"><span class="pre">datetime</span></tt></a> モジュールから <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> を使用して、Python で日付やタイムスタンプの列を扱うための変換機能を提供します。両方の日付に関する変換機能は型検出が有効なときに自動的に有効になります。</p>
+<div class="highlight-python"><pre>$ python sqlite3_date_types.py
+Without type detection:
+  column: id
+    value : 1
+    type  : &lt;type 'int'&gt;
+  column: details
+    value : write about select
+    type  : &lt;type 'unicode'&gt;
+  column: deadline
+    value : 2010-10-03
+    type  : &lt;type 'unicode'&gt;
+
+With type detection:
+  column: id
+    value : 1
+    type  : &lt;type 'int'&gt;
+  column: details
+    value : write about select
+    type  : &lt;type 'unicode'&gt;
+  column: deadline
+    value : 2010-10-03
+    type  : &lt;type 'datetime.date'&gt;</pre>
+</div>
+<div class="section" id="id10">
+<h3>カスタム型<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>新しい型を定義するために2つの関数を登録する必要があります。 <em>アダプタ</em> は入力として Python オブジェクトを受け取り、データベースに格納されるバイト列を返します。 <em>コンバータ</em> はデータベースから文字列を受け取り、Python オブジェクトを返します。アダプタ関数を定義するには <tt class="xref py py-func docutils literal"><span class="pre">register_adapter()</span></tt> を、コンバータ関数には <tt class="xref py py-func docutils literal"><span class="pre">register_converter()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">def</span> <span class="nf">adapter_func</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert from in-memory to storage representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;adapter_func(</span><span class="si">%s</span><span class="s">)</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">obj</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">converter_func</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert from storage to in-memory representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;converter_func(</span><span class="si">%r</span><span class="s">)</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">data</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;MyObj(</span><span class="si">%r</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span>
+
+<span class="c"># 型を操作する関数を登録する</span>
+<span class="n">sqlite3</span><span class="o">.</span><span class="n">register_adapter</span><span class="p">(</span><span class="n">MyObj</span><span class="p">,</span> <span class="n">adapter_func</span><span class="p">)</span>
+<span class="n">sqlite3</span><span class="o">.</span><span class="n">register_converter</span><span class="p">(</span><span class="s">&quot;MyObj&quot;</span><span class="p">,</span> <span class="n">converter_func</span><span class="p">)</span>
+
+<span class="c"># 保存するオブジェクトを作成する</span>
+<span class="c"># タプルのリストを使用するのでこのシーケンスを直接 executemany() へ渡せる</span>
+<span class="n">to_save</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">MyObj</span><span class="p">(</span><span class="s">&#39;this is a value to save&#39;</span><span class="p">),),</span>
+            <span class="p">(</span><span class="n">MyObj</span><span class="p">(</span><span class="mi">42</span><span class="p">),),</span>
+            <span class="p">]</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">detect_types</span><span class="o">=</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">PARSE_DECLTYPES</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="c"># &quot;MyObj&quot; 型の列でテーブルを作成する</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    create table if not exists obj (</span>
+<span class="s">        id    integer primary key autoincrement not null,</span>
+<span class="s">        data  MyObj</span>
+<span class="s">    )</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="c"># オブジェクトをデータベースへ追加する</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="s">&quot;insert into obj (data) values (?)&quot;</span><span class="p">,</span> <span class="n">to_save</span><span class="p">)</span>
+
+    <span class="c"># たった今データベースに保存されたオブジェクトをクエリする</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select id, data from obj&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">obj_id</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;Retrieved&#39;</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">print</span>
+</pre></div>
+</div>
+<p>このサンプルは、あるオブジェクトをデータベースに格納する文字列として保存するために <a class="reference internal" href="../pickle/index.html#module-pickle" title="Python オブジェクトシリアライゼーション"><tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt></a> を使用します。このテクニックは任意のオブジェクトを格納するのに便利ですが、
+オブジェクト属性をベースにしてクエリすることができません。独自の型に属性値を格納する SQLAlchemy のような、実際の <em>オブジェクト関係マッパー</em> は大量データを扱うのにもっと便利でしょう。</p>
+<div class="highlight-python"><pre>$ python sqlite3_custom_type.py
+adapter_func(MyObj('this is a value to save'))
+adapter_func(MyObj(42))
+converter_func("ccopy_reg\n_reconstructor\np1\n(c__main__\nMyObj\np2\n
+c__builtin__\nobject\np3\nNtRp4\n(dp5\nS'arg'\np6\nS'this is a value t
+o save'\np7\nsb.")
+converter_func("ccopy_reg\n_reconstructor\np1\n(c__main__\nMyObj\np2\n
+c__builtin__\nobject\np3\nNtRp4\n(dp5\nS'arg'\np6\nI42\nsb.")
+Retrieved 1 MyObj('this is a value to save') &lt;class '__main__.MyObj'&gt;
+Retrieved 2 MyObj(42) &lt;class '__main__.MyObj'&gt;</pre>
+</div>
+</div>
+<div class="section" id="id11">
+<h3>列名から型を派生する<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>クエリのそのデータに関する型情報のために2つの情報源があります。オリジナルのテーブル定義は、この前のセクションで紹介したように本当の列の型を識別するために使用されます。さらに型識別子は <tt class="docutils literal"><span class="pre">as</span> <span class="pre">&quot;name</span> <span class="pre">[type]&quot;</span></tt> の形でクエリ内の <strong class="command">select</strong> 句に含めることもできます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">def</span> <span class="nf">adapter_func</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert from in-memory to storage representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;adapter_func(</span><span class="si">%s</span><span class="s">)</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">obj</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">converter_func</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert from storage to in-memory representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;converter_func(</span><span class="si">%r</span><span class="s">)</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">data</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;MyObj(</span><span class="si">%r</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span>
+
+<span class="c"># 型を操作する関数を登録する</span>
+<span class="n">sqlite3</span><span class="o">.</span><span class="n">register_adapter</span><span class="p">(</span><span class="n">MyObj</span><span class="p">,</span> <span class="n">adapter_func</span><span class="p">)</span>
+<span class="n">sqlite3</span><span class="o">.</span><span class="n">register_converter</span><span class="p">(</span><span class="s">&quot;MyObj&quot;</span><span class="p">,</span> <span class="n">converter_func</span><span class="p">)</span>
+
+<span class="c"># 保存するオブジェクトを作成する</span>
+<span class="c"># タプルのリストを使用するのでこのシーケンスを直接 executemany() へ渡せる</span>
+<span class="n">to_save</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">MyObj</span><span class="p">(</span><span class="s">&#39;this is a value to save&#39;</span><span class="p">),),</span>
+            <span class="p">(</span><span class="n">MyObj</span><span class="p">(</span><span class="mi">42</span><span class="p">),),</span>
+            <span class="p">]</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">detect_types</span><span class="o">=</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">PARSE_COLNAMES</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="c"># &quot;MyObj&quot; 型の列でテーブルを作成する</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    create table if not exists obj2 (</span>
+<span class="s">        id    integer primary key autoincrement not null,</span>
+<span class="s">        data  text</span>
+<span class="s">    )</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="c"># オブジェクトをデータベースへ追加する</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="s">&quot;insert into obj2 (data) values (?)&quot;</span><span class="p">,</span> <span class="n">to_save</span><span class="p">)</span>
+
+    <span class="c"># たった今データベースに保存されたオブジェクトをクエリする</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;select id, data as &quot;pickle [MyObj]&quot; from obj2&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">obj_id</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;Retrieved&#39;</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">print</span>
+</pre></div>
+</div>
+<p>オリジナルのテーブル定義の代わりにクエリの一部に型があるときは <tt class="xref py py-data docutils literal"><span class="pre">detect_types</span></tt> フラグに <tt class="xref py py-const docutils literal"><span class="pre">PARSE_COLNAMES</span></tt> を使用してください。</p>
+<div class="highlight-python"><pre>$ python sqlite3_custom_type_column.py
+adapter_func(MyObj('this is a value to save'))
+adapter_func(MyObj(42))
+converter_func("ccopy_reg\n_reconstructor\np1\n(c__main__\nMyObj\np2\n
+c__builtin__\nobject\np3\nNtRp4\n(dp5\nS'arg'\np6\nS'this is a value t
+o save'\np7\nsb.")
+converter_func("ccopy_reg\n_reconstructor\np1\n(c__main__\nMyObj\np2\n
+c__builtin__\nobject\np3\nNtRp4\n(dp5\nS'arg'\np6\nI42\nsb.")
+Retrieved 1 MyObj('this is a value to save') &lt;class '__main__.MyObj'&gt;
+Retrieved 2 MyObj(42) &lt;class '__main__.MyObj'&gt;</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id12">
+<h2>トランザクション<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>関係データベースの重要な機能の1つは <em>トランザクション</em> であり、一貫した内部状態を保持するために使用します。トランザクションを有効にすることで1つのコネクションを通した複数の変更に対して、その結果が <em>コミット</em> されて実際にデータベースへ書き込まれるまで他のユーザへ影響を与えずに行うことができます。</p>
+<div class="section" id="id13">
+<h3>変更を保存する<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p><strong class="command">insert</strong> か <strong class="command">update</strong> 文のどちらかでデータベースを変更するとき、明示的に <tt class="xref py py-func docutils literal"><span class="pre">commit()</span></tt> を呼び出して保存する必要があります。この要求はアプリケーションに対して同時に関連する複数の変更を行う機会を与えます。そして、インクリメンタルではなく <em>原始的</em> に複数の変更を保存して、データベースへ複数のクライアントが接続することによる部分的な更新が行われないようにします。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">commit()</span></tt> を呼び出す効果はデータベースへ複数のコネクションを持つプログラムを見ると分かり易いです。最初のコネクションで新たな行を追加した後、別のコネクションを使用してその行を読み込もうと2回行います。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">def</span> <span class="nf">show_projects</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;select name, description from project&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;  &#39;</span><span class="p">,</span> <span class="n">name</span>
+    <span class="k">return</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn1</span><span class="p">:</span>
+
+    <span class="k">print</span> <span class="s">&#39;Before changes:&#39;</span>
+    <span class="n">show_projects</span><span class="p">(</span><span class="n">conn1</span><span class="p">)</span>
+
+    <span class="c"># あるカーソルで追加する</span>
+    <span class="n">cursor1</span> <span class="o">=</span> <span class="n">conn1</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor1</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    insert into project (name, description, deadline)</span>
+<span class="s">    values (&#39;virtualenvwrapper&#39;, &#39;Virtualenv Extensions&#39;, &#39;2011-01-01&#39;)</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">After changes in conn1:&#39;</span>
+    <span class="n">show_projects</span><span class="p">(</span><span class="n">conn1</span><span class="p">)</span>
+
+    <span class="c"># 他のコネクションからコミットせずに選択する</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Before commit:&#39;</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn2</span><span class="p">:</span>
+        <span class="n">show_projects</span><span class="p">(</span><span class="n">conn2</span><span class="p">)</span>
+
+    <span class="c"># コミットしてから他のコネクションで選択する</span>
+    <span class="n">conn1</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">After commit:&#39;</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn3</span><span class="p">:</span>
+        <span class="n">show_projects</span><span class="p">(</span><span class="n">conn3</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+<p><tt class="xref py py-data docutils literal"><span class="pre">conn1</span></tt> がコミットされる前に <tt class="xref py py-func docutils literal"><span class="pre">show_projects()</span></tt> が呼び出されると、その結果はどちらのコネクションが使用されるかに依ります。その変更は <tt class="xref py py-data docutils literal"><span class="pre">conn1</span></tt> を通して行われたので、その変更されたデータが確認されます。しかし <tt class="xref py py-data docutils literal"><span class="pre">conn2</span></tt> はそうではありません。コミットした後で、新たなコネクション <tt class="xref py py-data docutils literal"><span class="pre">conn3</span></tt> ではその追加された行が確認されます。</p>
+<div class="highlight-python"><pre>$ python sqlite3_transaction_commit.py
+Before changes:
+   pymotw
+
+After changes in conn1:
+   pymotw
+   virtualenvwrapper
+
+Before commit:
+   pymotw
+
+After commit:
+   pymotw
+   virtualenvwrapper</pre>
+</div>
+</div>
+<div class="section" id="id14">
+<h3>変更を放棄する<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>また、コミットされていない変更は <tt class="xref py py-func docutils literal"><span class="pre">rollback()</span></tt> で完全に放棄することもできます。 <tt class="xref py py-func docutils literal"><span class="pre">commit()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">rollback()</span></tt> メソッドは、普通は同じ <tt class="docutils literal"><span class="pre">try:except</span></tt> ブロックの違う部分から呼び出されます。つまり、エラーはロールバックのトリガーとなります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">def</span> <span class="nf">show_projects</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;select name, description from project&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;  &#39;</span><span class="p">,</span> <span class="n">name</span>
+    <span class="k">return</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+
+    <span class="k">print</span> <span class="s">&#39;Before changes:&#39;</span>
+    <span class="n">show_projects</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="c"># 削除</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;delete from project where name = &#39;virtualenvwrapper&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c"># 設定を表示する</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">After delete:&#39;</span>
+        <span class="n">show_projects</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+
+        <span class="c"># 処理がエラーを引き起こしたように見せかける</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;simulated error&#39;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="c"># 変更を放棄する</span>
+        <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+        
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># 変更を保存する</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c"># 結果を表示する</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">After rollback:&#39;</span>
+    <span class="n">show_projects</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">rollback()</span></tt> を呼び出した後はデータベースに対する変更はありません。</p>
+<div class="highlight-python"><pre>$ python sqlite3_transaction_rollback.py
+Before changes:
+   pymotw
+   virtualenvwrapper
+
+After delete:
+   pymotw
+ERROR: simulated error
+
+After rollback:
+   pymotw
+   virtualenvwrapper</pre>
+</div>
+</div>
+<div class="section" id="id15">
+<h3>分離レベル<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> は <em>分離レベル(isolation levels)</em> と呼ばれる3つのロックモードをサポートします。それはコネクション間で非互換な変更を行わないように使用されるロックを制御します。分離レベルはコネクションがオープンされるときに <em>isolation_level</em> 引数として文字列を渡すことでセットします。そのため、コネクションが違えば違う値を使用できます。</p>
+<p>このプログラムは同じデータベースに対して独立したコネクションを使用するスレッドのイベントの順番で違う分離レベルの効果を説明します。4つのスレッドが作成されます。2つのスレッドは既存の行を更新することでデータベースに変更を書き込みます。他の2つのスレッドは <tt class="docutils literal"><span class="pre">task</span></tt> テーブルから全ての行を読み込もうとします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(asctime)s</span><span class="s"> (</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="n">isolation_level</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">writer</span><span class="p">():</span>
+    <span class="n">my_name</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;connecting&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">isolation_level</span><span class="o">=</span><span class="n">isolation_level</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;connected&#39;</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;update task set priority = priority + 1&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;changes made&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;waiting to synchronize&#39;</span><span class="p">)</span>
+        <span class="n">ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c"># 同期</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;PAUSING&#39;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;CHANGES COMMITTED&#39;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">reader</span><span class="p">():</span>
+    <span class="n">my_name</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">isolation_level</span><span class="o">=</span><span class="n">isolation_level</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;waiting to synchronize&#39;</span><span class="p">)</span>
+        <span class="n">ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c"># 同期</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;wait over&#39;</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;select * from task&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;SELECT EXECUTED&#39;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;results fetched&#39;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+    <span class="n">threads</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Reader 1&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">reader</span><span class="p">),</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Reader 2&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">reader</span><span class="p">),</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Writer 1&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">writer</span><span class="p">),</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Writer 2&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">writer</span><span class="p">),</span>
+        <span class="p">]</span>
+    
+    <span class="p">[</span> <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span> <span class="p">]</span>
+    
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;setting ready&#39;</span><span class="p">)</span>
+    <span class="n">ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+    <span class="p">[</span> <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>そのスレッドは <a class="reference internal" href="../threading/index.html#module-threading" title="スレッドによる並列処理を管理する"><tt class="xref py py-mod docutils literal"><span class="pre">threading</span></tt></a> モジュールの <tt class="xref py py-class docutils literal"><span class="pre">Event</span></tt> を使用して同期します。 <tt class="xref py py-func docutils literal"><span class="pre">writer()</span></tt> 関数は接続して、データベースに変更を書き込みますが、そのイベントが発生する前にはコミットしません。 <tt class="xref py py-func docutils literal"><span class="pre">reader()</span></tt> 関数は接続してから、同期イベントの発生後までデータベースにクエリするのを待ちます。</p>
+<div class="section" id="deferred">
+<h4>遅延(Deferred)<a class="headerlink" href="#deferred" title="Permalink to this headline">¶</a></h4>
+<p>デフォルトの分離レベルは <tt class="docutils literal"><span class="pre">DEFERRED</span></tt> です。遅延モードを使用するとデータベースをロックしますが、1度に1つの変更のみが開始されます。これまでの全てのサンプルは遅延モードを使用します。</p>
+<div class="highlight-python"><pre>$ python sqlite3_isolation_levels.py DEFERRED
+2013-02-17 11:33:37,164 (Reader 1  ) waiting to synchronize
+2013-02-17 11:33:37,164 (Reader 2  ) waiting to synchronize
+2013-02-17 11:33:37,164 (Writer 1  ) connecting
+2013-02-17 11:33:37,165 (Writer 2  ) connecting
+2013-02-17 11:33:37,165 (Writer 1  ) connected
+2013-02-17 11:33:37,165 (Writer 2  ) connected
+2013-02-17 11:33:37,166 (Writer 1  ) changes made
+2013-02-17 11:33:37,166 (Writer 1  ) waiting to synchronize
+2013-02-17 11:33:38,166 (MainThread) setting ready
+2013-02-17 11:33:38,166 (Reader 2  ) wait over
+2013-02-17 11:33:38,166 (Reader 1  ) wait over
+2013-02-17 11:33:38,166 (Writer 1  ) PAUSING
+2013-02-17 11:33:38,167 (Reader 2  ) SELECT EXECUTED
+2013-02-17 11:33:38,167 (Reader 2  ) results fetched
+2013-02-17 11:33:38,167 (Reader 1  ) SELECT EXECUTED
+2013-02-17 11:33:38,167 (Reader 1  ) results fetched
+2013-02-17 11:33:39,172 (Writer 1  ) CHANGES COMMITTED
+2013-02-17 11:33:39,221 (Writer 2  ) changes made
+2013-02-17 11:33:39,221 (Writer 2  ) waiting to synchronize
+2013-02-17 11:33:39,221 (Writer 2  ) PAUSING
+2013-02-17 11:33:40,224 (Writer 2  ) CHANGES COMMITTED</pre>
+</div>
+</div>
+<div class="section" id="immediate">
+<h4>即時(Immediate)<a class="headerlink" href="#immediate" title="Permalink to this headline">¶</a></h4>
+<p>即時モードは変更が開始されるとすぐにデータベースをロックして、そのトランザクションがコミットされるまで他のカーソルから変更できないようにします。それは書き込みよりも読み込みの方が多いが、複雑な書き込みを行うデータベースには適しています。読み込みはトランザクションが進行中でもブロックされないからです。</p>
+<div class="highlight-python"><pre>$ python sqlite3_isolation_levels.py IMMEDIATE
+2013-02-17 11:33:40,260 (Reader 1  ) waiting to synchronize
+2013-02-17 11:33:40,260 (Writer 1  ) connecting
+2013-02-17 11:33:40,260 (Writer 2  ) connecting
+2013-02-17 11:33:40,260 (Reader 2  ) waiting to synchronize
+2013-02-17 11:33:40,260 (Writer 1  ) connected
+2013-02-17 11:33:40,260 (Writer 2  ) connected
+2013-02-17 11:33:40,261 (Writer 1  ) changes made
+2013-02-17 11:33:40,261 (Writer 1  ) waiting to synchronize
+2013-02-17 11:33:41,261 (MainThread) setting ready
+2013-02-17 11:33:41,261 (Writer 1  ) PAUSING
+2013-02-17 11:33:41,261 (Reader 2  ) wait over
+2013-02-17 11:33:41,262 (Reader 1  ) wait over
+2013-02-17 11:33:41,262 (Reader 2  ) SELECT EXECUTED
+2013-02-17 11:33:41,262 (Reader 1  ) SELECT EXECUTED
+2013-02-17 11:33:41,262 (Reader 1  ) results fetched
+2013-02-17 11:33:41,262 (Reader 2  ) results fetched
+2013-02-17 11:33:42,273 (Writer 1  ) CHANGES COMMITTED
+2013-02-17 11:33:42,317 (Writer 2  ) changes made
+2013-02-17 11:33:42,318 (Writer 2  ) waiting to synchronize
+2013-02-17 11:33:42,318 (Writer 2  ) PAUSING
+2013-02-17 11:33:43,320 (Writer 2  ) CHANGES COMMITTED</pre>
+</div>
+</div>
+<div class="section" id="exclusive">
+<h4>排他(Exclusive)<a class="headerlink" href="#exclusive" title="Permalink to this headline">¶</a></h4>
+<p>排他モードは全ての読み込みと書き込みに対してデータベースをロックします。それぞれの排他コネクションが他の全てのユーザをブロックするので、データベースのパフォーマンスが重要な状況に限定して使用すべきです。</p>
+<div class="highlight-python"><pre>$ python sqlite3_isolation_levels.py EXCLUSIVE
+2013-02-17 11:33:43,359 (Reader 2  ) waiting to synchronize
+2013-02-17 11:33:43,359 (Reader 1  ) waiting to synchronize
+2013-02-17 11:33:43,359 (Writer 1  ) connecting
+2013-02-17 11:33:43,359 (Writer 2  ) connecting
+2013-02-17 11:33:43,359 (Writer 1  ) connected
+2013-02-17 11:33:43,359 (Writer 2  ) connected
+2013-02-17 11:33:43,361 (Writer 1  ) changes made
+2013-02-17 11:33:43,361 (Writer 1  ) waiting to synchronize
+2013-02-17 11:33:44,360 (MainThread) setting ready
+2013-02-17 11:33:44,361 (Reader 1  ) wait over
+2013-02-17 11:33:44,361 (Reader 2  ) wait over
+2013-02-17 11:33:44,361 (Writer 1  ) PAUSING
+2013-02-17 11:33:45,364 (Writer 1  ) CHANGES COMMITTED
+2013-02-17 11:33:45,405 (Reader 1  ) SELECT EXECUTED
+2013-02-17 11:33:45,405 (Reader 2  ) SELECT EXECUTED
+2013-02-17 11:33:45,405 (Reader 1  ) results fetched
+2013-02-17 11:33:45,405 (Reader 2  ) results fetched
+2013-02-17 11:33:45,412 (Writer 2  ) changes made
+2013-02-17 11:33:45,412 (Writer 2  ) waiting to synchronize
+2013-02-17 11:33:45,412 (Writer 2  ) PAUSING
+2013-02-17 11:33:46,430 (Writer 2  ) CHANGES COMMITTED</pre>
+</div>
+<p>最初の writer が変更を開始するので、その reader と2番目の writer は最初の writer がコミットされるまでブロックします。 <tt class="xref py py-func docutils literal"><span class="pre">sleep()</span></tt> 呼び出しは writer スレッドで人工的な遅延を発生させて、他のコネクションがブロックされているという現象を目立たせます。</p>
+</div>
+<div class="section" id="id16">
+<h4>自動コミット<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<p>コネクションの <em>isolation_level</em> パラメータは自動コミットモードを有効にする <tt class="xref docutils literal"><span class="pre">None</span></tt> をセットすることもできます。自動コミットが有効になると、それぞれの <tt class="xref py py-func docutils literal"><span class="pre">execute()</span></tt> 呼び出しは終了時に即コミットされます。自動コミットモードは、1つのテーブルに小さなデータを追加するような短いトランザクションに適しています。スレッド間で衝突する機会が少ないので、データベースはできるだけ短い時間ロックされます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(asctime)s</span><span class="s"> (</span><span class="si">%(threadName)-10s</span><span class="s">) </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="n">isolation_level</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># 自動コミットモード</span>
+
+<span class="k">def</span> <span class="nf">writer</span><span class="p">():</span>
+    <span class="n">my_name</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;connecting&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">isolation_level</span><span class="o">=</span><span class="n">isolation_level</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;connected&#39;</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;update task set priority = priority + 1&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;changes made&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;waiting to synchronize&#39;</span><span class="p">)</span>
+        <span class="n">ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c"># 同期</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;PAUSING&#39;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">reader</span><span class="p">():</span>
+    <span class="n">my_name</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">isolation_level</span><span class="o">=</span><span class="n">isolation_level</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;waiting to synchronize&#39;</span><span class="p">)</span>
+        <span class="n">ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c"># 同期</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;wait over&#39;</span><span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;select * from task&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;SELECT EXECUTED&#39;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;results fetched&#39;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+    <span class="n">threads</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Reader 1&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">reader</span><span class="p">),</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Reader 2&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">reader</span><span class="p">),</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Writer 1&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">writer</span><span class="p">),</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Writer 2&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">writer</span><span class="p">),</span>
+        <span class="p">]</span>
+    
+    <span class="p">[</span> <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span> <span class="p">]</span>
+    
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;setting ready&#39;</span><span class="p">)</span>
+    <span class="n">ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+    <span class="p">[</span> <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">commit()</span></tt> の明示的な呼び出しを除去している点を除けば <tt class="docutils literal"><span class="pre">sqlite3_autocommit.py</span></tt> は <tt class="docutils literal"><span class="pre">sqlite3_isolation_levels.py</span></tt> と同じです。しかし、どちらの reader もクエリを開始する前に両方の writer スレッドの処理が終了するので出力は違っています。</p>
+<div class="highlight-python"><pre>$ python sqlite3_autocommit.py
+2013-02-17 11:33:46,487 (Reader 2  ) waiting to synchronize
+2013-02-17 11:33:46,487 (Reader 1  ) waiting to synchronize
+2013-02-17 11:33:46,488 (Writer 1  ) connecting
+2013-02-17 11:33:46,488 (Writer 1  ) connected
+2013-02-17 11:33:46,488 (Writer 2  ) connecting
+2013-02-17 11:33:46,488 (Writer 2  ) connected
+2013-02-17 11:33:46,489 (Writer 1  ) changes made
+2013-02-17 11:33:46,490 (Writer 1  ) waiting to synchronize
+2013-02-17 11:33:46,491 (Writer 2  ) changes made
+2013-02-17 11:33:46,491 (Writer 2  ) waiting to synchronize
+2013-02-17 11:33:47,489 (MainThread) setting ready
+2013-02-17 11:33:47,489 (Writer 1  ) PAUSING
+2013-02-17 11:33:47,489 (Writer 2  ) PAUSING
+2013-02-17 11:33:47,490 (Reader 1  ) wait over
+2013-02-17 11:33:47,490 (Reader 2  ) wait over
+2013-02-17 11:33:47,490 (Reader 2  ) SELECT EXECUTED
+2013-02-17 11:33:47,490 (Reader 1  ) SELECT EXECUTED
+2013-02-17 11:33:47,491 (Reader 2  ) results fetched
+2013-02-17 11:33:47,491 (Reader 1  ) results fetched</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id17">
+<h2>ユーザ定義の振る舞い<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> は Python で実装された関数やクラスでデータベースの機能拡張と複数の拡張の仕組みをサポートします。</p>
+<div class="section" id="sql-python">
+<h3>SQL で Python 関数を使用する<a class="headerlink" href="#sql-python" title="Permalink to this headline">¶</a></h3>
+<p>SQL 構文はその列のリストか <strong class="command">select</strong> 文の <strong class="command">where</strong> 句のどちらかで、クエリ中の関数呼び出しをサポートします。この機能は SQL にクエリから処理したデータを返す前にそのデータを処理することを可能にします。そして、違うフォーマット間の変換に使用できて、純粋な SQL では体裁の悪い演算を行い、アプリケーションのコードを再利用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">def</span> <span class="nf">encrypt</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;Encrypting </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;rot-13&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;Decrypting </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;rot-13&#39;</span><span class="p">)</span>
+
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+
+    <span class="n">conn</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&#39;encrypt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">encrypt</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span><span class="s">&#39;decrypt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">decrypt</span><span class="p">)</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+    <span class="c"># Raw values</span>
+    <span class="k">print</span> <span class="s">&#39;Original values:&#39;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;select id, details from task&quot;</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">row</span>
+
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Encrypting...&#39;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;update task set details = encrypt(details)&quot;</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Raw encrypted values:&#39;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;select id, details from task&quot;</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">row</span>
+    
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Decrypting in query...&#39;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;select id, decrypt(details) from task&quot;</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">row</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> の <tt class="xref py py-func docutils literal"><span class="pre">create_function()</span></tt> メソッドで SQL から見えるように関数を公開します。そのパラメータは(SQL 内で使用される)関数の名前、関数が受け取る引数の数や公開する Python の関数です。</p>
+<div class="highlight-python"><pre>$ python sqlite3_create_function.py
+Original values:
+(1, u'write about select')
+(2, u'write about random')
+(3, u'write about sqlite3')
+(4, u'finish reviewing markup')
+(5, u'revise chapter intros')
+(6, u'subtitle')
+
+Encrypting...
+Encrypting u'write about select'
+Encrypting u'write about random'
+Encrypting u'write about sqlite3'
+Encrypting u'finish reviewing markup'
+Encrypting u'revise chapter intros'
+Encrypting u'subtitle'
+
+Raw encrypted values:
+(1, u'jevgr nobhg fryrpg')
+(2, u'jevgr nobhg enaqbz')
+(3, u'jevgr nobhg fdyvgr3')
+(4, u'svavfu erivrjvat znexhc')
+(5, u'erivfr puncgre vagebf')
+(6, u'fhogvgyr')
+
+Decrypting in query...
+Decrypting u'jevgr nobhg fryrpg'
+Decrypting u'jevgr nobhg enaqbz'
+Decrypting u'jevgr nobhg fdyvgr3'
+Decrypting u'svavfu erivrjvat znexhc'
+Decrypting u'erivfr puncgre vagebf'
+Decrypting u'fhogvgyr'
+(1, u'write about select')
+(2, u'write about random')
+(3, u'write about sqlite3')
+(4, u'finish reviewing markup')
+(5, u'revise chapter intros')
+(6, u'subtitle')</pre>
+</div>
+</div>
+<div class="section" id="id18">
+<h3>カスタム集約<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<p>集約関数は多くの個々のデータを集めて、何らかの方法でそういったデータを集約します。組み込みの集約関数の例は <tt class="xref py py-func docutils literal"><span class="pre">avg()</span></tt> (平均), <tt class="xref py py-func docutils literal"><span class="pre">min()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">max()</span></tt> や <tt class="xref py py-func docutils literal"><span class="pre">count()</span></tt> です。</p>
+<p><a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> が使用する集約の API は2つのメソッドを持つクラスで定義されます。 <tt class="xref py py-func docutils literal"><span class="pre">step()</span></tt> メソッドはそのクエリが処理されるときに、それぞれのデータの値につき呼び出されます。 <tt class="xref py py-func docutils literal"><span class="pre">finalize()</span></tt> メソッドはそのクエリの最後で1回呼び出されて集約された値を返します。このサンプルは算術的な <em>mode</em> の集約関数を実装します。その集約関数は入力に最も多く現れた値を返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">class</span> <span class="nc">Mode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;step(</span><span class="si">%r</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&#39;finalize() -&gt; </span><span class="si">%r</span><span class="s"> (</span><span class="si">%d</span><span class="s"> times)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+
+    <span class="n">conn</span><span class="o">.</span><span class="n">create_aggregate</span><span class="p">(</span><span class="s">&#39;mode&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Mode</span><span class="p">)</span>
+    
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select mode(deadline) from task where project = &#39;pymotw&#39;&quot;</span><span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;mode(deadline) is:&#39;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> の <tt class="xref py py-func docutils literal"><span class="pre">create_aggregate()</span></tt> メソッドで集約クラスを登録します。そのパラメータは(SQL 内で使用される)関数の名前、 <tt class="xref py py-func docutils literal"><span class="pre">step()</span></tt> が受け取る引数の数と使用するクラスです。</p>
+<div class="highlight-python"><pre>$ python sqlite3_create_aggregate.py
+step(u'2010-10-03')
+step(u'2010-10-10')
+step(u'2010-10-17')
+step(u'2010-10-02')
+step(u'2010-10-03')
+step(u'2010-10-03')
+finalize() -&gt; u'2010-10-03' (3 times)
+mode(deadline) is: 2010-10-03</pre>
+</div>
+</div>
+<div class="section" id="id19">
+<h3>カスタムソート<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p><em>照合(collation)</em> は SQL クエリの <strong class="command">order by</strong> セクションで使用される比較関数です。カスタム照合は内部的に SQLite がソートできないデータ型を比較するために使用されます。例えば、カスタム照合はこの前のセクションで紹介した <tt class="docutils literal"><span class="pre">sqlite3_custom_type.py</span></tt> で保存した pickle 化されたオブジェクトをソートするために必要です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">def</span> <span class="nf">adapter_func</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">converter_func</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;MyObj(</span><span class="si">%r</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span>
+    <span class="k">def</span> <span class="nf">__cmp__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arg</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span>
+
+<span class="c"># 型を操作する関数を登録する</span>
+<span class="n">sqlite3</span><span class="o">.</span><span class="n">register_adapter</span><span class="p">(</span><span class="n">MyObj</span><span class="p">,</span> <span class="n">adapter_func</span><span class="p">)</span>
+<span class="n">sqlite3</span><span class="o">.</span><span class="n">register_converter</span><span class="p">(</span><span class="s">&quot;MyObj&quot;</span><span class="p">,</span> <span class="n">converter_func</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">collation_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="n">a_obj</span> <span class="o">=</span> <span class="n">converter_func</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b_obj</span> <span class="o">=</span> <span class="n">converter_func</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;collation_func(</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a_obj</span><span class="p">,</span> <span class="n">b_obj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">cmp</span><span class="p">(</span><span class="n">a_obj</span><span class="p">,</span> <span class="n">b_obj</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">detect_types</span><span class="o">=</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">PARSE_DECLTYPES</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="c"># 照合を定義する</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">create_collation</span><span class="p">(</span><span class="s">&#39;unpickle&#39;</span><span class="p">,</span> <span class="n">collation_func</span><span class="p">)</span>
+
+    <span class="c"># テーブルをクリアして新しい値を追加する</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;delete from obj&#39;</span><span class="p">)</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="s">&#39;insert into obj (data) values (?)&#39;</span><span class="p">,</span>
+                     <span class="p">[(</span><span class="n">MyObj</span><span class="p">(</span><span class="n">x</span><span class="p">),)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)],</span>
+                     <span class="p">)</span>
+
+    <span class="c"># たった今データベースに保存されたオブジェクトをクエリする</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Querying:&#39;</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select id, data from obj order by data collate unpickle&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">obj_id</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">obj_id</span><span class="p">,</span> <span class="n">obj</span>
+        <span class="k">print</span>
+</pre></div>
+</div>
+<p>照合関数の引数はバイト列なので、その引数は比較処理が行われる前に unpickle されて <tt class="xref py py-class docutils literal"><span class="pre">MyObj</span></tt> インスタンスへ変換されます。</p>
+<div class="highlight-python"><pre>$ python sqlite3_create_collation.py
+
+Querying:
+collation_func(MyObj(5), MyObj(4))
+collation_func(MyObj(4), MyObj(3))
+collation_func(MyObj(4), MyObj(2))
+collation_func(MyObj(3), MyObj(2))
+collation_func(MyObj(3), MyObj(1))
+collation_func(MyObj(2), MyObj(1))
+7 MyObj(1)
+
+6 MyObj(2)
+
+5 MyObj(3)
+
+4 MyObj(4)
+
+3 MyObj(5)</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id20">
+<h2>データへのアクセスを制限する<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+<p>SQLite は他の大規模な関係データベースで見られるユーザアクセス制御を行いませんが、列に対するアクセスを制限する仕組みを持っています。それぞれのコネクションは、要求される基準で実行時に列へのアクセスを許可する、または拒否するために <em>認証関数</em> をインストールすることができます。認証関数は SQL 文の構文解析を行うときに実行されて、5つの引数が渡されます。1つ目は実行される操作の種別(読み込み、書き込み、削除、その他)を示すアクションコードです。残りの引数はアクションコード次第で変わってきます。 <tt class="xref py py-const docutils literal"><span class="pre">SQLITE_READ</span></tt> 操作では、その引数はテーブルの名前、列の名前、そのアクセスが発生する SQL の場所(メインクエリ、トリガー等)と <tt class="xref docutils literal"><span class="pre">None</span></tt> です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+
+<span class="k">def</span> <span class="nf">authorizer_func</span><span class="p">(</span><span class="n">action_code</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">sql_location</span><span class="p">,</span> <span class="n">ignore</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">authorizer_func(</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> \
+        <span class="p">(</span><span class="n">action_code</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">sql_location</span><span class="p">,</span> <span class="n">ignore</span><span class="p">)</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">SQLITE_OK</span> <span class="c"># be permissive by default</span>
+
+    <span class="k">if</span> <span class="n">action_code</span> <span class="o">==</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">SQLITE_SELECT</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;requesting permission to run a select statement&#39;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">SQLITE_OK</span>
+    
+    <span class="k">elif</span> <span class="n">action_code</span> <span class="o">==</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">SQLITE_READ</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;requesting permission to access the column </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s"> from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> \
+            <span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">sql_location</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">column</span> <span class="o">==</span> <span class="s">&#39;details&#39;</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;  ignoring details column&#39;</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">SQLITE_IGNORE</span>
+        <span class="k">elif</span> <span class="n">column</span> <span class="o">==</span> <span class="s">&#39;priority&#39;</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;  preventing access to priority column&#39;</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">SQLITE_DENY</span>
+
+    <span class="k">return</span> <span class="n">response</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">set_authorizer</span><span class="p">(</span><span class="n">authorizer_func</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;Using SQLITE_IGNORE to mask a column value:&#39;</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select id, details from task where project = &#39;pymotw&#39;&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;details&#39;</span><span class="p">]</span>
+
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Using SQLITE_DENY to deny access to a column:&#39;</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;select id, priority from task where project = &#39;pymotw&#39;&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;details&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>このサンプルは <tt class="xref py py-const docutils literal"><span class="pre">SQLITE_IGNORE</span></tt> を使用して、クエリ結果の <tt class="docutils literal"><span class="pre">task.details</span></tt> 列の文字列を Null 値で置き換えます。さらに <tt class="xref py py-const docutils literal"><span class="pre">SQLITE_DENY</span></tt> を返すことで <tt class="docutils literal"><span class="pre">task.priority</span></tt> 列への全てのアクセスを SQLite に例外を発生させることで拒否します。</p>
+<div class="highlight-python"><pre>$ python sqlite3_set_authorizer.py
+Using SQLITE_IGNORE to mask a column value:
+
+authorizer_func(21, None, None, None, None)
+requesting permission to run a select statement
+
+authorizer_func(20, task, id, main, None)
+requesting permission to access the column task.id from main
+
+authorizer_func(20, task, details, main, None)
+requesting permission to access the column task.details from main
+  ignoring details column
+
+authorizer_func(20, task, project, main, None)
+requesting permission to access the column task.project from main
+1 None
+2 None
+3 None
+4 None
+5 None
+6 None
+
+Using SQLITE_DENY to deny access to a column:
+
+authorizer_func(21, None, None, None, None)
+requesting permission to run a select statement
+
+authorizer_func(20, task, id, main, None)
+requesting permission to access the column task.id from main
+
+authorizer_func(20, task, priority, main, None)
+requesting permission to access the column task.priority from main
+  preventing access to priority column
+Traceback (most recent call last):
+  File "sqlite3_set_authorizer.py", line 47, in &lt;module&gt;
+    cursor.execute("select id, priority from task where project = 'pymotw'")
+sqlite3.DatabaseError: access to task.priority is prohibited</pre>
+</div>
+<p>アクションコードは <a class="reference internal" href="#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> の <tt class="docutils literal"><span class="pre">SQLITE_</span></tt> の接頭辞を持つ定数が利用できると考えられます。SQL 文のそれぞれの種別はフラグで指定されて、同様に個々の列に対するアクセス制御が行われます。</p>
+</div>
+<div class="section" id="id21">
+<h2>インメモリデータベース<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h2>
+<p>SQLite はディスク上のファイルに頼らずに RAM 上での完全なデータベース管理をサポートします。インメモリデータベースはデータベースをテスト間で保存する必要がない自動テスト、もしくはスキーマやその他のデータベース機能の検証を行うときに便利です。インメモリデータベースをオープンするには <tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> を作成するとき、ファイル名の代わりに <tt class="docutils literal"><span class="pre">':memory:'</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">schema_filename</span> <span class="o">=</span> <span class="s">&#39;todo_schema.sql&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+    
+    <span class="k">print</span> <span class="s">&#39;Creating schema&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_filename</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;Inserting initial data&#39;</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into project (name, description, deadline)</span>
+<span class="s">        values (&#39;pymotw&#39;, &#39;Python Module of the Week&#39;, &#39;2010-11-01&#39;)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;write about select&#39;</span><span class="p">,</span> <span class="s">&#39;done&#39;</span><span class="p">,</span> <span class="s">&#39;2010-10-03&#39;</span><span class="p">,</span> <span class="s">&#39;pymotw&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;write about random&#39;</span><span class="p">,</span> <span class="s">&#39;waiting&#39;</span><span class="p">,</span> <span class="s">&#39;2010-10-10&#39;</span><span class="p">,</span> <span class="s">&#39;pymotw&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;write about sqlite3&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;2010-10-17&#39;</span><span class="p">,</span> <span class="s">&#39;pymotw&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into task (details, status, deadline, project)</span>
+<span class="s">        values (?, ?, ?, ?)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;Looking for tasks...&#39;</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select id, priority, status, deadline, details from task</span>
+<span class="s">    where project = &#39;pymotw&#39; order by deadline</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> {</span><span class="si">%d</span><span class="s">} </span><span class="si">%-25s</span><span class="s"> [</span><span class="si">%-8s</span><span class="s">] (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">row</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;priority&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;details&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;deadline&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn2</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Looking for tasks in second connection...&#39;</span>
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn2</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    select id, priority, status, deadline, details from task</span>
+<span class="s">    where project = &#39;pymotw&#39; order by deadline</span>
+<span class="s">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%2d</span><span class="s"> {</span><span class="si">%d</span><span class="s">} </span><span class="si">%-25s</span><span class="s"> [</span><span class="si">%-8s</span><span class="s">] (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">row</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;priority&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;details&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s">&#39;deadline&#39;</span><span class="p">],</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルの2番目のクエリはテーブルが存在しないのでエラーで失敗します。コネクション毎に独立したデータベースを作成するので、あるカーソルによる変更は他のコネクションに影響しません。</p>
+<div class="highlight-python"><pre>$ python sqlite3_memory.py
+Creating schema
+Inserting initial data
+Looking for tasks...
+ 1 {1} write about select        [done    ] (2010-10-03)
+ 2 {1} write about random        [waiting ] (2010-10-10)
+ 3 {1} write about sqlite3       [active  ] (2010-10-17)
+
+Looking for tasks in second connection...
+Traceback (most recent call last):
+  File "sqlite3_memory.py", line 54, in &lt;module&gt;
+    """)
+sqlite3.OperationalError: no such table: task</pre>
+</div>
+</div>
+<div class="section" id="id22">
+<h2>データベースのコンテンツをエクスポートする<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
+<p>インメモリデータベースのコンテンツは <tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> の <tt class="xref py py-func docutils literal"><span class="pre">iterdump()</span></tt> メソッドを使用して保存されます。 <tt class="xref py py-func docutils literal"><span class="pre">iterdump()</span></tt> が返すイテレータはデータベースの状態を再作成する SQL 命令をまとめて構築する一連の文字列を生成します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+
+<span class="n">schema_filename</span> <span class="o">=</span> <span class="s">&#39;todo_schema.sql&#39;</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+    
+    <span class="k">print</span> <span class="s">&#39;Creating schema&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_filename</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;Inserting initial data&#39;</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into project (name, description, deadline)</span>
+<span class="s">        values (&#39;pymotw&#39;, &#39;Python Module of the Week&#39;, &#39;2010-11-01&#39;)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;write about select&#39;</span><span class="p">,</span> <span class="s">&#39;done&#39;</span><span class="p">,</span> <span class="s">&#39;2010-10-03&#39;</span><span class="p">,</span> <span class="s">&#39;pymotw&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;write about random&#39;</span><span class="p">,</span> <span class="s">&#39;waiting&#39;</span><span class="p">,</span> <span class="s">&#39;2010-10-10&#39;</span><span class="p">,</span> <span class="s">&#39;pymotw&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;write about sqlite3&#39;</span><span class="p">,</span> <span class="s">&#39;active&#39;</span><span class="p">,</span> <span class="s">&#39;2010-10-17&#39;</span><span class="p">,</span> <span class="s">&#39;pymotw&#39;</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">        insert into task (details, status, deadline, project)</span>
+<span class="s">        values (?, ?, ?, ?)</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;Dumping:&#39;</span>
+    <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">iterdump</span><span class="p">():</span>
+        <span class="k">print</span> <span class="n">text</span>
+    
+</pre></div>
+</div>
+<p>また <tt class="xref py py-func docutils literal"><span class="pre">iterdump()</span></tt> はファイルに保存されたデータベースで使用することもできますが、他の方法で保存されないデータベースを保存するために使用すると最も便利です。</p>
+<div class="highlight-python"><pre>$ python sqlite3_iterdump.py
+Creating schema
+Inserting initial data
+Dumping:
+BEGIN TRANSACTION;
+CREATE TABLE project (
+    name        text primary key,
+    description text,
+    deadline    date
+);
+INSERT INTO "project" VALUES('pymotw','Python Module of the Week','2010-11-01');
+CREATE TABLE task (
+    id           integer primary key autoincrement not null,
+    priority     integer default 1,
+    details      text,
+    status       text,
+    deadline     date,
+    completed_on date,
+    project      text not null references project(name)
+);
+INSERT INTO "task" VALUES(1,1,'write about select','done','2010-10-03',NULL,'pymotw');
+INSERT INTO "task" VALUES(2,1,'write about random','waiting','2010-10-10',NULL,'pymotw');
+INSERT INTO "task" VALUES(3,1,'write about sqlite3','active','2010-10-17',NULL,'pymotw');
+DELETE FROM sqlite_sequence;
+INSERT INTO "sqlite_sequence" VALUES('task',3);
+COMMIT;</pre>
+</div>
+</div>
+<div class="section" id="id23">
+<h2>スレッドとコネクションの共有<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h2>
+<p>歴史的な理由で SQLite の旧バージョンで行わなければならない <tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt> オブジェクトはスレッド間で共有されません。それぞれのスレッドはデータベースへの独自のコネクションを作成しなければなりません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">db_filename</span> <span class="o">=</span> <span class="s">&#39;todo.db&#39;</span>
+<span class="n">isolation_level</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># autocommit mode</span>
+
+<span class="k">def</span> <span class="nf">reader</span><span class="p">(</span><span class="n">conn</span><span class="p">):</span>
+    <span class="n">my_name</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">print</span> <span class="s">&#39;Starting thread&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;select * from task&#39;</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&#39;results fetched&#39;</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+    <span class="k">return</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span> <span class="n">isolation_level</span><span class="o">=</span><span class="n">isolation_level</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Reader 1&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">reader</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">conn</span><span class="p">,))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>スレッド間でコネクションを共有しようとすると例外が発生します。</p>
+<div class="highlight-python"><pre>$ python sqlite3_threading.py
+Starting thread
+ERROR: SQLite objects created in a thread can only be used in that same thread.The object was created in thread id 140735239297376 and this is thread id 4315942912</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/sqlite3.html">sqlite3</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0249"><strong>PEP 249</strong></a> &#8211; DB API 2.0 Specificiation</dt>
+<dd>関係データベースへのアクセスを提供するモジュールの標準インタフェース</dd>
+<dt><a class="reference external" href="http://www.sqlite.org/">SQLite</a></dt>
+<dd>SQLite ライブラリの公式サイト</dd>
+<dt><a class="reference internal" href="../shelve/index.html#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a></dt>
+<dd>任意の Python オブジェクトを保存するキーバリューストア</dd>
+<dt><a class="reference external" href="http://sqlalchemy.org/">SQLAlchemy</a></dt>
+<dd>SQLite やその他の多くの関係データベースをサポートする人気のあるオブジェクト関係マッパ</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../generic_os.html" title="汎用 OS サービス"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../whichdb/index.html" title="whichdb – DBM スタイルのデータベースフォーマットを確認する"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../persistence.html" >データの永続化</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

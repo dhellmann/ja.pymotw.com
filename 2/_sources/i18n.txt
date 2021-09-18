@@ -1,0 +1,16 @@
+..
+    ====================
+    Internationalization
+    ====================
+
+======
+国際化
+======
+
+.. toctree::
+    :maxdepth: 1
+    
+    gettext/index
+    locale/index
+
+

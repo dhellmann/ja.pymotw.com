@@ -1,0 +1,422 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>resource &#8211; システムリソース管理 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="Unix に特化したサービス" href="../unix.html" />
+    <link rel="next" title="プロセス間通信とネットワーキング" href="../ipc.html" />
+    <link rel="prev" title="pwd – Unix Password Database" href="../pwd/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">resource &#8211; システムリソース管理</a><ul>
+<li><a class="reference internal" href="#id1">現在の使用状況</a></li>
+<li><a class="reference internal" href="#id3">リソースリミット</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../pwd/index.html" title="前の章へ"><strong>前:</strong> pwd &#8211; Unix Password Database</a><br/>
+          <a href="../ipc.html" title="次の章へ"><strong>次:</strong> プロセス間通信とネットワーキング</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/resource/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../ipc.html" title="プロセス間通信とネットワーキング"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../pwd/index.html" title="pwd – Unix Password Database"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../unix.html" accesskey="U">Unix に特化したサービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="resource">
+<h1>resource &#8211; システムリソース管理<a class="headerlink" href="#resource" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-resource"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">Unix プログラムのシステムリソースリミットを管理する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.5.2</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-resource" title="システムリソース管理"><tt class="xref py py-mod docutils literal"><span class="pre">resource</span></tt></a> モジュールの関数は、プロセスが消費する現在のシステムリソースを調べて、プログラムがシステム上でどのぐらいの負荷を与えるかを制御するためにリミットを設けます。</p>
+<div class="section" id="id1">
+<h2>現在の使用状況<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>カレントプロセスやその子プロセスが使用するリソースを調べるには <tt class="xref py py-func docutils literal"><span class="pre">getrusage()</span></tt> を使用してください。返り値は現在のシステムの状態に基づく複数のリソース値を含むデータです。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">この記事では全てのリソース値を紹介しません。完全なリストは <a class="reference external" href="http://docs.python.org/library/resource.html#resource.getrusage">標準ライブラリドキュメント</a> を参照してください。</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">resource</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">usage</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&#39;ru_utime&#39;</span><span class="p">,</span> <span class="s">&#39;User time&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ru_stime&#39;</span><span class="p">,</span> <span class="s">&#39;System time&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ru_maxrss&#39;</span><span class="p">,</span> <span class="s">&#39;Max. Resident Set Size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ru_ixrss&#39;</span><span class="p">,</span> <span class="s">&#39;Shared Memory Size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ru_idrss&#39;</span><span class="p">,</span> <span class="s">&#39;Unshared Memory Size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ru_isrss&#39;</span><span class="p">,</span> <span class="s">&#39;Stack Size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ru_inblock&#39;</span><span class="p">,</span> <span class="s">&#39;Block inputs&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ru_oublock&#39;</span><span class="p">,</span> <span class="s">&#39;Block outputs&#39;</span><span class="p">),</span>
+    <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%-25s</span><span class="s"> (</span><span class="si">%-10s</span><span class="s">) = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">usage</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>テストプログラムはとても単純なので、あまりリソースを消費しません。</p>
+<div class="highlight-python"><pre>$ python resource_getrusage.py
+User time                 (ru_utime  ) = 0.009676
+System time               (ru_stime  ) = 0.005418
+Max. Resident Set Size    (ru_maxrss ) = 3895296
+Shared Memory Size        (ru_ixrss  ) = 0
+Unshared Memory Size      (ru_idrss  ) = 0
+Stack Size                (ru_isrss  ) = 0
+Block inputs              (ru_inblock) = 0
+Block outputs             (ru_oublock) = 1</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>リソースリミット<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>現在の実際の使用状況とは別に、アプリケーションに与えられた <em>リミット</em> を調べて変更できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">resource</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_CORE&#39;</span><span class="p">,</span> <span class="s">&#39;core file size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_CPU&#39;</span><span class="p">,</span>  <span class="s">&#39;CPU time&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_FSIZE&#39;</span><span class="p">,</span> <span class="s">&#39;file size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_DATA&#39;</span><span class="p">,</span> <span class="s">&#39;heap size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_STACK&#39;</span><span class="p">,</span> <span class="s">&#39;stack size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_RSS&#39;</span><span class="p">,</span> <span class="s">&#39;resident set size&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_NPROC&#39;</span><span class="p">,</span> <span class="s">&#39;number of processes&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_NOFILE&#39;</span><span class="p">,</span> <span class="s">&#39;number of open files&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;RLIMIT_MEMLOCK&#39;</span><span class="p">,</span> <span class="s">&#39;lockable memory address&#39;</span><span class="p">),</span>
+    <span class="p">]:</span>
+    <span class="n">limit_num</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="n">soft</span><span class="p">,</span> <span class="n">hard</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">limit_num</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Maximum </span><span class="si">%-25s</span><span class="s"> (</span><span class="si">%-15s</span><span class="s">) : </span><span class="si">%20s</span><span class="s"> </span><span class="si">%20s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">soft</span><span class="p">,</span> <span class="n">hard</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>それぞれのリミットの返り値は、現在の設定の <em>ソフト</em> リミットとオペレーティングシステムの <em>ハード</em> リミットを含むタプルです。</p>
+<div class="highlight-python"><pre>$ python resource_getrlimit.py
+Maximum core file size            (RLIMIT_CORE    ) :                    0  9223372036854775807
+Maximum CPU time                  (RLIMIT_CPU     ) :  9223372036854775807  9223372036854775807
+Maximum file size                 (RLIMIT_FSIZE   ) :  9223372036854775807  9223372036854775807
+Maximum heap size                 (RLIMIT_DATA    ) :  9223372036854775807  9223372036854775807
+Maximum stack size                (RLIMIT_STACK   ) :              8388608             67104768
+Maximum resident set size         (RLIMIT_RSS     ) :  9223372036854775807  9223372036854775807
+Maximum number of processes       (RLIMIT_NPROC   ) :                  709                 1064
+Maximum number of open files      (RLIMIT_NOFILE  ) :                 2560  9223372036854775807
+Maximum lockable memory address   (RLIMIT_MEMLOCK ) :  9223372036854775807  9223372036854775807</pre>
+</div>
+<p>そのリミットは <tt class="xref py py-func docutils literal"><span class="pre">setrlimit()</span></tt> で変更できます。例えば、1つのプロセスがオープンできるファイル数を制御するために <tt class="xref py py-const docutils literal"><span class="pre">RLIMIT_NOFILE</span></tt> をより小さなソフトリミットを使用するように変更できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">resource</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">soft</span><span class="p">,</span> <span class="n">hard</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Soft limit starts as  :&#39;</span><span class="p">,</span> <span class="n">soft</span>
+
+<span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">hard</span><span class="p">))</span>
+
+<span class="n">soft</span><span class="p">,</span> <span class="n">hard</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_NOFILE</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Soft limit changed to :&#39;</span><span class="p">,</span> <span class="n">soft</span>
+
+<span class="n">random</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;/dev/random&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;random has fd =&#39;</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">null</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;/dev/null&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">IOError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">err</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;null has fd =&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python resource_setrlimit_nofile.py
+Soft limit starts as  : 2560
+Soft limit changed to : 4
+random has fd = 3
+[Errno 24] Too many open files: '/dev/null'</pre>
+</div>
+<p>それは1つのプロセスが消費する CPU 時間に対して、多くの時間を費やさないように制限するのにも便利です。そのプロセスが割り当てられた CPU 時間を実行したときに <tt class="xref py py-const docutils literal"><span class="pre">SIGXCPU</span></tt> シグナルを送信します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">resource</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c"># CPU 時間リミットが実行されたときに</span>
+<span class="c"># 通知するシグナルハンドラを設定する</span>
+<span class="k">def</span> <span class="nf">time_expired</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;EXPIRED :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s">&#39;(time ran out)&#39;</span><span class="p">)</span>
+
+<span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGXCPU</span><span class="p">,</span> <span class="n">time_expired</span><span class="p">)</span>
+
+<span class="c"># CPU 時間リミットを調整する</span>
+<span class="n">soft</span><span class="p">,</span> <span class="n">hard</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_CPU</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Soft limit starts as  :&#39;</span><span class="p">,</span> <span class="n">soft</span>
+
+<span class="n">resource</span><span class="o">.</span><span class="n">setrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_CPU</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">hard</span><span class="p">))</span>
+
+<span class="n">soft</span><span class="p">,</span> <span class="n">hard</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrlimit</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RLIMIT_CPU</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Soft limit changed to :&#39;</span><span class="p">,</span> <span class="n">soft</span>
+<span class="k">print</span>
+
+<span class="c"># 意味のない処理で CPU 時間を消費する</span>
+<span class="k">print</span> <span class="s">&#39;Starting:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200000</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200000</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span>
+
+<span class="c"># この処理は実行されない</span>
+<span class="k">print</span> <span class="s">&#39;Exiting :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>普通はシグナルハンドラがオープンされた全てのファイルをフラッシュしてからクローズします。しかし、このサンプルはただメッセージを表示して終了します。</p>
+<div class="highlight-python"><pre>$ python resource_setrlimit_cpu.py
+Soft limit starts as  : 9223372036854775807
+Soft limit changed to : 1
+
+Starting: Sun Feb 17 11:33:12 2013
+EXPIRED : Sun Feb 17 11:33:13 2013
+(time ran out)</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/resource.html">resource</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../signal/index.html#module-signal" title="非同期のシステムイベント通知を受け取る"><tt class="xref py py-mod docutils literal"><span class="pre">signal</span></tt></a></dt>
+<dd>シグナルハンドラ登録の詳細</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../ipc.html" title="プロセス間通信とネットワーキング"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../pwd/index.html" title="pwd – Unix Password Database"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../unix.html" >Unix に特化したサービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

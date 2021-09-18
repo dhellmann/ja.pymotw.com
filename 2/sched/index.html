@@ -1,0 +1,415 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>sched &#8211; 汎用イベントスケジューラ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データタイプ" href="../data_types.html" />
+    <link rel="next" title="Queue – スレッドセーフな FIFO の実装" href="../Queue/index.html" />
+    <link rel="prev" title="bisect – ソート済みのリストを保持する" href="../bisect/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">sched &#8211; 汎用イベントスケジューラ</a><ul>
+<li><a class="reference internal" href="#id1">イベントを遅延なく実行する</a></li>
+<li><a class="reference internal" href="#id2">イベントを重複させる</a></li>
+<li><a class="reference internal" href="#id3">イベントの優先度</a></li>
+<li><a class="reference internal" href="#id4">イベントをキャンセルする</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../bisect/index.html" title="前の章へ"><strong>前:</strong> bisect &#8211; ソート済みのリストを保持する</a><br/>
+          <a href="../Queue/index.html" title="次の章へ"><strong>次:</strong> Queue &#8211; スレッドセーフな FIFO の実装</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/sched/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../Queue/index.html" title="Queue – スレッドセーフな FIFO の実装"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../bisect/index.html" title="bisect – ソート済みのリストを保持する"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" accesskey="U">データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="sched">
+<h1>sched &#8211; 汎用イベントスケジューラ<a class="headerlink" href="#sched" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-sched"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">汎用イベントスケジューラ</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-sched" title="汎用イベントスケジューラ"><tt class="xref py py-mod docutils literal"><span class="pre">sched</span></tt></a> モジュールは、特定時刻にタスクを実行する汎用イベントスケジューラを実装します。スケジューラクラスは、現在の時間を知るために <em>time</em>  関数を、一定時間待つために <em>delay</em> 関数を使用します。実際の時間の単位は、多目的に使用できるように柔軟なインターフェイスを設ければ重要ではありません。</p>
+<p><em>time</em> 関数は、引数なしで呼ばれ、現在の時間を表す数値を返します。 <em>delay</em> 関数は、 <em>time</em> 関数と同じ単位で1つの整数を引数に取り、時間単位分を待ちます。例えば、 <tt class="xref py py-func docutils literal"><span class="pre">time.time()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">time.sleep()</span></tt> 関数はこれらの要件を満たします。</p>
+<p>マルチスレッドアプリケーションをサポートするには、その他のスレッドの実行機会があることを保証するために、各イベントが生成された後で <em>delay</em> 関数の引数を0で呼び出します。</p>
+<div class="section" id="id1">
+<h2>イベントを遅延なく実行する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>イベントは、遅延後または一定時間後に実行するようにスケジュールできます。遅延させてスケジュールするには、4つの引数を受け取る <tt class="xref py py-func docutils literal"><span class="pre">enter()</span></tt> を使用してください。</p>
+<ul class="simple">
+<li>遅延を表す値</li>
+<li>優先順位の値</li>
+<li>呼び出す関数</li>
+<li>関数の引数のタプル</li>
+</ul>
+<p>このサンプルでは、予定の違う2つのイベントがそれぞれ2後後と3秒後に実行されます。イベントを実行する時間がきたら、 <tt class="xref py py-func docutils literal"><span class="pre">print_event()</span></tt> が呼び出されて、現在の時間とイベントに渡された <tt class="docutils literal"><span class="pre">name</span></tt> 引数を表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sched</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">sched</span><span class="o">.</span><span class="n">scheduler</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">print_event</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;EVENT:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">name</span>
+
+<span class="k">print</span> <span class="s">&#39;START:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">scheduler</span><span class="o">.</span><span class="n">enter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">print_event</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;first&#39;</span><span class="p">,))</span>
+<span class="n">scheduler</span><span class="o">.</span><span class="n">enter</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">print_event</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;second&#39;</span><span class="p">,))</span>
+
+<span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>この結果出力は次のようになります。</p>
+<div class="highlight-python"><pre>$ python sched_basic.py
+START: 1361118798.28
+EVENT: 1361118800.28 first
+EVENT: 1361118801.28 second</pre>
+</div>
+<p>最初のイベントは開始して2秒後に、2番目のイベントは開始して3秒後に表示されます。</p>
+</div>
+<div class="section" id="id2">
+<h2>イベントを重複させる<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>全てのイベントが処理されるまで <tt class="xref py py-func docutils literal"><span class="pre">run()</span></tt> の呼び出しはブロックします。それぞれのイベントは同じスレッドで実行されるので、あるイベントがイベント間の遅延時間よりも実行に時間がかかる場合に重複します。このイベントの重複は、それ以降のイベントを延期することで解決されます。イベントがなくなるわけではありませんが、予定した時間よりも遅れてイベントが実行される可能性があります。次の例では、 <tt class="xref py py-func docutils literal"><span class="pre">long_event()</span></tt> は <tt class="docutils literal"><span class="pre">sleep</span></tt> しますが、時間のかかる計算を実行するか、I/O をブロッキングすることで簡単に遅延させられます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sched</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">sched</span><span class="o">.</span><span class="n">scheduler</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">long_event</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;BEGIN EVENT :&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">name</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;FINISH EVENT:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">name</span>
+
+<span class="k">print</span> <span class="s">&#39;START:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">scheduler</span><span class="o">.</span><span class="n">enter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">long_event</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;first&#39;</span><span class="p">,))</span>
+<span class="n">scheduler</span><span class="o">.</span><span class="n">enter</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">long_event</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;second&#39;</span><span class="p">,))</span>
+
+<span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>その結果、最初のイベントは2番目のイベントの開始時刻を過ぎるまでかかるので、最初のイベント終了後すぐに2番目のイベントが実行されます。</p>
+<div class="highlight-python"><pre>$ python sched_overlap.py
+START: 1361118801.35
+BEGIN EVENT : 1361118803.35 first
+FINISH EVENT: 1361118805.35 first
+BEGIN EVENT : 1361118805.35 second
+FINISH EVENT: 1361118807.35 second</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>イベントの優先度<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>同じ時間に1つ以上のイベントが予定されている場合、実行する順番を決めるために優先度の値が使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sched</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">sched</span><span class="o">.</span><span class="n">scheduler</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">print_event</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;EVENT:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">name</span>
+
+<span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;START:&#39;</span><span class="p">,</span> <span class="n">now</span>
+<span class="n">scheduler</span><span class="o">.</span><span class="n">enterabs</span><span class="p">(</span><span class="n">now</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">print_event</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;first&#39;</span><span class="p">,))</span>
+<span class="n">scheduler</span><span class="o">.</span><span class="n">enterabs</span><span class="p">(</span><span class="n">now</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">print_event</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;second&#39;</span><span class="p">,))</span>
+
+<span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このサンプルは、厳密に同じ時間に予定されていることを保証する必要があるので、 <tt class="xref py py-func docutils literal"><span class="pre">enter()</span></tt> ではなく <tt class="xref py py-func docutils literal"><span class="pre">enterabs()</span></tt> メソッドを使用します。 <tt class="xref py py-func docutils literal"><span class="pre">enterabs()</span></tt> の最初の引数は、遅延の時間ではなくイベントを実行する時間です。</p>
+<div class="highlight-python"><pre>$ python sched_priority.py
+START: 1361118807.4
+EVENT: 1361118809.4 second
+EVENT: 1361118809.4 first</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>イベントをキャンセルする<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-func docutils literal"><span class="pre">enter()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">enterabs()</span></tt> の両方とも、後でキャンセルできるリファレンスを返します。 <tt class="xref py py-func docutils literal"><span class="pre">run()</span></tt> はブロックしてしまうので、イベントは違うスレッドからキャンセルさせる必要があります。このサンプルでは、別のスレッドがスケジューラを実行するために開始されて、メイン処理のスレッドがそのイベントをキャンセルするために使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sched</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">sched</span><span class="o">.</span><span class="n">scheduler</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">)</span>
+
+<span class="c"># スレッドが変更できるグローバル変数をセットする</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">increment_counter</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">counter</span>
+    <span class="k">print</span> <span class="s">&#39;EVENT:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">name</span>
+    <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">print</span> <span class="s">&#39;NOW:&#39;</span><span class="p">,</span> <span class="n">counter</span>
+
+<span class="k">print</span> <span class="s">&#39;START:&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">e1</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">enter</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">increment_counter</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;E1&#39;</span><span class="p">,))</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">enter</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">increment_counter</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;E2&#39;</span><span class="p">,))</span>
+
+<span class="c"># イベントを実行するスレッドを開始する</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="c"># メインスレッドに戻り、最初のイベントをキャンセルする</span>
+<span class="n">scheduler</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">e1</span><span class="p">)</span>
+
+<span class="c"># スケジューラのスレッドの実行が終わるまで待つ</span>
+<span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;FINAL:&#39;</span><span class="p">,</span> <span class="n">counter</span>
+</pre></div>
+</div>
+<p>2つのイベントが予定されていましたが、最初のイベントはキャンセルされました。2番目のイベントのみ実行されるので、その <tt class="docutils literal"><span class="pre">counter</span></tt> 変数は1回だけインクリメントされます。</p>
+<div class="highlight-python"><pre>$ python sched_cancel.py
+START: 1361118809.46
+EVENT: 1361118812.47 E2
+NOW: 1
+FINAL: 1</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-sched.html">sched</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../time/index.html#module-time" title="時間を扱う関数"><tt class="xref py py-mod docutils literal"><span class="pre">time</span></tt></a></dt>
+<dd>time モジュール</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../Queue/index.html" title="Queue – スレッドセーフな FIFO の実装"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../bisect/index.html" title="bisect – ソート済みのリストを保持する"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" >データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

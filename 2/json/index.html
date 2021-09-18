@@ -1,0 +1,684 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>json &#8211; JavaScript Object Notation シリアライザ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="インターネットデータ操作" href="../internet_data.html" />
+    <link rel="next" title="mailbox – メールアーカイブのアクセスと操作" href="../mailbox/index.html" />
+    <link rel="prev" title="base64 – バイナリデータを ASCII 文字へエンコードする" href="../base64/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">json &#8211; JavaScript Object Notation シリアライザ</a><ul>
+<li><a class="reference internal" href="#id1">シンプルなデータ型をエンコード、デコードする</a></li>
+<li><a class="reference internal" href="#id2">人間が読み易い 対 コンパクトアウトプット</a></li>
+<li><a class="reference internal" href="#id3">ディクショナリをエンコードする</a></li>
+<li><a class="reference internal" href="#id4">独自のデータ型で使用する</a></li>
+<li><a class="reference internal" href="#id5">クラスのエンコーダとデコーダ</a></li>
+<li><a class="reference internal" href="#id6">ストリームとファイルで使用する</a></li>
+<li><a class="reference internal" href="#id7">混在するデータストリーム</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../base64/index.html" title="前の章へ"><strong>前:</strong> base64 &#8211; バイナリデータを ASCII 文字へエンコードする</a><br/>
+          <a href="../mailbox/index.html" title="次の章へ"><strong>次:</strong> mailbox &#8211; メールアーカイブのアクセスと操作</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/json/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../mailbox/index.html" title="mailbox – メールアーカイブのアクセスと操作"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../base64/index.html" title="base64 – バイナリデータを ASCII 文字へエンコードする"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_data.html" accesskey="U">インターネットデータ操作</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="json-javascript-object-notation">
+<h1>json &#8211; JavaScript Object Notation シリアライザ<a class="headerlink" href="#json-javascript-object-notation" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-json"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">Python オブジェクトを JSON 文字列へエンコード、JSON 文字列を Python オブジェクトへデコードする</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.6</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> モジュールはインメモリの Python オブジェクトを <a class="reference external" href="http://json.org/">JavaScript Object Notation</a> (JSON) というシリアライズされたフォーマットへ変換する <a class="reference internal" href="../pickle/index.html#module-pickle" title="Python オブジェクトシリアライゼーション"><tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt></a> に似た API を提供します。pickle と違うのは、JSON はアプリケーション間通信に適応するように多くの言語(特に JavaScript)で実装されている利点があります。JSON は AJAX アプリケーションにおける web サーバとクライアント間の通信でおそらく最もよく利用されていますが、その課題領域のみに制限されているわけではありません。</p>
+<div class="section" id="id1">
+<h2>シンプルなデータ型をエンコード、デコードする<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>エンコーダはデフォルトで Python のネイティブのデータ型(string, unicode, int, float, list, tuple, dict)を理解します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span> <span class="p">}</span> <span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;DATA:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="n">data_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;JSON:&#39;</span><span class="p">,</span> <span class="n">data_string</span>
+</pre></div>
+</div>
+<p>値は Python の <tt class="docutils literal"><span class="pre">repr()</span></tt> の出力とよく似た値にエンコードされます。</p>
+<div class="highlight-python"><pre>$ python json_simple_types.py
+DATA: [{'a': 'A', 'c': 3.0, 'b': (2, 4)}]
+JSON: [{"a": "A", "c": 3.0, "b": [2, 4]}]</pre>
+</div>
+<p>エンコードした後に再度デコードすると、厳密には同じ型のオブジェクトを取得できないこともあります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span> <span class="p">}</span> <span class="p">]</span>
+<span class="n">data_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;ENCODED:&#39;</span><span class="p">,</span> <span class="n">data_string</span>
+
+<span class="n">decoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data_string</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;DECODED:&#39;</span><span class="p">,</span> <span class="n">decoded</span>
+
+<span class="k">print</span> <span class="s">&#39;ORIGINAL:&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&#39;DECODED :&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>特に、文字列はユニコードへ、タプルは JSON リストへ変換されます。</p>
+<div class="highlight-python"><pre>$ python json_simple_types_decode.py
+ENCODED: [{"a": "A", "c": 3.0, "b": [2, 4]}]
+DECODED: [{u'a': u'A', u'c': 3.0, u'b': [2, 4]}]
+ORIGINAL: &lt;type 'tuple'&gt;
+DECODED : &lt;type 'list'&gt;</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>人間が読み易い 対 コンパクトアウトプット<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>pickle より優れている JSON の他の利点はその出力結果を人間が読み易いことです。 <tt class="docutils literal"><span class="pre">dumps()</span></tt> 関数はその出力を読み易くするために複数の引数を受け取ります。例えば、 <tt class="docutils literal"><span class="pre">sort_keys</span></tt> はランダムな順序ではなく、ディクショナリのキーをソートして出力するようにエンコーダへ伝えます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span> <span class="p">}</span> <span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;DATA:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="n">unsorted</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;JSON:&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;SORT:&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">first</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">second</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;UNSORTED MATCH:&#39;</span><span class="p">,</span> <span class="n">unsorted</span> <span class="o">==</span> <span class="n">first</span>
+<span class="k">print</span> <span class="s">&#39;SORTED MATCH  :&#39;</span><span class="p">,</span> <span class="n">first</span> <span class="o">==</span> <span class="n">second</span>
+</pre></div>
+</div>
+<p>ソートすることで、その出力結果を目視で確認するのに便利です。さらにテストのときに JSON の出力を比較するのも簡単です。</p>
+<div class="highlight-python"><pre>$ python json_sort_keys.py
+DATA: [{'a': 'A', 'c': 3.0, 'b': (2, 4)}]
+JSON: [{"a": "A", "c": 3.0, "b": [2, 4]}]
+SORT: [{"a": "A", "b": [2, 4], "c": 3.0}]
+UNSORTED MATCH: False
+SORTED MATCH  : True</pre>
+</div>
+<p>深くネストされたデータ構造の出力を分かり易くするために <tt class="docutils literal"><span class="pre">indent</span></tt> に値を指定したくなるでしょう。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span> <span class="p">}</span> <span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;DATA:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;NORMAL:&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;INDENT:&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>インデントが正の数の場合、データ構造の各レベルに対応するインデントレベルにスペースを入れて <a class="reference internal" href="../pprint/index.html#module-pprint" title="データ構造を見やすい形で出力する"><tt class="xref py py-mod docutils literal"><span class="pre">pprint</span></tt></a> によく似た出力になります。</p>
+<div class="highlight-python"><pre>$ python json_indent.py
+DATA: [{'a': 'A', 'c': 3.0, 'b': (2, 4)}]
+NORMAL: [{"a": "A", "b": [2, 4], "c": 3.0}]
+INDENT: [
+  {
+    "a": "A",
+    "b": [
+      2,
+      4
+    ],
+    "c": 3.0
+  }
+]</pre>
+</div>
+<p>同じデータ量を送信する必要ある冗長な出力には、サンプルのようにバイト数が増加しますが、本番環境で意図したようにソートされるとは限りません。実際、デフォルト設定よりもっとコンパクトになるようにエンコードしたとしても、エンコードされた出力のデータを分割するために設定を調整したくなるかもしれません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span> <span class="p">}</span> <span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;DATA:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;repr(data)             :&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;dumps(data)            :&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;dumps(data, indent=2)  :&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;dumps(data, separators):&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span><span class="s">&#39;:&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">dumps()</span></tt> への <tt class="docutils literal"><span class="pre">separators</span></tt> 引数はディクショナリの値からリストやキーのアイテムを分離するためにその文字列を含むタプルにします。デフォルトは <tt class="docutils literal"><span class="pre">(',</span> <span class="pre">',</span> <span class="pre">':</span> <span class="pre">')</span></tt> です。スペースを削除することでもっとコンパクトな出力になります。</p>
+<div class="highlight-python"><pre>$ python json_compact_encoding.py
+DATA: [{'a': 'A', 'c': 3.0, 'b': (2, 4)}]
+repr(data)             : 35
+dumps(data)            : 35
+dumps(data, indent=2)  : 76
+dumps(data, separators): 29</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>ディクショナリをエンコードする<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>JSON フォーマットはディクショナリのキーが文字列であることを前提とします。ディクショナリのキーに他のデータ型を使用している場合、そのオブジェクトをエンコードしようとすると <a class="reference internal" href="../exceptions/index.html#exceptions-valueerror"><em>ValueError</em></a> が発生します。その制限を回避する1つのワークアラウンドは <tt class="docutils literal"><span class="pre">skipkeys</span></tt> 引数を使用して非文字列のキーを読み飛ばすことです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;d&#39;</span><span class="p">,):</span><span class="s">&#39;D tuple&#39;</span> <span class="p">}</span> <span class="p">]</span>
+
+<span class="k">print</span> <span class="s">&#39;First attempt&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">),</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;Second attempt&#39;</span>
+<span class="k">print</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">skipkeys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>例外を発生させずに非文字列のキーは単純に無視されます。</p>
+<div class="highlight-python"><pre>$ python json_skipkeys.py
+First attempt
+ERROR: keys must be a string
+
+Second attempt
+[{"a": "A", "c": 3.0, "b": [2, 4]}]</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>独自のデータ型で使用する<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>これまでの全てのサンプルは Python の組み込みデータ型がネイティブに <a class="reference internal" href="#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> でサポートされているので、そういった組み込みデータ型を使用していました。Python のデータ型と同様にエンコードできるようにしたい独自のデータ型を定義することは珍しいことではありません。そのために2つの方法があります。</p>
+<p>先ずエンコードするためのクラスが必要になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;MyObj(</span><span class="si">%s</span><span class="s">)&gt;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">MyObj</span></tt> インスタンスをエンコードする簡単な方法は不明なデータ型をよく知られたデータ型へ変換する関数を定義することです。自分自身でエンコードする必要はありません。ただ1つのオブジェクトを他のオブジェクトへ変換するのみです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">json_myobj</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">json_myobj</span><span class="o">.</span><span class="n">MyObj</span><span class="p">(</span><span class="s">&#39;instance value goes here&#39;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;First attempt&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+
+<span class="k">def</span> <span class="nf">convert_to_builtin_type</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;default(&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="s">&#39;)&#39;</span>
+    <span class="c"># Convert objects to a dictionary of their representation</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;__class__&#39;</span><span class="p">:</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> 
+          <span class="s">&#39;__module__&#39;</span><span class="p">:</span><span class="n">obj</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span>
+          <span class="p">}</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;With default&#39;</span>
+<span class="k">print</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">convert_to_builtin_type</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">convert_to_builtin_type()</span></tt> の関数内で、あるプログラムが Python モジュールへアクセスする必要がある場合、 <a class="reference internal" href="#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> が認識しないクラスのインスタンスはそのオブジェクトを再作成するために十分な情報を持つディクショナリへ変換されます。</p>
+<div class="highlight-python"><pre>$ python json_dump_default.py
+First attempt
+ERROR: &lt;MyObj(instance value goes here)&gt; is not JSON serializable
+
+With default
+default( &lt;MyObj(instance value goes here)&gt; )
+{"s": "instance value goes here", "__module__": "json_myobj", "__class__": "MyObj"}</pre>
+</div>
+<p>その出力結果をデコードして <tt class="docutils literal"><span class="pre">MyObj</span></tt> インスタンスを作成するには、そのモジュールからクラスをインポートして、そのクラスのインスタンスを作成できるようにデコーダへ関連付ける必要があります。そのため <tt class="docutils literal"><span class="pre">loads()</span></tt> への <tt class="docutils literal"><span class="pre">object_hook</span></tt> 引数を使用します。</p>
+<p><tt class="docutils literal"><span class="pre">object_hook</span></tt> は入ってくるデータストリームからデコードされるディクショナリ毎に呼び出されます。つまり、そのディクショナリから他のオブジェクトのデータ型へ変換する機会を提供してくれます。そのフック関数はそのディクショナリの代わりに受け取るための呼び出しアプリケーションを要求するオブジェクトを返すべきです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">def</span> <span class="nf">dict_to_object</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s">&#39;__class__&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;__class__&#39;</span><span class="p">)</span>
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;__module__&#39;</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;MODULE:&#39;</span><span class="p">,</span> <span class="n">module</span>
+        <span class="n">class_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;CLASS:&#39;</span><span class="p">,</span> <span class="n">class_</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">print</span> <span class="s">&#39;INSTANCE ARGS:&#39;</span><span class="p">,</span> <span class="n">args</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="n">class_</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="n">d</span>
+    <span class="k">return</span> <span class="n">inst</span>
+
+<span class="n">encoded_object</span> <span class="o">=</span> <span class="s">&#39;[{&quot;s&quot;: &quot;instance value goes here&quot;, &quot;__module__&quot;: &quot;json_myobj&quot;, &quot;__class__&quot;: &quot;MyObj&quot;}]&#39;</span>
+
+<span class="n">myobj_instance</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">encoded_object</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">dict_to_object</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">myobj_instance</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> は文字列の値から unicode オブジェクトへ変換されます。そのため、そのクラスのコンストラクタへのキーワード引数として使用される前に、unicode オブジェクトを ASCII 文字列として再エンコードする必要があります。</p>
+<div class="highlight-python"><pre>$ python json_load_object_hook.py
+MODULE: &lt;module 'json_myobj' from '/Users/dhellmann/Devel/pymotw-ja/t2y/PyMOTW/json/json_myobj.pyc'&gt;
+CLASS: &lt;class 'json_myobj.MyObj'&gt;
+INSTANCE ARGS: {'s': u'instance value goes here'}
+[&lt;MyObj(instance value goes here)&gt;]</pre>
+</div>
+<p>よく似たフック関数が組み込み型の整数(<tt class="docutils literal"><span class="pre">parse_int</span></tt>), 浮動小数点数(<tt class="docutils literal"><span class="pre">parse_float</span></tt>) と定数 (<tt class="docutils literal"><span class="pre">parse_constant</span></tt>) のために使用できます。</p>
+</div>
+<div class="section" id="id5">
+<h2>クラスのエンコーダとデコーダ<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>既に説明した便利な関数に加えて、 <a class="reference internal" href="#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> モジュールはエンコーディングとデコーディングのクラスを提供します。そのクラスを直接使用する場合、拡張 API へアクセスして、それらのクラスの振る舞いをカスタマイズするサブクラスを作成できます。</p>
+<p>JSONEncoder はエンコードデータの &#8220;チャンク&#8221; を生成するために繰り返し利用できるインタフェースを提供します。そして、メモリ内にある完全なデータ構造を再構成せずに簡単にネットワークソケット又はファイルへの書き込みます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span> <span class="p">}</span> <span class="p">]</span>
+
+<span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">encoder</span><span class="o">.</span><span class="n">iterencode</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;PART:&#39;</span><span class="p">,</span> <span class="n">part</span>
+</pre></div>
+</div>
+<p>ご覧の通り、その出力はサイズの値をベースにしたモノというよりはむしろ論理的なユニット単位で生成されます。</p>
+<div class="highlight-python"><pre>$ python json_encoder_iterable.py
+PART: [
+PART: {
+PART: "a"
+PART: :
+PART: "A"
+PART: ,
+PART: "c"
+PART: :
+PART: 3.0
+PART: ,
+PART: "b"
+PART: :
+PART: [2
+PART: , 4
+PART: ]
+PART: }
+PART: ]</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">encode()</span></tt> メソッドは <tt class="docutils literal"><span class="pre">''.join(encoder.iterencode())</span></tt> と基本的には等価です。そして、フロント側でその他のエラーを調べます。</p>
+<p>任意のオブジェクトをエンコードするために、上述した <tt class="docutils literal"><span class="pre">convert_to_builtin_type()</span></tt> の方法と同様の実装で <tt class="docutils literal"><span class="pre">default()</span></tt> メソッドをオーバーライドできます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">json_myobj</span>
+
+<span class="k">class</span> <span class="nc">MyEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;default(&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="s">&#39;)&#39;</span>
+        <span class="c"># Convert objects to a dictionary of their representation</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;__class__&#39;</span><span class="p">:</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> 
+              <span class="s">&#39;__module__&#39;</span><span class="p">:</span><span class="n">obj</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span>
+              <span class="p">}</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">json_myobj</span><span class="o">.</span><span class="n">MyObj</span><span class="p">(</span><span class="s">&#39;internal data&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">obj</span>
+<span class="k">print</span> <span class="n">MyEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>その出力は以前の実装した内容と同じです。</p>
+<div class="highlight-python"><pre>$ python json_encoder_default.py
+&lt;MyObj(internal data)&gt;
+default( &lt;MyObj(internal data)&gt; )
+{"s": "internal data", "__module__": "json_myobj", "__class__": "MyObj"}</pre>
+</div>
+<p>テキストをデコードした後、そのディクショナリをオブジェクトへ変換するには、以前の実装より少しだけ作業が必要ですが、大したことはありません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="k">class</span> <span class="nc">MyDecoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_to_object</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">dict_to_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">&#39;__class__&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;__class__&#39;</span><span class="p">)</span>
+            <span class="n">module_name</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;__module__&#39;</span><span class="p">)</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;MODULE:&#39;</span><span class="p">,</span> <span class="n">module</span>
+            <span class="n">class_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;CLASS:&#39;</span><span class="p">,</span> <span class="n">class_</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="k">print</span> <span class="s">&#39;INSTANCE ARGS:&#39;</span><span class="p">,</span> <span class="n">args</span>
+            <span class="n">inst</span> <span class="o">=</span> <span class="n">class_</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">inst</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="k">return</span> <span class="n">inst</span>
+
+<span class="n">encoded_object</span> <span class="o">=</span> <span class="s">&#39;[{&quot;s&quot;: &quot;instance value goes here&quot;, &quot;__module__&quot;: &quot;json_myobj&quot;, &quot;__class__&quot;: &quot;MyObj&quot;}]&#39;</span>
+
+<span class="n">myobj_instance</span> <span class="o">=</span> <span class="n">MyDecoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoded_object</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">myobj_instance</span>
+</pre></div>
+</div>
+<p>その出力は以前の例と同じです。</p>
+<div class="highlight-python"><pre>$ python json_decoder_object_hook.py
+MODULE: &lt;module 'json_myobj' from '/Users/dhellmann/Devel/pymotw-ja/t2y/PyMOTW/json/json_myobj.pyc'&gt;
+CLASS: &lt;class 'json_myobj.MyObj'&gt;
+INSTANCE ARGS: {'s': u'instance value goes here'}
+[&lt;MyObj(instance value goes here)&gt;]</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>ストリームとファイルで使用する<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>これまでの全ての例では、メモリ内に完全なデータ構造が構成されているときにエンコードデータを対象として扱える(扱うべき)ということを前提としていました。巨大なデータ構造、例えばファイルのようなオブジェクトへ直接的にそのエンコードデータを書き込む方が望ましいでしょう。そのための便利な関数 <tt class="docutils literal"><span class="pre">load()</span></tt> と <tt class="docutils literal"><span class="pre">dump()</span></tt> は、読み書き用途にファイルのようなオブジェクトへのリファレンスを受け取ることができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">:(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s">&#39;c&#39;</span><span class="p">:</span><span class="mf">3.0</span> <span class="p">}</span> <span class="p">]</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;w+&#39;</span><span class="p">)</span>
+<span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>ソケットもほぼ同様の方法で普通のファイルハンドラとして動作するでしょう。</p>
+<div class="highlight-python"><pre>$ python json_dump_file.py
+[{"a": "A", "c": 3.0, "b": [2, 4]}]</pre>
+</div>
+<p>一度にデータの一部のみを読み込むように最適化されてはいませんが、 <tt class="docutils literal"><span class="pre">load()</span></tt> 関数は入力ストリームからオブジェクトを生成するカプセル化のロジックの利点も提供します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s">&#39;w+&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;[{&quot;a&quot;: &quot;A&quot;, &quot;c&quot;: 3.0, &quot;b&quot;: [2, 4]}]&#39;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python json_load_file.py
+[{u'a': u'A', u'c': 3.0, u'b': [2, 4]}]</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>混在するデータストリーム<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>JSONDecoder には終了文字のある JSON データのような、複数のデータで構成されたデータ構造をデコードするために <tt class="docutils literal"><span class="pre">raw_decode()</span></tt> メソッドがあります。その返り値は入力データをデコードすることで作成されるオブジェクトと、そのデータのデコードが終了した位置を指すインデックスです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">decoder</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">get_decoded_and_remainder</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
+    <span class="n">obj</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">decoder</span><span class="o">.</span><span class="n">raw_decode</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+    <span class="n">remaining</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">end</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">remaining</span><span class="p">)</span>
+
+<span class="n">encoded_object</span> <span class="o">=</span> <span class="s">&#39;[{&quot;a&quot;: &quot;A&quot;, &quot;c&quot;: 3.0, &quot;b&quot;: [2, 4]}]&#39;</span>
+<span class="n">extra_text</span> <span class="o">=</span> <span class="s">&#39;This text is not JSON.&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;JSON first:&#39;</span>
+<span class="n">obj</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">remaining</span> <span class="o">=</span> <span class="n">get_decoded_and_remainder</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">encoded_object</span><span class="p">,</span> <span class="n">extra_text</span><span class="p">]))</span>
+<span class="k">print</span> <span class="s">&#39;Object              :&#39;</span><span class="p">,</span> <span class="n">obj</span>
+<span class="k">print</span> <span class="s">&#39;End of parsed input :&#39;</span><span class="p">,</span> <span class="n">end</span>
+<span class="k">print</span> <span class="s">&#39;Remaining text      :&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;JSON embedded:&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">obj</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">remaining</span> <span class="o">=</span> <span class="n">get_decoded_and_remainder</span><span class="p">(</span>
+        <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">extra_text</span><span class="p">,</span> <span class="n">encoded_object</span><span class="p">,</span> <span class="n">extra_text</span><span class="p">])</span>
+        <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+
+    
+</pre></div>
+</div>
+<p>不幸にも <tt class="docutils literal"><span class="pre">raw_decode()</span></tt> は終了文字のあるデータ構造のオブジェクトが入力データの最初に現れた場合しか動作しません。</p>
+<div class="highlight-python"><pre>$ python json_mixed_data.py
+JSON first:
+Object              : [{u'a': u'A', u'c': 3.0, u'b': [2, 4]}]
+End of parsed input : 35
+Remaining text      : ' This text is not JSON.'
+
+JSON embedded:
+ERROR: No JSON object could be decoded</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/json.html">json</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference external" href="http://json.org/">JavaScript Object Notation</a></dt>
+<dd>JSON のホームページでドキュメントや他言語の実装がある</dd>
+<dt><a class="reference external" href="http://code.google.com/p/simplejson/">http://code.google.com/p/simplejson/</a></dt>
+<dd>Bob Ippolito と他の人による simplejson は Python2.6 と Python 3.0 で提供された json ライブラリの開発バージョンとしてメンテナンスされている、Python 2.4 と 2.5 にも後方互換性があるようにメンテナンスされている</dd>
+<dt><a class="reference external" href="http://code.google.com/p/jsonpickle/">jsonpickle</a></dt>
+<dd>jsonpickle は任意の Python オブジェクトを JSON にシリアライズする</dd>
+<dt><a class="reference internal" href="../articles/data_persistence.html#article-data-persistence"><em>データの永続化と変換</em></a></dt>
+<dd>Python プログラムからデータを格納するその他のサンプル</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../mailbox/index.html" title="mailbox – メールアーカイブのアクセスと操作"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../base64/index.html" title="base64 – バイナリデータを ASCII 文字へエンコードする"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_data.html" >インターネットデータ操作</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

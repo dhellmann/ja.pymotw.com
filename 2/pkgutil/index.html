@@ -1,0 +1,656 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>pkgutil &#8211; パッケージユーティリティ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="インポートモジュール" href="../importing.html" />
+    <link rel="next" title="zipimport – ZIP アーカイブ内から Python コードを読み込む" href="../zipimport/index.html" />
+    <link rel="prev" title="imp – モジュールのインポート構造に対するインタフェース" href="../imp/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">pkgutil &#8211; パッケージユーティリティ</a><ul>
+<li><a class="reference internal" href="#id1">パッケージのインポートパス</a><ul>
+<li><a class="reference internal" href="#id2">パッケージの開発バージョン</a></li>
+<li><a class="reference internal" href="#pkg">PKG ファイルでパスを管理する</a></li>
+<li><a class="reference internal" href="#id3">ネストされたパッケージ</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">パッケージのデータ</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../imp/index.html" title="前の章へ"><strong>前:</strong> imp &#8211; モジュールのインポート構造に対するインタフェース</a><br/>
+          <a href="../zipimport/index.html" title="次の章へ"><strong>次:</strong> zipimport &#8211; ZIP アーカイブ内から Python コードを読み込む</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/pkgutil/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../zipimport/index.html" title="zipimport – ZIP アーカイブ内から Python コードを読み込む"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../imp/index.html" title="imp – モジュールのインポート構造に対するインタフェース"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../importing.html" accesskey="U">インポートモジュール</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="pkgutil">
+<h1>pkgutil &#8211; パッケージユーティリティ<a class="headerlink" href="#pkgutil" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-pkgutil"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">モジュール検索パスに特定パッケージを追加して、パッケージのリソースを扱う</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.3 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-pkgutil" title="パッケージユーティリティ"><tt class="xref py py-mod docutils literal"><span class="pre">pkgutil</span></tt></a> モジュールは、Python パッケージを扱う機能を提供します。 <tt class="xref py py-func docutils literal"><span class="pre">extend_path()</span></tt> はパッケージのサブモジュールのインポートパスを変更し、 <tt class="xref py py-func docutils literal"><span class="pre">get_data()</span></tt> はパッケージとして配布されたファイルリソースへのアクセスを提供します。</p>
+<div class="section" id="id1">
+<h2>パッケージのインポートパス<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-func docutils literal"><span class="pre">extend_path()</span></tt> 関数は、 <a class="reference internal" href="../sys/imports.html#sys-path"><em>sys.path</em></a> の他のディレクトリを追加するために、任意のパッケージの検索パスを変更するのに使用されます。これは、パッケージの開発バージョンでインストール済みバージョンを上書きしたり、1つのパッケージの名前空間内に共有モジュールやプラットフォーム固有のものを組み合わせたりするのに使用されます。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">extend_path()</span></tt> を呼び出す最も一般的な方法は、次の2行をパッケージの <tt class="docutils literal"><span class="pre">__init__.py</span></tt> へ追加します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pkgutil</span>
+<span class="n">__path__</span> <span class="o">=</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">extend_path</span><span class="p">(</span><span class="n">__path__</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">extend_path()</span></tt> は、第二引数で渡された任意のパッケージのサブディレクトリ名を含むディレクトリのために <tt class="docutils literal"><span class="pre">sys.path</span></tt> を調べます。ディレクトリのリストは、第一引数で渡されたパスと組み合わせて、パッケージのインポートパスに利用できる1つのリストを返します。</p>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">demopkg</span></tt> というサンプルパッケージは、次のファイルを含みます。</p>
+<div class="highlight-python"><pre>$ find demopkg1 -name '*.py'
+demopkg1/__init__.py
+demopkg1/shared.py</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">demopkg1/__init__.py</span></tt> は次の通りです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pkgutil</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="k">print</span> <span class="s">&#39;demopkg1.__path__ before:&#39;</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">__path__</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="n">__path__</span> <span class="o">=</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">extend_path</span><span class="p">(</span><span class="n">__path__</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;demopkg1.__path__ after:&#39;</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">__path__</span><span class="p">)</span>
+<span class="k">print</span>
+</pre></div>
+</div>
+<p>変更による違いを分かりやすくするために <strong class="command">print</strong> 文で変更前後の検索パスを表示します。</p>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">demopkg</span></tt> の拡張機能を含む <tt class="docutils literal"><span class="pre">extension</span></tt> ディレクトリは次の通りです。</p>
+<div class="highlight-python"><pre>$ find extension -name '*.py'
+extension/__init__.py
+extension/demopkg1/__init__.py
+extension/demopkg1/not_shared.py</pre>
+</div>
+<p>簡単なテストプログラムは <tt class="xref py py-mod docutils literal"><span class="pre">demopkg1</span></tt> パッケージをインポートします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">demopkg1</span>
+<span class="k">print</span> <span class="s">&#39;demopkg1           :&#39;</span><span class="p">,</span> <span class="n">demopkg1</span><span class="o">.</span><span class="n">__file__</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">demopkg1.shared</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;demopkg1.shared    : Not found (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">err</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;demopkg1.shared    :&#39;</span><span class="p">,</span> <span class="n">demopkg1</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">__file__</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">demopkg1.not_shared</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;demopkg1.not_shared: Not found (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">err</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;demopkg1.not_shared:&#39;</span><span class="p">,</span> <span class="n">demopkg1</span><span class="o">.</span><span class="n">not_shared</span><span class="o">.</span><span class="n">__file__</span>
+</pre></div>
+</div>
+<p>このテストプログラムをコマンドラインから直接実行すると、 <tt class="xref py py-mod docutils literal"><span class="pre">not_shared</span></tt> モジュールが見つかりません。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">この記事のサンプルのファイルシステム上のフルパスは、変更された部分を強調するために短縮しています。</p>
+</div>
+<div class="highlight-python"><pre>$ python pkgutil_extend_path.py
+
+demopkg1.__path__ before:
+['.../PyMOTW/pkgutil/demopkg1']
+
+demopkg1.__path__ after:
+['.../PyMOTW/pkgutil/demopkg1']
+
+demopkg1           : .../PyMOTW/pkgutil/demopkg1/__init__.py
+demopkg1.shared    : .../PyMOTW/pkgutil/demopkg1/shared.py
+demopkg1.not_shared: Not found (No module named not_shared)</pre>
+</div>
+<p>但し、この <tt class="docutils literal"><span class="pre">extension</span></tt> ディレクトリを <tt class="xref py py-data docutils literal"><span class="pre">PYTHONPATH</span></tt> に追加して、同じプログラムを再実行すると違う結果になります。</p>
+<div class="highlight-python"><pre>$ export PYTHONPATH=extension
+$ python pkgutil_extend_path.py
+demopkg1.__path__ before:
+['.../PyMOTW/pkgutil/demopkg1']
+
+demopkg1.__path__ after:
+['.../PyMOTW/pkgutil/demopkg1',
+ '.../PyMOTW/pkgutil/extension/demopkg1']
+
+demopkg1           : .../PyMOTW/pkgutil/demopkg1/__init__.pyc
+demopkg1.shared    : .../PyMOTW/pkgutil/demopkg1/shared.pyc
+demopkg1.not_shared: .../PyMOTW/pkgutil/extension/demopkg1/not_shared.py</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">extension</span></tt> ディレクトリ内の <tt class="xref py py-mod docutils literal"><span class="pre">demopkg1</span></tt> が検索パスへ追加されたので、 <tt class="xref py py-mod docutils literal"><span class="pre">not_shared</span></tt> モジュールがそこで見つかります。</p>
+<p>この方法でパスを拡張することは、共通パッケージとプラットフォーム固有のモジュールを組み合わせるのに都合が良く、特に C 言語の拡張モジュールを含むプラットフォーム固有のモジュールに便利です。</p>
+<div class="section" id="id2">
+<h3>パッケージの開発バージョン<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>あるプロジェクトで拡張機能を開発する一方で、インストール済みパッケージへの変更をテストしなければならないことがよくあります。インストール済みのパッケージを開発バージョンと置き換えることは、悪い考えかもしれません。それは必ずしも正しいとは言えなくて、システム上のその他のツールがインストール済みパッケージに依存している可能性があるからです。</p>
+<p>完全に独立したパッケージのコピーをもつ開発環境は <a class="reference external" href="http://pypi.python.org/pypi/virtualenv">virtualenv</a> で設定できますが、些細な変更のために全ての依存関係をもつ仮想環境を構築するのは、やり過ぎかもしれません。</p>
+<p>別の方法としては、開発環境でパッケージがもつモジュールの検索パスを変更するのに <a class="reference internal" href="#module-pkgutil" title="パッケージユーティリティ"><tt class="xref py py-mod docutils literal"><span class="pre">pkgutil</span></tt></a> を使用することです。このケースでは、但し、そのパスは置き換えなければならないので、開発バージョンはインストール済みバージョンを上書きします。</p>
+<p>任意のパッケージ <tt class="xref py py-mod docutils literal"><span class="pre">demopkg2</span></tt> は次のファイルを含みます。</p>
+<div class="highlight-python"><pre>$ find demopkg2 -name '*.py'
+demopkg2/__init__.py
+demopkg2/overloaded.py</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">demopkg2/overloaded.py</span></tt> に置かれた開発中の関数と一緒に、インストール済みバージョンは、</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;This is the installed version of func().&#39;</span>
+</pre></div>
+</div>
+<p>と <tt class="docutils literal"><span class="pre">demopkg2/__init__.py</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pkgutil</span>
+
+<span class="n">__path__</span> <span class="o">=</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">extend_path</span><span class="p">(</span><span class="n">__path__</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+<span class="n">__path__</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>を含みます。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">reverse()</span></tt> は、 <a class="reference internal" href="#module-pkgutil" title="パッケージユーティリティ"><tt class="xref py py-mod docutils literal"><span class="pre">pkgutil</span></tt></a> が検索パスへ任意のディレクトリを追加するのを保証するために使用され、デフォルトの位置よりも <em>先に</em> インポートのために調べられます。</p>
+<p>このプログラムは、 <tt class="xref py py-mod docutils literal"><span class="pre">demopkg2.overloaded</span></tt> をインポートして <tt class="xref py py-func docutils literal"><span class="pre">func()</span></tt> を呼び出します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">demopkg2</span>
+<span class="k">print</span> <span class="s">&#39;demopkg2           :&#39;</span><span class="p">,</span> <span class="n">demopkg2</span><span class="o">.</span><span class="n">__file__</span>
+
+<span class="kn">import</span> <span class="nn">demopkg2.overloaded</span>
+<span class="k">print</span> <span class="s">&#39;demopkg2.overloaded:&#39;</span><span class="p">,</span> <span class="n">demopkg2</span><span class="o">.</span><span class="n">overloaded</span><span class="o">.</span><span class="n">__file__</span>
+
+<span class="k">print</span>
+<span class="n">demopkg2</span><span class="o">.</span><span class="n">overloaded</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>特別なパス設定を行わずに、そのテストプログラムを実行すると、インストール済みの <tt class="xref py py-func docutils literal"><span class="pre">func()</span></tt> を呼び出して表示します。</p>
+<div class="highlight-python"><pre>$ python pkgutil_devel.py
+demopkg2           : .../PyMOTW/pkgutil/demopkg2/__init__.py
+demopkg2.overloaded: .../PyMOTW/pkgutil/demopkg2/overloaded.py</pre>
+</div>
+<p>開発ディレクトリは、次のファイルを含みます。</p>
+<div class="highlight-python"><pre>$ find develop -name '*.py'
+develop/demopkg2/__init__.py
+develop/demopkg2/overloaded.py</pre>
+</div>
+<p>そして <tt class="xref py py-mod docutils literal"><span class="pre">overloaded</span></tt> の変更されたバージョンは次になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;This is the development version of func().&#39;</span>
+</pre></div>
+</div>
+<p>テストプログラムが検索パスの <tt class="docutils literal"><span class="pre">develop</span></tt> ディレクトリで実行されるときに読み込まれます。</p>
+<div class="highlight-python"><pre>$ export PYTHONPATH=develop
+$ python pkgutil_devel.py
+
+demopkg2           : .../PyMOTW/pkgutil/demopkg2/__init__.pyc
+demopkg2.overloaded: .../PyMOTW/pkgutil/develop/demopkg2/overloaded.pyc</pre>
+</div>
+</div>
+<div class="section" id="pkg">
+<h3>PKG ファイルでパスを管理する<a class="headerlink" href="#pkg" title="Permalink to this headline">¶</a></h3>
+<p>前節の最初のサンプルは、 <tt class="xref py py-data docutils literal"><span class="pre">PYTHONPATH</span></tt> にディレクトリを追加して、検索パスを拡張する方法を説明しました。その他にディレクトリ名を含む <tt class="docutils literal"><span class="pre">*.pkg</span></tt> ファイルを利用して検索パスを追加することもできます。PKG ファイルは、 <a class="reference internal" href="../site/index.html#module-site" title="Site-wide configuration"><tt class="xref py py-mod docutils literal"><span class="pre">site</span></tt></a> モジュールが利用する PTH ファイルとよく似ています。これらのファイルは、パッケージの検索パスを追加するために、1行につき1ディレクトリ名を含みます。</p>
+<p>最初のサンプルからアプリケーションのプラットフォーム固有の部分を構成する別の方法は、各オペレーティングシステム用に別ディレクトリを使用して、検索パスを拡張する <tt class="docutils literal"><span class="pre">.pkg</span></tt> ファイルを含めます。</p>
+<p>このサンプルでは、同じ <tt class="xref py py-mod docutils literal"><span class="pre">demopkg1</span></tt> ファイルを使用して、次のファイルも含めます。</p>
+<div class="highlight-python"><pre>$ find os_* -type f
+os_one/demopkg1/__init__.py
+os_one/demopkg1/not_shared.py
+os_one/demopkg1.pkg
+os_two/demopkg1/__init__.py
+os_two/demopkg1/not_shared.py
+os_two/demopkg1.pkg</pre>
+</div>
+<p>PKG ファイルは、拡張されるパッケージ名と一致するように <tt class="docutils literal"><span class="pre">demopkg1.pkg</span></tt> というファイル名にします。両方とも次の内容を含みます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">demopkg</span>
+</pre></div>
+</div>
+<p>このデモプログラムは、インポートされたモジュールのバージョンを表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">demopkg1</span>
+<span class="k">print</span> <span class="s">&#39;demopkg1:&#39;</span><span class="p">,</span> <span class="n">demopkg1</span><span class="o">.</span><span class="n">__file__</span>
+
+<span class="kn">import</span> <span class="nn">demopkg1.shared</span>
+<span class="k">print</span> <span class="s">&#39;demopkg1.shared:&#39;</span><span class="p">,</span> <span class="n">demopkg1</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">__file__</span>
+
+<span class="kn">import</span> <span class="nn">demopkg1.not_shared</span>
+<span class="k">print</span> <span class="s">&#39;demopkg1.not_shared:&#39;</span><span class="p">,</span> <span class="n">demopkg1</span><span class="o">.</span><span class="n">not_shared</span><span class="o">.</span><span class="n">__file__</span>
+</pre></div>
+</div>
+<p>シンプルな実行スクリプトを利用して、2つのパッケージ間を切り替えます。</p>
+<div class="highlight-python"><pre>
+
+export PYTHONPATH=os_${1}
+echo "PYTHONPATH=$PYTHONPATH"
+echo
+
+python pkgutil_os_specific.py
+</pre>
+</div>
+<p>引数に <tt class="docutils literal"><span class="pre">&quot;one&quot;</span></tt> か <tt class="docutils literal"><span class="pre">&quot;two&quot;</span></tt> を渡して実行すると、そのパスが適切に設定されます。</p>
+<div class="highlight-python"><pre>$ ./with_os.sh one
+PYTHONPATH=os_one
+
+demopkg1.__path__ before:
+['.../PyMOTW/pkgutil/demopkg1']
+
+demopkg1.__path__ after:
+['.../PyMOTW/pkgutil/demopkg1',
+ '.../PyMOTW/pkgutil/os_one/demopkg1',
+ 'demopkg']
+
+demopkg1           : .../PyMOTW/pkgutil/demopkg1/__init__.pyc
+demopkg1.shared    : .../PyMOTW/pkgutil/demopkg1/shared.pyc
+demopkg1.not_shared: .../PyMOTW/pkgutil/os_one/demopkg1/not_shared.pyc</pre>
+</div>
+<div class="highlight-python"><pre>$ ./with_os.sh two
+PYTHONPATH=os_two
+
+demopkg1.__path__ before:
+['.../PyMOTW/pkgutil/demopkg1']
+
+demopkg1.__path__ after:
+['.../PyMOTW/pkgutil/demopkg1',
+ '.../PyMOTW/pkgutil/os_two/demopkg1',
+ 'demopkg']
+
+demopkg1           : .../PyMOTW/pkgutil/demopkg1/__init__.pyc
+demopkg1.shared    : .../PyMOTW/pkgutil/demopkg1/shared.pyc
+demopkg1.not_shared: .../PyMOTW/pkgutil/os_two/demopkg1/not_shared.pyc</pre>
+</div>
+<p>PKG ファイルは、通常の検索パスの任意の場所に置けます。カレントのワークディレクトリにある PKG ファイルは、開発ツリーを含めるためにも使用できます。</p>
+</div>
+<div class="section" id="id3">
+<h3>ネストされたパッケージ<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>ネストされたパッケージのために、トップレベルパッケージのパスを変更する必要があります。例えば、次のディレクトリ構造では、</p>
+<div class="highlight-python"><pre>$ find nested -name '*.py'
+nested/__init__.py
+nested/second/__init__.py
+nested/second/deep.py
+nested/shallow.py</pre>
+</div>
+<p>ここで <tt class="docutils literal"><span class="pre">nested/__init__.py</span></tt> は次のようになります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pkgutil</span>
+
+<span class="n">__path__</span> <span class="o">=</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">extend_path</span><span class="p">(</span><span class="n">__path__</span><span class="p">,</span> <span class="n">__name__</span><span class="p">)</span>
+<span class="n">__path__</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>そして、開発ツリーは次のようになります。</p>
+<div class="highlight-python"><pre>$ find develop/nested -name '*.py'
+develop/nested/__init__.py
+develop/nested/second/__init__.py
+develop/nested/second/deep.py
+develop/nested/shallow.py</pre>
+</div>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">shallow</span></tt> と <tt class="xref py py-mod docutils literal"><span class="pre">deep</span></tt> の両モジュールは、そのモジュールがインストール済みバージョンか、開発バージョンかを表すメッセージを出力するシンプルな関数を提供します。</p>
+<p>このテストプログラムは、新しいパッケージを実行します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">nested</span>
+
+<span class="kn">import</span> <span class="nn">nested.shallow</span>
+<span class="k">print</span> <span class="s">&#39;nested.shallow:&#39;</span><span class="p">,</span> <span class="n">nested</span><span class="o">.</span><span class="n">shallow</span><span class="o">.</span><span class="n">__file__</span>
+<span class="n">nested</span><span class="o">.</span><span class="n">shallow</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+
+<span class="k">print</span>
+<span class="kn">import</span> <span class="nn">nested.second.deep</span>
+<span class="k">print</span> <span class="s">&#39;nested.second.deep:&#39;</span><span class="p">,</span> <span class="n">nested</span><span class="o">.</span><span class="n">second</span><span class="o">.</span><span class="n">deep</span><span class="o">.</span><span class="n">__file__</span>
+<span class="n">nested</span><span class="o">.</span><span class="n">second</span><span class="o">.</span><span class="n">deep</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>パス操作を行わずに <tt class="docutils literal"><span class="pre">pkgutil_nested.py</span></tt> が実行されると、両モジュールのインストール済みバージョンが使用されます。</p>
+<div class="highlight-python"><pre>$ python pkgutil_nested.py
+nested.shallow: .../PyMOTW/pkgutil/nested/shallow.pyc
+This func() comes from the installed version of nested.shallow
+
+nested.second.deep: .../PyMOTW/pkgutil/nested/second/deep.pyc
+This func() comes from the installed version of nested.second.deep</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">develop</span></tt> ディレクトリがその検索パスに追加されると、開発バージョンの両関数がインストール済みバージョンを上書きします。</p>
+<div class="highlight-python"><pre>$ PYTHONPATH=develop python pkgutil_nested.py
+nested.shallow: .../PyMOTW/pkgutil/develop/nested/shallow.pyc
+This func() comes from the development version of nested.shallow
+
+nested.second.deep: .../PyMOTW/pkgutil/develop/nested/second/deep.pyc
+This func() comes from the development version of nested.second.deep</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>パッケージのデータ<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>コードに加えて、Python パッケージは、テンプレート、デフォルト設定ファイル、画像ファイル、パッケージのコードで使用するその他のファイルといった、データファイルを含められます。 <tt class="xref py py-func docutils literal"><span class="pre">get_data()</span></tt> 関数は、フォーマットに依存せず、ファイルのデータへのアクセスを提供します。そのため、パッケージが EGG ファイル、バイナリの一部、もしくはファイルシステム上の通常ファイルで配布されるかどうかといったことは問題になりません。</p>
+<p>パッケージ <tt class="xref py py-mod docutils literal"><span class="pre">pkgwithdata</span></tt> は <tt class="docutils literal"><span class="pre">templates</span></tt> ディレクトリを含みます。</p>
+<div class="highlight-python"><pre>$ find pkgwithdata -type f
+
+pkgwithdata/__init__.py
+pkgwithdata/templates/base.html</pre>
+</div>
+<p>そして <tt class="docutils literal"><span class="pre">pkgwithdata/templates/base.html</span></tt> も含みます。</p>
+<div class="highlight-python"><pre>&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"&gt;
+&lt;html&gt; &lt;head&gt;
+&lt;title&gt;PyMOTW Template&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;h1&gt;Example Template&lt;/h1&gt;
+
+&lt;p&gt;This is a sample data file.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<p>このプログラムは、テンプレートのコンテンツを取り出すために <tt class="xref py py-func docutils literal"><span class="pre">get_data()</span></tt> を利用して、その内容を表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pkgutil</span>
+
+<span class="n">template</span> <span class="o">=</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;pkgwithdata&#39;</span><span class="p">,</span> <span class="s">&#39;templates/base.html&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">template</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">get_data()</span></tt> の引数は、パッケージのドット名で、パッケージのトップから相対的なファイル名になります。返り値はバイトシーケンスなので、表示する前に UTF-8 でエンコードします。</p>
+<div class="highlight-python"><pre>$ python pkgutil_get_data.py
+&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"&gt;
+&lt;html&gt; &lt;head&gt;
+&lt;title&gt;PyMOTW Template&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;h1&gt;Example Template&lt;/h1&gt;
+
+&lt;p&gt;This is a sample data file.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">get_data()</span></tt> は、フォーマット非依存な配布形式です。というのは、パッケージのコンテンツへアクセスするのに <span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0302"><strong>PEP 302</strong></a> で定義されたインポートフックを使用するからです。インポートフックを提供する任意のローダは、 <a class="reference internal" href="../zipfile/index.html#module-zipfile" title="Read and write ZIP archive files."><tt class="xref py py-mod docutils literal"><span class="pre">zipfile</span></tt></a> の ZIP アーカイブインポータを含めて使用できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pkgutil</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># カレントディレクトリからコードとローカルのファイルシステムに</span>
+<span class="c"># 存在しない名前を使用するテンプレートを含む ZIP ファイルを作成する</span>
+<span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">PyZipFile</span><span class="p">(</span><span class="s">&#39;pkgwithdatainzip.zip&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
+    <span class="n">zf</span><span class="o">.</span><span class="n">writepy</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">zf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;pkgwithdata/templates/base.html&#39;</span><span class="p">,</span>
+             <span class="s">&#39;pkgwithdata/templates/fromzip.html&#39;</span><span class="p">,</span>
+             <span class="p">)</span>
+
+<span class="c"># インポートパスへ ZIP ファイルを追加する</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;pkgwithdatainzip.zip&#39;</span><span class="p">)</span>
+
+<span class="c"># ZIP アーカイブから来ていることを表示するために pkgwithdata をインポートする</span>
+<span class="kn">import</span> <span class="nn">pkgwithdata</span>
+<span class="k">print</span> <span class="s">&#39;Loading pkgwithdata from&#39;</span><span class="p">,</span> <span class="n">pkgwithdata</span><span class="o">.</span><span class="n">__file__</span>
+
+<span class="c"># テンプレートの本文を表示する</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Template:&#39;</span>
+<span class="k">print</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s">&#39;pkgwithdata&#39;</span><span class="p">,</span> <span class="s">&#39;templates/fromzip.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルは、テンプレートファイルの名前を変更したファイルを含め、 <tt class="xref py py-mod docutils literal"><span class="pre">pkgwithdata</span></tt> パッケージのコピーと一緒に ZIP アーカイブを作成します。それから、テンプレートを読み込むために <a class="reference internal" href="#module-pkgutil" title="パッケージユーティリティ"><tt class="xref py py-mod docutils literal"><span class="pre">pkgutil</span></tt></a> の使用前にインポートパスへ ZIP アーカイブを追加して、そのテンプレートの内容を表示します。</p>
+<div class="highlight-python"><pre>$ python pkgutil_get_data_zip.py
+Loading pkgwithdata from pkgwithdatainzip.zip/pkgwithdata/__init__.pyc
+
+Template:
+&lt;!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN"&gt;
+&lt;html&gt; &lt;head&gt;
+&lt;title&gt;PyMOTW Template&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;h1&gt;Example Template&lt;/h1&gt;
+
+&lt;p&gt;This is a sample data file.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-pkgutil.html">pkgutil</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference external" href="http://pypi.python.org/pypi/virtualenv">virtualenv</a></dt>
+<dd>Ian Bicking の仮想環境スクリプト</dd>
+<dt><tt class="xref py py-mod docutils literal"><span class="pre">distutils</span></tt></dt>
+<dd>標準ライブラリのパッケージングツール</dd>
+<dt><a class="reference external" href="http://packages.python.org/distribute/">Distribute</a></dt>
+<dd>次世代パッケージングツール</dd>
+<dt><span class="target" id="index-1"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0302"><strong>PEP 302</strong></a></dt>
+<dd>インポートフック</dd>
+<dt><a class="reference internal" href="../zipfile/index.html#module-zipfile" title="Read and write ZIP archive files."><tt class="xref py py-mod docutils literal"><span class="pre">zipfile</span></tt></a></dt>
+<dd>インポートできる ZIP アーカイブを作成</dd>
+<dt><a class="reference internal" href="../zipimport/index.html#module-zipimport" title="ZIP アーカイブ内から Python コードを読み込む"><tt class="xref py py-mod docutils literal"><span class="pre">zipimport</span></tt></a></dt>
+<dd>ZIP アーカイブからパッケージをインポート</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../zipimport/index.html" title="zipimport – ZIP アーカイブ内から Python コードを読み込む"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../imp/index.html" title="imp – モジュールのインポート構造に対するインタフェース"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../importing.html" >インポートモジュール</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

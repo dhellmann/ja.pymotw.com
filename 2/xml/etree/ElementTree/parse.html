@@ -1,0 +1,837 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>XML ドキュメントを解析する - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../../../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../../../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../../../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../../../_static/jquery.js"></script>
+<script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../../../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../../../contents.html" />
+    <link rel="index" title="インデックス" href="../../../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../../../index.html" />
+    <link rel="up" title="xml.etree.ElementTree – XML 操作 API" href="index.html" />
+    <link rel="next" title="XML ドキュメントを作成する" href="create.html" />
+    <link rel="prev" title="xml.etree.ElementTree – XML 操作 API" href="index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../../../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../../../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">XML ドキュメントを解析する</a><ul>
+<li><a class="reference internal" href="#id1">ドキュメント全体を解析する</a></li>
+<li><a class="reference internal" href="#id2">解析されたツリーを横断する</a></li>
+<li><a class="reference internal" href="#id3">ドキュメントのノードを見つける</a></li>
+<li><a class="reference internal" href="#id4">解析されたノード属性</a></li>
+<li><a class="reference internal" href="#id5">解析中にイベントを監視する</a></li>
+<li><a class="reference internal" href="#id6">カスタムツリービルダーを作成する</a></li>
+<li><a class="reference internal" href="#id7">文字列を解析する</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../../../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="index.html" title="前の章へ"><strong>前:</strong> xml.etree.ElementTree &#8211; XML 操作 API</a><br/>
+          <a href="create.html" title="次の章へ"><strong>次:</strong> XML ドキュメントを作成する</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../../../_sources/xml/etree/ElementTree/parse.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="create.html" title="XML ドキュメントを作成する"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="xml.etree.ElementTree – XML 操作 API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../../../markup.html" >構造化マークアップ処理ツール</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">xml.etree.ElementTree &#8211; XML 操作 API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="xml">
+<span id="xml-etree-elementtree-parsing"></span><h1>XML ドキュメントを解析する<a class="headerlink" href="#xml" title="Permalink to this headline">¶</a></h1>
+<p>解析された XML ドキュメントは、XML ドキュメントのノードをネストさせる方法に基づいてツリー構造に関連付けた <tt class="xref py py-class docutils literal"><span class="pre">ElementTree</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt> オブジェクトによってインメモリで表されます。</p>
+<div class="section" id="id1">
+<h2>ドキュメント全体を解析する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>ドキュメント全体を <tt class="xref py py-func docutils literal"><span class="pre">parse()</span></tt> で解析すると <tt class="xref py py-class docutils literal"><span class="pre">ElementTree</span></tt> インスタンスが返されます。このツリーは入力ドキュメントの全てのデータを解釈して、ツリーのノードは適切な位置で検索や操作ができます。この柔軟性は解析されたドキュメントをちょっと扱うには簡単ですが、ドキュメント全体を一度に読み込む必要があるので、イベントベースの解析方法よりも普通はより多くのメモリを使用します。</p>
+<p><a class="reference external" href="http://www.opml.org/">OPML</a> アウトラインとして表されるポッドキャストのリストをサンプルに、シンプルなドキュメントでは、メモリ使用量は少なくて重要ではありません。</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;opml</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+	<span class="nt">&lt;title&gt;</span>My Podcasts<span class="nt">&lt;/title&gt;</span>
+	<span class="nt">&lt;dateCreated&gt;</span>Sun, 07 Mar 2010 15:53:26 GMT<span class="nt">&lt;/dateCreated&gt;</span>
+	<span class="nt">&lt;dateModified&gt;</span>Sun, 07 Mar 2010 15:53:26 GMT<span class="nt">&lt;/dateModified&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Science and Tech&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;APM: Future Tense&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://www.publicradio.org/columns/futuretense/podcast.xml&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://www.publicradio.org/columns/futuretense/&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Engines Of Our Ingenuity Podcast&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://www.npr.org/rss/podcast.php?id=510030&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://www.uh.edu/engines/engines.htm&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Science &amp;#38; the City&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://www.nyas.org/Podcasts/Atom.axd&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://www.nyas.org/WhatWeDo/SciencetheCity.aspx&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/outline&gt;</span>
+  <span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Books and Fiction&quot;</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Podiobooker&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://feeds.feedburner.com/podiobooks&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://www.podiobooks.com/blog&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;The Drabblecast&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://web.me.com/normsherman/Site/Podcast/rss.xml&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://web.me.com/normsherman/Site/Podcast/Podcast.html&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;tor.com / category / tordotstories&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://www.tor.com/rss/category/TorDotStories&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://www.tor.com/&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/outline&gt;</span>
+  <span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Computers and Programming&quot;</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;MacBreak Weekly&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://leo.am/podcasts/mbw&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://twit.tv/mbw&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;FLOSS Weekly&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://leo.am/podcasts/floss&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://twit.tv&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Core Intuition&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://www.coreint.org/podcast.xml&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://www.coreint.org/&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/outline&gt;</span>
+  <span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Python&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;PyCon Podcast&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://advocacy.python.org/podcasts/pycon.rss&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://advocacy.python.org/podcasts/&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;A Little Bit of Python&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://advocacy.python.org/podcasts/littlebit.rss&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://advocacy.python.org/podcasts/&quot;</span> <span class="nt">/&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Django Dose Everything Feed&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://djangodose.com/everything/feed/&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/outline&gt;</span>
+  <span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;Miscelaneous&quot;</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;outline</span> <span class="na">text=</span><span class="s">&quot;dhellmann&#39;s CastSampler Feed&quot;</span> <span class="na">type=</span><span class="s">&quot;rss&quot;</span> 
+             <span class="na">xmlUrl=</span><span class="s">&quot;http://www.castsampler.com/cast/feed/rss/dhellmann/&quot;</span> 
+             <span class="na">htmlUrl=</span><span class="s">&quot;http://www.castsampler.com/users/dhellmann/&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/outline&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/opml&gt;</span>
+</pre></div>
+</div>
+<p>ファイルを解析するには、オープンしたファイルハンドラを <tt class="xref py py-func docutils literal"><span class="pre">parse()</span></tt> へ渡します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">tree</span>
+</pre></div>
+</div>
+<p>これはデータを読み込み、XML を解析して、 <tt class="xref py py-class docutils literal"><span class="pre">ElementTree</span></tt> オブジェクトを返します。</p>
+<div class="highlight-python"><pre>$ python ElementTree_parse_opml.py
+&lt;xml.etree.ElementTree.ElementTree object at 0x10048efd0&gt;</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>解析されたツリーを横断する<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>順番に全ての子を参照するには、 <tt class="xref py py-class docutils literal"><span class="pre">ElementTree</span></tt> インスタンスを繰り返し処理するジェネレータを生成する <tt class="xref py py-func docutils literal"><span class="pre">iter()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">iter</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">node</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span>
+</pre></div>
+</div>
+<p>このサンプルはツリー全体と1つのタグを一緒に表示します。</p>
+<div class="highlight-python"><pre>$ python ElementTree_dump_opml.py
+opml {'version': '1.0'}
+head {}
+title {}
+dateCreated {}
+dateModified {}
+body {}
+outline {'text': 'Science and Tech'}
+outline {'xmlUrl': 'http://www.publicradio.org/columns/futuretense/podcast.xml', 'text': 'APM: Future Tense', 'type': 'rss', 'htmlUrl': 'http://www.publicradio.org/columns/futuretense/'}
+outline {'xmlUrl': 'http://www.npr.org/rss/podcast.php?id=510030', 'text': 'Engines Of Our Ingenuity Podcast', 'type': 'rss', 'htmlUrl': 'http://www.uh.edu/engines/engines.htm'}
+outline {'xmlUrl': 'http://www.nyas.org/Podcasts/Atom.axd', 'text': 'Science &amp; the City', 'type': 'rss', 'htmlUrl': 'http://www.nyas.org/WhatWeDo/SciencetheCity.aspx'}
+outline {'text': 'Books and Fiction'}
+outline {'xmlUrl': 'http://feeds.feedburner.com/podiobooks', 'text': 'Podiobooker', 'type': 'rss', 'htmlUrl': 'http://www.podiobooks.com/blog'}
+outline {'xmlUrl': 'http://web.me.com/normsherman/Site/Podcast/rss.xml', 'text': 'The Drabblecast', 'type': 'rss', 'htmlUrl': 'http://web.me.com/normsherman/Site/Podcast/Podcast.html'}
+outline {'xmlUrl': 'http://www.tor.com/rss/category/TorDotStories', 'text': 'tor.com / category / tordotstories', 'type': 'rss', 'htmlUrl': 'http://www.tor.com/'}
+outline {'text': 'Computers and Programming'}
+outline {'xmlUrl': 'http://leo.am/podcasts/mbw', 'text': 'MacBreak Weekly', 'type': 'rss', 'htmlUrl': 'http://twit.tv/mbw'}
+outline {'xmlUrl': 'http://leo.am/podcasts/floss', 'text': 'FLOSS Weekly', 'type': 'rss', 'htmlUrl': 'http://twit.tv'}
+outline {'xmlUrl': 'http://www.coreint.org/podcast.xml', 'text': 'Core Intuition', 'type': 'rss', 'htmlUrl': 'http://www.coreint.org/'}
+outline {'text': 'Python'}
+outline {'xmlUrl': 'http://advocacy.python.org/podcasts/pycon.rss', 'text': 'PyCon Podcast', 'type': 'rss', 'htmlUrl': 'http://advocacy.python.org/podcasts/'}
+outline {'xmlUrl': 'http://advocacy.python.org/podcasts/littlebit.rss', 'text': 'A Little Bit of Python', 'type': 'rss', 'htmlUrl': 'http://advocacy.python.org/podcasts/'}
+outline {'xmlUrl': 'http://djangodose.com/everything/feed/', 'text': 'Django Dose Everything Feed', 'type': 'rss'}
+outline {'text': 'Miscelaneous'}
+outline {'xmlUrl': 'http://www.castsampler.com/cast/feed/rss/dhellmann/', 'text': "dhellmann's CastSampler Feed", 'type': 'rss', 'htmlUrl': 'http://www.castsampler.com/users/dhellmann/'}</pre>
+</div>
+<p>podcast の名前のグループとフィード URL のみを表示するには、ヘッダセクションにある全てのデータを取り除き、 <tt class="docutils literal"><span class="pre">outline</span></tt> ノードのみを対象にして <em>text</em> と <em>xmlUrl</em> 属性を表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s">&#39;outline&#39;</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;xmlUrl&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">url</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;  </span><span class="si">%s</span><span class="s"> :: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">name</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">iter()</span></tt> へ渡す <tt class="docutils literal"><span class="pre">'outline'</span></tt> という引数は、 <tt class="docutils literal"><span class="pre">'outline'</span></tt> タグをもつノードのみに処理を絞り込みます。</p>
+<div class="highlight-python"><pre>$ python ElementTree_show_feed_urls.py
+Science and Tech
+  APM: Future Tense :: http://www.publicradio.org/columns/futuretense/podcast.xml
+  Engines Of Our Ingenuity Podcast :: http://www.npr.org/rss/podcast.php?id=510030
+  Science &amp; the City :: http://www.nyas.org/Podcasts/Atom.axd
+Books and Fiction
+  Podiobooker :: http://feeds.feedburner.com/podiobooks
+  The Drabblecast :: http://web.me.com/normsherman/Site/Podcast/rss.xml
+  tor.com / category / tordotstories :: http://www.tor.com/rss/category/TorDotStories
+Computers and Programming
+  MacBreak Weekly :: http://leo.am/podcasts/mbw
+  FLOSS Weekly :: http://leo.am/podcasts/floss
+  Core Intuition :: http://www.coreint.org/podcast.xml
+Python
+  PyCon Podcast :: http://advocacy.python.org/podcasts/pycon.rss
+  A Little Bit of Python :: http://advocacy.python.org/podcasts/littlebit.rss
+  Django Dose Everything Feed :: http://djangodose.com/everything/feed/
+Miscelaneous
+  dhellmann's CastSampler Feed :: http://www.castsampler.com/cast/feed/rss/dhellmann/</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>ドキュメントのノードを見つける<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>関連するノードをこのように探してツリー全体を横断するとエラーが発生し易くなります。前節のサンプルは、それぞれの <tt class="docutils literal"><span class="pre">outline</span></tt> ノードでグループ(<tt class="xref py py-attr docutils literal"><span class="pre">text</span></tt> 属性のみをもつノード)かどうかを決めるために調べなければなりませんでした。podcast のダウンローダアプリケーション向けに名前やグループをもたない podcast フィード URL のシンプルなリストを作成するには、そのロジックはもっと分かり易い検索特性でノードを探すために <tt class="xref py py-func docutils literal"><span class="pre">findall()</span></tt> を使用すると簡単になります。</p>
+<p>前節の変換サンプルの1番目の引数として、全ての <tt class="docutils literal"><span class="pre">outline</span></tt> ノードを探す <a class="reference external" href="http://www.w3.org/TR/xpath/">XPath</a> の引数を渡します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;.//outline&#39;</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;xmlUrl&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">url</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">url</span>
+</pre></div>
+</div>
+<p>このサンプルのロジックは、本質的には <tt class="xref py py-func docutils literal"><span class="pre">getiterator()</span></tt> を使用するサンプルと同じです。URL が見つからなかったときにグループ名を表示しないことを除けば、それでも URL の存在を確認する必要があります。</p>
+<div class="highlight-python"><pre>$ python ElementTree_find_feeds_by_tag.py
+http://www.publicradio.org/columns/futuretense/podcast.xml
+http://www.npr.org/rss/podcast.php?id=510030
+http://www.nyas.org/Podcasts/Atom.axd
+http://feeds.feedburner.com/podiobooks
+http://web.me.com/normsherman/Site/Podcast/rss.xml
+http://www.tor.com/rss/category/TorDotStories
+http://leo.am/podcasts/mbw
+http://leo.am/podcasts/floss
+http://www.coreint.org/podcast.xml
+http://advocacy.python.org/podcasts/pycon.rss
+http://advocacy.python.org/podcasts/littlebit.rss
+http://djangodose.com/everything/feed/
+http://www.castsampler.com/cast/feed/rss/dhellmann/</pre>
+</div>
+<p>別のサンプルとして、 <tt class="docutils literal"><span class="pre">outline</span></tt> ノードが深さ2でネストされている構造を利用できます。検索パスを <tt class="docutils literal"><span class="pre">.//outline/outline</span></tt> に変更すると、そのループ処理が <tt class="docutils literal"><span class="pre">outline</span></tt> ノードの深さ2のレベルのみを処理します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&#39;.//outline/outline&#39;</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;xmlUrl&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">url</span>
+</pre></div>
+</div>
+<p>入力である深さ2でネストされたこれらの全ての <tt class="docutils literal"><span class="pre">outline</span></tt> ノードは、podcast フィードを参照する <em>xmlURL</em> 属性をもっていると予想されるので、このサンプルのループ処理は <em>xmlURL</em> 属性の確認処理を省けます。</p>
+<div class="highlight-python"><pre>$ python ElementTree_find_feeds_by_structure.py
+http://www.publicradio.org/columns/futuretense/podcast.xml
+http://www.npr.org/rss/podcast.php?id=510030
+http://www.nyas.org/Podcasts/Atom.axd
+http://feeds.feedburner.com/podiobooks
+http://web.me.com/normsherman/Site/Podcast/rss.xml
+http://www.tor.com/rss/category/TorDotStories
+http://leo.am/podcasts/mbw
+http://leo.am/podcasts/floss
+http://www.coreint.org/podcast.xml
+http://advocacy.python.org/podcasts/pycon.rss
+http://advocacy.python.org/podcasts/littlebit.rss
+http://djangodose.com/everything/feed/
+http://www.castsampler.com/cast/feed/rss/dhellmann/</pre>
+</div>
+<p>このサンプルは存在するデータ構造を絞り込んでいますが、もしこの <tt class="docutils literal"><span class="pre">outline</span></tt> ノードがさらに深いツリーで再配置される場合は処理が停止します。</p>
+</div>
+<div class="section" id="id4">
+<h2>解析されたノード属性<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-func docutils literal"><span class="pre">findall()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">iter()</span></tt> が返す要素は <tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt> オブジェクトです。XML 構文解析ツリーのノードで表されます。それぞれの <tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt> は、XML から引き出したデータへアクセスする属性をもちます。これはやや不自然なサンプル入力ファイル <tt class="docutils literal"><span class="pre">data.xml</span></tt> で説明できます。</p>
+<div class="highlight-xml"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;top&gt;</span>
+  <span class="nt">&lt;child&gt;</span>This child contains text.<span class="nt">&lt;/child&gt;</span>
+  <span class="nt">&lt;child_with_tail&gt;</span>This child has regular text.<span class="nt">&lt;/child_with_tail&gt;</span>And &quot;tail&quot; text.
+  <span class="nt">&lt;with_attributes</span> <span class="na">name=</span><span class="s">&quot;value&quot;</span> <span class="na">foo=</span><span class="s">&quot;bar&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;entity_expansion</span> <span class="na">attribute=</span><span class="s">&quot;This &amp;#38; That&quot;</span><span class="nt">&gt;</span>That <span class="ni">&amp;#38;</span> This<span class="nt">&lt;/entity_expansion&gt;</span>
+<span class="nt">&lt;/top&gt;</span>
+</pre></div>
+</td></tr></table></div>
+<p>ノードの &#8220;属性&#8221; はディクショナリのように動作する <tt class="xref py py-attr docutils literal"><span class="pre">attrib</span></tt> プロパティを利用できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;data.xml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;./with_attributes&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">node</span><span class="o">.</span><span class="n">tag</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="k">print</span> <span class="s">&#39;  </span><span class="si">%-4s</span><span class="s"> = &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+<p>入力ファイル <tt class="docutils literal"><span class="pre">data.xml</span></tt> の5行目のノードは2つの属性 <tt class="xref py py-attr docutils literal"><span class="pre">name</span></tt> と <tt class="xref py py-attr docutils literal"><span class="pre">foo</span></tt> をもちます。</p>
+<div class="highlight-python"><pre>$ python ElementTree_node_attributes.py
+with_attributes
+  foo  = "bar"
+  name = "value"</pre>
+</div>
+<p>ノードのテキストコンテンツは、終了タグの後ろに続く &#8220;tail&#8221; のテキストと一緒に利用できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;data.xml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;./child&#39;</span><span class="p">,</span> <span class="s">&#39;./child_with_tail&#39;</span> <span class="p">]:</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">node</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">print</span> <span class="s">&#39;  child node text:&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span>
+    <span class="k">print</span> <span class="s">&#39;  and tail text  :&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">tail</span>
+</pre></div>
+</div>
+<p>3行目の <tt class="docutils literal"><span class="pre">child</span></tt> ノードテキストが埋め込まれています。そして、4行目のノードは(全てのスペースを含む) &#8220;tail&#8221; のテキストがあります。</p>
+<div class="highlight-python"><pre>$ python ElementTree_node_text.py
+child
+  child node text: This child contains text.
+  and tail text  :
+
+child_with_tail
+  child node text: This child has regular text.
+  and tail text  : And "tail" text.</pre>
+</div>
+<p>ドキュメントに埋め込まれた XML エンティティ参照は、便利なことに値が返される前に適切な文字に変換されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree</span> <span class="kn">import</span> <span class="n">ElementTree</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;data.xml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;entity_expansion&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">node</span><span class="o">.</span><span class="n">tag</span>
+<span class="k">print</span> <span class="s">&#39;  in attribute:&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;attribute&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;  in text     :&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span>
+</pre></div>
+</div>
+<p>自動変換は XML ドキュメントの特定文字を表す実装の詳細が無視されることを意味します。</p>
+<div class="highlight-python"><pre>$ python ElementTree_entity_references.py
+entity_expansion
+  in attribute: This &amp; That
+  in text     : That &amp; This</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>解析中にイベントを監視する<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>その他の API は、XML ドキュメントをイベントベースで処理するときに便利です。パーサは、タグをオープンするために <tt class="docutils literal"><span class="pre">start</span></tt> イベントを、タグをクローズするために <tt class="docutils literal"><span class="pre">end</span></tt> イベントを生成します。データは、イベントストリームを繰り返し処理する解析フェーズでそのドキュメントから展開されます。これはその後でドキュメント全体を扱う必要がない場合に便利です。そして、解析されたドキュメント全体をメモリに保持する必要がありません。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">iterparse()</span></tt> は、イベントの名前とイベントをトリガーにするノードを含むタプルを生成するイテレータを返します。イベントは次のいずれかを指定できます。</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">start</span></tt></dt>
+<dd>新しいタグが検出されます。タグの閉じ括弧は処理済みですが、コンテンツではありません。</dd>
+<dt><tt class="docutils literal"><span class="pre">end</span></tt></dt>
+<dd>終了タグの閉じ括弧が処理されます。全ての子は既に処理済みです。</dd>
+<dt><tt class="docutils literal"><span class="pre">start-ns</span></tt></dt>
+<dd>名前空間の定義を開始します。</dd>
+<dt><tt class="docutils literal"><span class="pre">end-ns</span></tt></dt>
+<dd>名前空間の定義を終了します。</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">iterparse</span>
+
+<span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">prefix_width</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">prefix_dots</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span> <span class="o">*</span> <span class="n">prefix_width</span>
+<span class="n">line_template</span> <span class="o">=</span> <span class="s">&#39;{prefix:&lt;0.{prefix_len}}{event:&lt;8}{suffix:&lt;{suffix_len}} {node.tag:&lt;12} {node_id}&#39;</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="ow">in</span> <span class="n">iterparse</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;start&#39;</span><span class="p">,</span> <span class="s">&#39;end&#39;</span><span class="p">,</span> <span class="s">&#39;start-ns&#39;</span><span class="p">,</span> <span class="s">&#39;end-ns&#39;</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="s">&#39;end&#39;</span><span class="p">:</span>
+        <span class="n">depth</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="n">prefix_len</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">*</span> <span class="mi">2</span>
+    
+    <span class="k">print</span> <span class="n">line_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix_dots</span><span class="p">,</span>
+                               <span class="n">prefix_len</span><span class="o">=</span><span class="n">prefix_len</span><span class="p">,</span>
+                               <span class="n">suffix</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                               <span class="n">suffix_len</span><span class="o">=</span><span class="p">(</span><span class="n">prefix_width</span> <span class="o">-</span> <span class="n">prefix_len</span><span class="p">),</span>
+                               <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                               <span class="n">node_id</span><span class="o">=</span><span class="nb">id</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
+                               <span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+                               <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="s">&#39;start&#39;</span><span class="p">:</span>
+        <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>デフォルトでは <tt class="docutils literal"><span class="pre">end</span></tt> イベントのみが生成されます。他のイベントを参照するには、このサンプルのように必要なイベント名のリストを <tt class="xref py py-func docutils literal"><span class="pre">iterparse()</span></tt> へ渡してください。</p>
+<div class="highlight-python"><pre>$ python ElementTree_show_all_events.py
+start            opml         4299790224
+..start          head         4299790288
+....start        title        4299790352
+....end          title        4299790352
+....start        dateCreated  4299790544
+....end          dateCreated  4299790544
+....start        dateModified 4299790736
+....end          dateModified 4299790736
+..end            head         4299790288
+..start          body         4299791120
+....start        outline      4299791184
+......start      outline      4299791248
+......end        outline      4299791248
+......start      outline      4299791312
+......end        outline      4299791312
+......start      outline      4299791376
+......end        outline      4299791376
+....end          outline      4299791184
+....start        outline      4299791440
+......start      outline      4299791568
+......end        outline      4299791568
+......start      outline      4299791504
+......end        outline      4299791504
+......start      outline      4299791632
+......end        outline      4299791632
+....end          outline      4299791440
+....start        outline      4299791696
+......start      outline      4299791824
+......end        outline      4299791824
+......start      outline      4299792016
+......end        outline      4299792016
+......start      outline      4299791952
+......end        outline      4299791952
+....end          outline      4299791696
+....start        outline      4299792144
+......start      outline      4299792208
+......end        outline      4299792208
+......start      outline      4299792272
+......end        outline      4299792272
+......start      outline      4299800656
+......end        outline      4299800656
+....end          outline      4299792144
+....start        outline      4299800784
+......start      outline      4299800912
+......end        outline      4299800912
+....end          outline      4299800784
+..end            body         4299791120
+end              opml         4299790224</pre>
+</div>
+<p>イベントスタイルの処理は、XML の入力から他のフォーマットに変換するといったより自然な操作です。このテクニックは、前節のサンプルで podcast のリストを XML ファイルから CSV ファイルに変換するために使用できます。変換された CSV ファイルはスプレッドシートやデータベースアプリケーションで読み込めます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">iterparse</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONNUMERIC</span><span class="p">)</span>
+
+<span class="n">group_name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="ow">in</span> <span class="n">iterparse</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;start&#39;</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">tag</span> <span class="o">!=</span> <span class="s">&#39;outline&#39;</span><span class="p">:</span>
+        <span class="c"># outline 以外を無視する</span>
+        <span class="k">continue</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;xmlUrl&#39;</span><span class="p">):</span>
+        <span class="c"># カレントグループを覚える</span>
+        <span class="n">group_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># podcast エントリを出力する</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span> <span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">],</span>
+                          <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s">&#39;xmlUrl&#39;</span><span class="p">],</span>
+                          <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;htmlUrl&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">),</span>
+                          <span class="p">)</span>
+                         <span class="p">)</span>
+</pre></div>
+</div>
+<p>この変換プログラムは、解析された入力ファイル全体をメモリに保持する必要がありません。入力ファイルからそれぞれのノードで検出されたときに処理するので効率が良くなります。</p>
+<div class="highlight-python"><pre>$ python ElementTree_write_podcast_csv.py
+"Science and Tech","APM: Future Tense","http://www.publicradio.org/columns/futuretense/podcast.xml","http://www.publicradio.org/columns/futuretense/"
+"Science and Tech","Engines Of Our Ingenuity Podcast","http://www.npr.org/rss/podcast.php?id=510030","http://www.uh.edu/engines/engines.htm"
+"Science and Tech","Science &amp; the City","http://www.nyas.org/Podcasts/Atom.axd","http://www.nyas.org/WhatWeDo/SciencetheCity.aspx"
+"Books and Fiction","Podiobooker","http://feeds.feedburner.com/podiobooks","http://www.podiobooks.com/blog"
+"Books and Fiction","The Drabblecast","http://web.me.com/normsherman/Site/Podcast/rss.xml","http://web.me.com/normsherman/Site/Podcast/Podcast.html"
+"Books and Fiction","tor.com / category / tordotstories","http://www.tor.com/rss/category/TorDotStories","http://www.tor.com/"
+"Computers and Programming","MacBreak Weekly","http://leo.am/podcasts/mbw","http://twit.tv/mbw"
+"Computers and Programming","FLOSS Weekly","http://leo.am/podcasts/floss","http://twit.tv"
+"Computers and Programming","Core Intuition","http://www.coreint.org/podcast.xml","http://www.coreint.org/"
+"Python","PyCon Podcast","http://advocacy.python.org/podcasts/pycon.rss","http://advocacy.python.org/podcasts/"
+"Python","A Little Bit of Python","http://advocacy.python.org/podcasts/littlebit.rss","http://advocacy.python.org/podcasts/"
+"Python","Django Dose Everything Feed","http://djangodose.com/everything/feed/",""
+"Miscelaneous","dhellmann's CastSampler Feed","http://www.castsampler.com/cast/feed/rss/dhellmann/","http://www.castsampler.com/users/dhellmann/"</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>カスタムツリービルダーを作成する<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>構文解析のイベントを処理する潜在的にもっと効率の良い方法は、標準のツリービルダーをカスタムして置き換えることです。 <tt class="xref py py-class docutils literal"><span class="pre">ElementTree</span></tt> パーサーは XML を処理するのに <tt class="xref py py-class docutils literal"><span class="pre">XMLTreeBuilder</span></tt> を使用して、その結果を保存するために対象クラスのメソッドを呼び出します。通常の出力は、デフォルトの <tt class="xref py py-class docutils literal"><span class="pre">TreeBuilder</span></tt> クラスが作成する <tt class="xref py py-class docutils literal"><span class="pre">ElementTree</span></tt> インスタンスです。 <tt class="xref py py-class docutils literal"><span class="pre">TreeBuilder</span></tt> を別のクラスに置き換えることで、オーバーヘッドを省いて、 <tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt> ノードがインスタンス化される前にイベントを受け取れます。</p>
+<p>前のセクションの XML-to-CSV コンバータはツリービルダーに変換できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">XMLTreeBuilder</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">class</span> <span class="nc">PodcastListToCSV</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputFile</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">outputFile</span><span class="p">,</span> <span class="n">quoting</span><span class="o">=</span><span class="n">csv</span><span class="o">.</span><span class="n">QUOTE_NONNUMERIC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">attrib</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">!=</span> <span class="s">&#39;outline&#39;</span><span class="p">:</span>
+            <span class="c"># outline 以外を無視する</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;xmlUrl&#39;</span><span class="p">):</span>
+            <span class="c"># カレントグループを覚える</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group_name</span> <span class="o">=</span> <span class="n">attrib</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># podcast エントリを出力する</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_name</span><span class="p">,</span> <span class="n">attrib</span><span class="p">[</span><span class="s">&#39;text&#39;</span><span class="p">],</span>
+                                   <span class="n">attrib</span><span class="p">[</span><span class="s">&#39;xmlUrl&#39;</span><span class="p">],</span>
+                                   <span class="n">attrib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;htmlUrl&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">),</span>
+                                   <span class="p">)</span>
+                                  <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+        <span class="c"># 閉じタグを無視する</span>
+        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c"># ノード内部のデータを無視する</span>
+        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># 特別な処理は何もしない</span>
+        <span class="k">return</span>
+
+
+<span class="n">target</span> <span class="o">=</span> <span class="n">PodcastListToCSV</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">XMLTreeBuilder</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;podcasts.opml&#39;</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">PodcastListToCSV</span></tt> は <tt class="xref py py-class docutils literal"><span class="pre">TreeBuilder</span></tt> プロトコルを実装します。新たな XML タグが検出されると、タグ名と属性をもつ <tt class="xref py py-func docutils literal"><span class="pre">start()</span></tt> が呼び出されます。終了タグが現れるときにその名前で <tt class="xref py py-func docutils literal"><span class="pre">end()</span></tt> が呼ばれます。その間、ノードがコンテンツをもつときに <tt class="xref py py-func docutils literal"><span class="pre">data()</span></tt> が呼ばれます(ツリービルダーが &#8220;カレント&#8221; ノードを保持すると予想される)。全ての入力が処理されると <tt class="xref py py-func docutils literal"><span class="pre">close()</span></tt> が呼ばれます。この処理は <tt class="xref py py-class docutils literal"><span class="pre">XMLTreeBuilder</span></tt> のユーザへ返される値を返します。</p>
+<div class="highlight-python"><pre>$ python ElementTree_podcast_csv_treebuilder.py
+"Science and Tech","APM: Future Tense","http://www.publicradio.org/columns/futuretense/podcast.xml","http://www.publicradio.org/columns/futuretense/"
+"Science and Tech","Engines Of Our Ingenuity Podcast","http://www.npr.org/rss/podcast.php?id=510030","http://www.uh.edu/engines/engines.htm"
+"Science and Tech","Science &amp; the City","http://www.nyas.org/Podcasts/Atom.axd","http://www.nyas.org/WhatWeDo/SciencetheCity.aspx"
+"Books and Fiction","Podiobooker","http://feeds.feedburner.com/podiobooks","http://www.podiobooks.com/blog"
+"Books and Fiction","The Drabblecast","http://web.me.com/normsherman/Site/Podcast/rss.xml","http://web.me.com/normsherman/Site/Podcast/Podcast.html"
+"Books and Fiction","tor.com / category / tordotstories","http://www.tor.com/rss/category/TorDotStories","http://www.tor.com/"
+"Computers and Programming","MacBreak Weekly","http://leo.am/podcasts/mbw","http://twit.tv/mbw"
+"Computers and Programming","FLOSS Weekly","http://leo.am/podcasts/floss","http://twit.tv"
+"Computers and Programming","Core Intuition","http://www.coreint.org/podcast.xml","http://www.coreint.org/"
+"Python","PyCon Podcast","http://advocacy.python.org/podcasts/pycon.rss","http://advocacy.python.org/podcasts/"
+"Python","A Little Bit of Python","http://advocacy.python.org/podcasts/littlebit.rss","http://advocacy.python.org/podcasts/"
+"Python","Django Dose Everything Feed","http://djangodose.com/everything/feed/",""
+"Miscelaneous","dhellmann's CastSampler Feed","http://www.castsampler.com/cast/feed/rss/dhellmann/","http://www.castsampler.com/users/dhellmann/"</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>文字列を解析する<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>小さな XML テキスト、特にプログラムのソースに埋め込まれる可能性がある文字列リテラルを扱うには、 <tt class="xref py py-func docutils literal"><span class="pre">XML()</span></tt> と1つの引数として解析される XML に含まれる文字列を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">XML</span>
+
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">XML</span><span class="p">(</span><span class="s">&#39;&#39;&#39;</span>
+<span class="s">&lt;root&gt;</span>
+<span class="s">  &lt;group&gt;</span>
+<span class="s">    &lt;child id=&quot;a&quot;&gt;This is child &quot;a&quot;.&lt;/child&gt;</span>
+<span class="s">    &lt;child id=&quot;b&quot;&gt;This is child &quot;b&quot;.&lt;/child&gt;</span>
+<span class="s">  &lt;/group&gt;</span>
+<span class="s">  &lt;group&gt;</span>
+<span class="s">    &lt;child id=&quot;c&quot;&gt;This is child &quot;c&quot;.&lt;/child&gt;</span>
+<span class="s">  &lt;/group&gt;</span>
+<span class="s">&lt;/root&gt;</span>
+<span class="s">&#39;&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;parsed =&#39;</span><span class="p">,</span> <span class="n">parsed</span>
+
+<span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">parsed</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;  text: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span>
+    <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">elem</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;  tail: &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">elem</span><span class="o">.</span><span class="n">tail</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">print</span> <span class="s">&#39;  </span><span class="si">%-4s</span><span class="s"> = &quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">print</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">parse()</span></tt> とは違って、返り値は <tt class="xref py py-class docutils literal"><span class="pre">ElementTree</span></tt> ではなく <tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt> インスタンスになることに注意してください。 <tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt> は直接イテレータプロトコルをサポートするので <tt class="xref py py-func docutils literal"><span class="pre">getiterator()</span></tt> を呼び出す必要はありません。</p>
+<div class="highlight-python"><pre>$ python ElementTree_XML.py
+parsed = &lt;Element 'root' at 0x100499710&gt;
+group
+
+group</pre>
+</div>
+<p>目的のユニークなノードを識別する <tt class="xref py py-attr docutils literal"><span class="pre">id</span></tt> 属性をもつ構造化された XML 向けに、解析結果に対してアクセスするには <tt class="xref py py-func docutils literal"><span class="pre">XMLID()</span></tt> が便利な方法です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">XMLID</span>
+
+<span class="n">tree</span><span class="p">,</span> <span class="n">id_map</span> <span class="o">=</span> <span class="n">XMLID</span><span class="p">(</span><span class="s">&#39;&#39;&#39;</span>
+<span class="s">&lt;root&gt;</span>
+<span class="s">  &lt;group&gt;</span>
+<span class="s">    &lt;child id=&quot;a&quot;&gt;This is child &quot;a&quot;.&lt;/child&gt;</span>
+<span class="s">    &lt;child id=&quot;b&quot;&gt;This is child &quot;b&quot;.&lt;/child&gt;</span>
+<span class="s">  &lt;/group&gt;</span>
+<span class="s">  &lt;group&gt;</span>
+<span class="s">    &lt;child id=&quot;c&quot;&gt;This is child &quot;c&quot;.&lt;/child&gt;</span>
+<span class="s">  &lt;/group&gt;</span>
+<span class="s">&lt;/root&gt;</span>
+<span class="s">&#39;&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">id_map</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">XMLID()</span></tt> は、 <tt class="xref py py-class docutils literal"><span class="pre">Element</span></tt> オブジェクトとして解析されたツリーを返します。それと一緒に <tt class="xref py py-attr docutils literal"><span class="pre">id</span></tt> 属性の文字列をツリーの個別ノードにマッピングするディクショナリも返します。</p>
+<div class="highlight-python"><pre>$ python ElementTree_XMLID.py
+a = &lt;Element 'child' at 0x100499850&gt;
+b = &lt;Element 'child' at 0x100499910&gt;
+c = &lt;Element 'child' at 0x100499b50&gt;</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt>Outline Processor Markup Language, <a class="reference external" href="http://www.opml.org/">OPML</a></dt>
+<dd>Dave Winer の OPML 仕様とドキュメント</dd>
+<dt>XML Path Language, <a class="reference external" href="http://www.w3.org/TR/xpath/">XPath</a></dt>
+<dd>XML ドキュメントの一部を識別するための構文</dd>
+<dt><a class="reference external" href="http://effbot.org/zone/element-xpath.htm">XPath Support in ElementTree</a></dt>
+<dd>Fredrick Lundh の ElementTree のオリジナルドキュメントの一部</dd>
+<dt><a class="reference internal" href="../../../csv/index.html#module-csv" title="カンマ区切りのファイルを読み書きする"><tt class="xref py py-mod docutils literal"><span class="pre">csv</span></tt></a></dt>
+<dd>カンマ区切りのファイルを読み書きする</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="create.html" title="XML ドキュメントを作成する"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="xml.etree.ElementTree – XML 操作 API"
+             >previous</a> |</li>
+        <li><a href="../../../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../../../markup.html" >構造化マークアップ処理ツール</a> &raquo;</li>
+          <li><a href="index.html" >xml.etree.ElementTree &#8211; XML 操作 API</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

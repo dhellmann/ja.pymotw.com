@@ -1,0 +1,383 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>shelve &#8211; 任意の Python オブジェクトの永続ストレージ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データの永続化" href="../persistence.html" />
+    <link rel="next" title="whichdb – DBM スタイルのデータベースフォーマットを確認する" href="../whichdb/index.html" />
+    <link rel="prev" title="pickle と cPickle – Python オブジェクトシリアライゼーション" href="../pickle/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">shelve &#8211; 任意の Python オブジェクトの永続ストレージ</a><ul>
+<li><a class="reference internal" href="#id1">新たなシェルフを作成する</a></li>
+<li><a class="reference internal" href="#write-back">ライトバック(Write-back)</a></li>
+<li><a class="reference internal" href="#shelve-shelf-types">特別なシェルフ</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../pickle/index.html" title="前の章へ"><strong>前:</strong> pickle と cPickle &#8211; Python オブジェクトシリアライゼーション</a><br/>
+          <a href="../whichdb/index.html" title="次の章へ"><strong>次:</strong> whichdb &#8211; DBM スタイルのデータベースフォーマットを確認する</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/shelve/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../whichdb/index.html" title="whichdb – DBM スタイルのデータベースフォーマットを確認する"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../pickle/index.html" title="pickle と cPickle – Python オブジェクトシリアライゼーション"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../persistence.html" accesskey="U">データの永続化</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="shelve-python">
+<h1>shelve &#8211; 任意の Python オブジェクトの永続ストレージ<a class="headerlink" href="#shelve-python" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-shelve"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">shelve モジュールは、ディクショナリのような API で pickle 化できる任意の Python オブジェクトの永続ストレージを実装する</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> モジュールは、関係データベースだと行き過ぎなときに Python オブジェクトの簡単な永続ストレージの選択肢として使用できます。シェルフはちょうどディクショナリのようにキーでアクセスできます。その値は pickle 化されて <a class="reference internal" href="../anydbm/index.html#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a> が作成、管理するデータベースへ書き込まれます。</p>
+<div class="section" id="id1">
+<h2>新たなシェルフを作成する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> を使用する最も簡単な方法は <tt class="xref py py-class docutils literal"><span class="pre">DbfilenameShelf</span></tt> を経由することです。それはデータを格納するために <a class="reference internal" href="../anydbm/index.html#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a> を使用します。そのクラスを直接使用するか、単純に <tt class="xref py py-func docutils literal"><span class="pre">shelve.open()</span></tt> を呼び出します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shelve</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;test_shelf.db&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;int&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s">&#39;float&#39;</span><span class="p">:</span><span class="mf">9.5</span><span class="p">,</span> <span class="s">&#39;string&#39;</span><span class="p">:</span><span class="s">&#39;Sample data&#39;</span> <span class="p">}</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>再度データへアクセスするには、シェルフをオープンしてディクショナリのように使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shelve</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;test_shelf.db&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">existing</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">existing</span>
+</pre></div>
+</div>
+<p>両方のサンプルスクリプトを実行すると次のようになります。</p>
+<div class="highlight-python"><pre>$ python shelve_create.py
+$ python shelve_existing.py
+{'int': 10, 'float': 9.5, 'string': 'Sample data'}</pre>
+</div>
+<p><a class="reference internal" href="../dbm/index.html#module-dbm" title="シンプルなデータベースインタフェース"><tt class="xref py py-mod docutils literal"><span class="pre">dbm</span></tt></a> モジュールは、複数のアプリケーションから同時に同じデータベースへ書き込むのをサポートしません。クライアントアプリケーションがシェルフを変更しないなら、そのデータベースを読み込み専用でオープンするようにシェルフへ伝えることができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shelve</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;test_shelf.db&#39;</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">existing</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">existing</span>
+</pre></div>
+</div>
+<p>読み込み専用でオープンされたデータベースを変更しようとする場合、アクセスエラー例外が発生します。その例外の種類は、データベースの作成時に <a class="reference internal" href="../anydbm/index.html#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a> が選択したデータベースモジュールで変わります。</p>
+</div>
+<div class="section" id="write-back">
+<h2>ライトバック(Write-back)<a class="headerlink" href="#write-back" title="Permalink to this headline">¶</a></h2>
+<p>シェルフはデフォルトで volatile オブジェクトの変更を保存しません。シェルフに格納された要素のコンテンツを変更するなら、再度その要素を格納して明示的にそのシェルフを更新しなければなりません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shelve</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;test_shelf.db&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span>
+    <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">][</span><span class="s">&#39;new_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;this was not here before&#39;</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;test_shelf.db&#39;</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このサンプルでは、&#8217;key1&#8217; のディクショナリは再度、格納されていません。そのため、シェルフを再オープンするとその変更が保存されていません。</p>
+<div class="highlight-python"><pre>$ python shelve_create.py
+$ python shelve_withoutwriteback.py
+{'int': 10, 'float': 9.5, 'string': 'Sample data'}
+{'int': 10, 'float': 9.5, 'string': 'Sample data'}</pre>
+</div>
+<p>シェルフに格納された volatile オブジェクトに対する変更を自動的に捕捉するには、ライトバック(writeback)を有効にしてシェルフをオープンします。ライトバックフラグは、インメモリキャッシュでデータベースから取り出した全てのオブジェクトをシェルフに覚えさせます。また、それぞれのキャッシュオブジェクトは、シェルフがクローズされるときにデータベースへ書き込まれます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shelve</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;test_shelf.db&#39;</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span>
+    <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">][</span><span class="s">&#39;new_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;this was not here before&#39;</span>
+    <span class="k">print</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">shelve</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;test_shelf.db&#39;</span><span class="p">,</span> <span class="n">writeback</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">s</span><span class="p">[</span><span class="s">&#39;key1&#39;</span><span class="p">]</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>これはプログラマによる人為的なエラーを減少させて、より透過的にオブジェクトを永続化させますが、ライトバックモードを使用することが全ての状況で望まれるわけではないかもしれません。キャッシュは、シェルフがオープンされている間、余分なメモリを消費します。そして、クローズされるときにキャッシュされたオブジェクトをデータベースへ書き込むために余分な時間がかかります。キャッシュされたオブジェクトが変更されたかを伝える方法がないので、そのキャッシュは全て書き込まれます。アプリケーションのデータが書き込みよりも読み込みが多い場合、ライトバックは想像以上にオーバーヘッドになるかもしれません。</p>
+<div class="highlight-python"><pre>$ python shelve_create.py
+$ python shelve_writeback.py
+{'int': 10, 'float': 9.5, 'string': 'Sample data'}
+{'int': 10, 'new_value': 'this was not here before', 'float': 9.5, 'string': 'Sample data'}
+{'int': 10, 'new_value': 'this was not here before', 'float': 9.5, 'string': 'Sample data'}</pre>
+</div>
+</div>
+<div class="section" id="shelve-shelf-types">
+<span id="id2"></span><h2>特別なシェルフ<a class="headerlink" href="#shelve-shelf-types" title="Permalink to this headline">¶</a></h2>
+<p>前節で紹介した全てのサンプルはデフォルトのシェルフの実装を使用します。シェルフ実装のデフォルトではなく <tt class="xref py py-func docutils literal"><span class="pre">shelve.open()</span></tt> を使用するのは一般的な使用方法です。特にデータを格納するために使用されるデータベースを気にしない場合です。そうは言っても、気にするときもあります。そういった状況では <tt class="xref py py-class docutils literal"><span class="pre">DbfilenameShelf</span></tt> か <tt class="xref py py-class docutils literal"><span class="pre">BsdDbShelf</span></tt> を直接的に使用したり、もしくはカスタム目的で <tt class="xref py py-class docutils literal"><span class="pre">Shelf</span></tt> をサブクラス化した方が良いかもしれません。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-shelve.html">shelve</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../anydbm/index.html#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a></dt>
+<dd><a class="reference internal" href="../anydbm/index.html#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a> モジュール</dd>
+<dt><a class="reference external" href="http://www.doughellmann.com/projects/feedcache/">feedcache</a></dt>
+<dd>デフォルトストレージオプションとして <a class="reference internal" href="#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> を使用する feedcache モジュール</dd>
+<dt><a class="reference external" href="http://pypi.python.org/pypi/shove/">shove</a></dt>
+<dd>バックエンドフォーマットでよく似た API を実装する shove モジュール</dd>
+<dt><a class="reference internal" href="../articles/data_persistence.html#article-data-persistence"><em>データの永続化と変換</em></a></dt>
+<dd>標準モジュールでデータを格納するその他の仕組み</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../whichdb/index.html" title="whichdb – DBM スタイルのデータベースフォーマットを確認する"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../pickle/index.html" title="pickle と cPickle – Python オブジェクトシリアライゼーション"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../persistence.html" >データの永続化</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

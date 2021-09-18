@@ -1,0 +1,539 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>contextlib &#8211; コンテキストマネージャユーティリティ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="Python ランタイムサービス" href="../runtime_services.html" />
+    <link rel="next" title="gc – Garbage Collector" href="../gc/index.html" />
+    <link rel="prev" title="atexit – プログラムの終了時に関数を呼び出す" href="../atexit/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">contextlib &#8211; コンテキストマネージャユーティリティ</a><ul>
+<li><a class="reference internal" href="#api">コンテキストマネージャ API</a></li>
+<li><a class="reference internal" href="#id1">ジェネレータからコンテキストマネージャへ</a></li>
+<li><a class="reference internal" href="#id2">ネストされたコンテキスト</a></li>
+<li><a class="reference internal" href="#id3">オープンハンドラをクローズする</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../atexit/index.html" title="前の章へ"><strong>前:</strong> atexit &#8211; プログラムの終了時に関数を呼び出す</a><br/>
+          <a href="../gc/index.html" title="次の章へ"><strong>次:</strong> gc &#8211; Garbage Collector</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/contextlib/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../gc/index.html" title="gc – Garbage Collector"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../atexit/index.html" title="atexit – プログラムの終了時に関数を呼び出す"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../runtime_services.html" accesskey="U">Python ランタイムサービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="contextlib">
+<h1>contextlib &#8211; コンテキストマネージャユーティリティ<a class="headerlink" href="#contextlib" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-contextlib"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">コンテキストマネージャを作成して操作するためのユーティリティ</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.5</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-contextlib" title="コンテキストマネージャの操作ユーティリティ"><tt class="xref py py-mod docutils literal"><span class="pre">contextlib</span></tt></a> モジュールはコンテキストマネージャと <strong class="command">with</strong> 文を連携させるユーティリティを提供します。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">コンテキストマネージャは <tt class="docutils literal"><span class="pre">with</span></tt> 文と関係があります。 <strong class="command">with</strong> 文は Python 2.6 から公式対応になるので Python 2.5 で contextlib を使用するには from <tt class="xref py py-mod docutils literal"><span class="pre">__future__</span></tt> からインポートする必要があります。</p>
+</div>
+<div class="section" id="api">
+<h2>コンテキストマネージャ API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p><em>コンテキストマネージャ</em> はコードブロック内のリソース管理に責任を持ちます。それはブロックに入るときにそのリソースが生成されて、ブロックから出るときにクリーンアップするような場合です。例えば、コンテキストマネージャの API をサポートするファイルは、そのファイルが全て読み込み、または書き込みされた後でクローズされることを保証するのが簡単になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;/tmp/pymotw.txt&#39;</span><span class="p">,</span> <span class="s">&#39;wt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;contents go here&#39;</span><span class="p">)</span>
+<span class="c"># ファイルは自動的にクローズされる</span>
+</pre></div>
+</div>
+<p>コンテキストマネージャは <strong class="command">with</strong> 文により利用可能となり、その API は2つのメソッドを実行します。 <tt class="xref py py-func docutils literal"><span class="pre">__enter__()</span></tt> メソッドは実行フローが <strong class="command">with</strong> 内部のコードブロックに入るときに実行されます。そしてコンテキスト内で使用されるオブジェクトを返します。実行フローが <strong class="command">with</strong> ブロックを出るときにコンテキストマネージャの <tt class="xref py py-func docutils literal"><span class="pre">__exit__()</span></tt> メソッドが使用されたリソースをクリーンアップするために呼ばれます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Context</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__init__()&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__enter__()&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__exit__()&#39;</span>
+        
+<span class="k">with</span> <span class="n">Context</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;Doing work in the context&#39;</span>
+</pre></div>
+</div>
+<p>コンテキストマネージャと <strong class="command">with</strong> 文を組み合わせることは <tt class="docutils literal"><span class="pre">try:finally</span></tt> ブロックをよりも小さなコーディングで済みます。それはエラーが発生したとしても、コンテキストマネージャの <tt class="xref py py-func docutils literal"><span class="pre">__exit__()</span></tt> メソッドは常に呼び出されるからです。</p>
+<div class="highlight-python"><pre>$ python contextlib_api.py
+__init__()
+__enter__()
+Doing work in the context
+__exit__()</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">__enter__()</span></tt> は <strong class="command">with</strong> 文の <strong class="command">as</strong> で指定された名前に関連付けられるオブジェクトを返します。このサンプルでは、 <tt class="xref py py-class docutils literal"><span class="pre">Context</span></tt> はオープンされたコンテキストを使用するオブジェクトを返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">WithinContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;WithinContext.__init__(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">context</span>
+        
+    <span class="k">def</span> <span class="nf">do_something</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;WithinContext.do_something()&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;WithinContext.__del__&#39;</span>
+        
+
+<span class="k">class</span> <span class="nc">Context</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;Context.__init__()&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;Context.__enter__()&#39;</span>
+        <span class="k">return</span> <span class="n">WithinContext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;Context.__exit__()&#39;</span>
+    
+<span class="k">with</span> <span class="n">Context</span><span class="p">()</span> <span class="k">as</span> <span class="n">c</span><span class="p">:</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">do_something</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>少し混乱するかもしれませんが、変数 <tt class="xref py py-data docutils literal"><span class="pre">c</span></tt> に関連付けられた値は <tt class="xref py py-func docutils literal"><span class="pre">__enter__()</span></tt> が返すオブジェクトで <strong class="command">with</strong> 文で作成された <tt class="xref py py-class docutils literal"><span class="pre">Context</span></tt> インスタンスでは <em>ありません</em> 。</p>
+<div class="highlight-python"><pre>$ python contextlib_api_other_object.py
+Context.__init__()
+Context.__enter__()
+WithinContext.__init__(&lt;__main__.Context object at 0x1004606d0&gt;)
+WithinContext.do_something()
+Context.__exit__()
+WithinContext.__del__</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">__exit__()</span></tt> メソッドは <strong class="command">with</strong> ブロック内で発生した例外の詳細を引数により受け取ります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Context</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle_error</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__init__(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">handle_error</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span> <span class="o">=</span> <span class="n">handle_error</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__enter__()&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__exit__(</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span>
+        
+<span class="k">with</span> <span class="n">Context</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;error message handled&#39;</span><span class="p">)</span>
+
+<span class="k">print</span>
+
+<span class="k">with</span> <span class="n">Context</span><span class="p">(</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;error message propagated&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>コンテキストマネージャが例外を扱う場合、その例外を伝搬する必要がないなら <tt class="xref py py-func docutils literal"><span class="pre">__exit__()</span></tt> は True を返します。False を返すことは <tt class="xref py py-func docutils literal"><span class="pre">__exit__()</span></tt> が返された後でその例外を再発生させることになります。</p>
+<div class="highlight-python"><pre>$ python contextlib_api_error.py
+__init__(True)
+__enter__()
+__exit__(&lt;type 'exceptions.RuntimeError'&gt;, error message handled, &lt;traceback object at 0x100467560&gt;)
+
+__init__(False)
+__enter__()
+__exit__(&lt;type 'exceptions.RuntimeError'&gt;, error message propagated, &lt;traceback object at 0x1004675f0&gt;)
+Traceback (most recent call last):
+  File "contextlib_api_error.py", line 30, in &lt;module&gt;
+    raise RuntimeError('error message propagated')
+RuntimeError: error message propagated</pre>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>ジェネレータからコンテキストマネージャへ<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>伝統的な手法であるコンテキストマネージャを作成することは難しいことではありません。コンテキストマネージャは <tt class="xref py py-func docutils literal"><span class="pre">__enter__()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">__exit__()</span></tt> メソッドを持つクラスを書くことで作成できます。しかし、あなたが些細なコンテキストを管理したいだけならちょっと面倒になるときがあります。そういった状況では、ジェネレータの機能をコンテキストマネージャの中に転用して <tt class="xref py py-func docutils literal"><span class="pre">contextmanager()</span></tt> デコレータを使用することができます。</p>
+<p>ジェネレータはコンテキストを初期化すべきで yield が1回呼び出されてからコンテキストをクリーンアップします。もし yield された値があれば with 文の as で指定された変数にセットされます。with ブロック内からの例外はその発生場所で扱えるようにジェネレータ内部で再発生させます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">contextlib</span>
+
+<span class="nd">@contextlib.contextmanager</span>
+<span class="k">def</span> <span class="nf">make_context</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;  entering&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">{}</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;  ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;  exiting&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;Normal:&#39;</span>
+<span class="k">with</span> <span class="n">make_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">value</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;  inside with statement:&#39;</span><span class="p">,</span> <span class="n">value</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;Handled error:&#39;</span>
+<span class="k">with</span> <span class="n">make_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">value</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;showing example of handling an error&#39;</span><span class="p">)</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;Unhandled error:&#39;</span>
+<span class="k">with</span> <span class="n">make_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">value</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;this exception is not handled&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ジェネレータはコンテキストを初期化し、厳密に一度だけ yield します。それからそのコンテキストをクリーンアップします。yield される値があるなら <strong class="command">with</strong> 文の <strong class="command">as</strong> の変数に束縛されます。 <strong class="command">with</strong> ブロック内の例外は、ジェネレータ内部で扱うことができるので再発生させます。</p>
+<div class="highlight-python"><pre>$ python contextlib_contextmanager.py
+Normal:
+  entering
+  inside with statement: {}
+  exiting
+
+Handled error:
+  entering
+  ERROR: showing example of handling an error
+  exiting
+
+Unhandled error:
+  entering
+  exiting
+Traceback (most recent call last):
+  File "contextlib_contextmanager.py", line 34, in &lt;module&gt;
+    raise ValueError('this exception is not handled')
+ValueError: this exception is not handled</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>ネストされたコンテキスト<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>時々、複数のコンテキストを同時に管理する必要があります(例えば、入出力のファイルハンドラ間でデータをコピーするときです)。そういったときに複数のコンテキスト間で with 文をネストすることができます。もし外側のコンテキストが独立したブロックである必要性がない場合、何の利点はなくてもインデントレベルを追加してしまいます。 <tt class="xref py py-func docutils literal"><span class="pre">nested()</span></tt> を使用すると1つの <strong class="command">with</strong> 文でそういったコンテキストをネストします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">contextlib</span>
+
+<span class="nd">@contextlib.contextmanager</span>
+<span class="k">def</span> <span class="nf">make_context</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;entering:&#39;</span><span class="p">,</span> <span class="n">name</span>
+    <span class="k">yield</span> <span class="n">name</span>
+    <span class="k">print</span> <span class="s">&#39;exiting :&#39;</span><span class="p">,</span> <span class="n">name</span>
+
+<span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nested</span><span class="p">(</span><span class="n">make_context</span><span class="p">(</span><span class="s">&#39;A&#39;</span><span class="p">),</span> <span class="n">make_context</span><span class="p">(</span><span class="s">&#39;B&#39;</span><span class="p">),</span> <span class="n">make_context</span><span class="p">(</span><span class="s">&#39;C&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;inside with statement:&#39;</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span>
+</pre></div>
+</div>
+<p>entering したコンテキストとは逆の順番で exiting していることに注意してください。</p>
+<div class="highlight-python"><pre>$ python contextlib_nested.py
+entering: A
+entering: B
+entering: C
+inside with statement: A B C
+exiting : C
+exiting : B
+exiting : A</pre>
+</div>
+<p>Python 2.7 以上では、 <strong class="command">with</strong> 文が直接ネストすることをサポートしたことにより <tt class="xref py py-func docutils literal"><span class="pre">nested()</span></tt> は廃止予定です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">contextlib</span>
+
+<span class="nd">@contextlib.contextmanager</span>
+<span class="k">def</span> <span class="nf">make_context</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;entering:&#39;</span><span class="p">,</span> <span class="n">name</span>
+    <span class="k">yield</span> <span class="n">name</span>
+    <span class="k">print</span> <span class="s">&#39;exiting :&#39;</span><span class="p">,</span> <span class="n">name</span>
+
+<span class="k">with</span> <span class="n">make_context</span><span class="p">(</span><span class="s">&#39;A&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">A</span><span class="p">,</span> <span class="n">make_context</span><span class="p">(</span><span class="s">&#39;B&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">B</span><span class="p">,</span> <span class="n">make_context</span><span class="p">(</span><span class="s">&#39;C&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">C</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;inside with statement:&#39;</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span>
+</pre></div>
+</div>
+<p>それぞれのコンテキストマネージャとオプションの <strong class="command">as</strong> はカンマ (<tt class="docutils literal"><span class="pre">,</span></tt>) で分割されます。その効果は <tt class="xref py py-func docutils literal"><span class="pre">nested()</span></tt> を使用するのと似ていますが、 <tt class="xref py py-func docutils literal"><span class="pre">nested()</span></tt> が正しく実装できないエラー処理関連の特別な状況を回避します。</p>
+<div class="highlight-python"><pre>$ python contextlib_nested_with.py
+entering: A
+entering: B
+entering: C
+inside with statement: A B C
+exiting : C
+exiting : B
+exiting : A</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>オープンハンドラをクローズする<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">file()</span></tt> クラスはコンテキストマネージャの API を直接サポートしますが、オープンハンドラを表す他のオブジェクトによってはサポートしないものもあります。 <a class="reference internal" href="#module-contextlib" title="コンテキストマネージャの操作ユーティリティ"><tt class="xref py py-mod docutils literal"><span class="pre">contextlib</span></tt></a> の標準ライブラリドキュメントで説明されている例では <tt class="xref py py-func docutils literal"><span class="pre">urllib.urlopen()</span></tt> から返されるオブジェクトがサポートしないものに該当します。 <tt class="xref py py-func docutils literal"><span class="pre">close()</span></tt> メソッドを使用するレガシーなクラスが他にもありますが、コンテキストマネージャ API をサポートしません。ハンドラがクローズされることを保証するには、そういったコンテキストマネージャを作成するための <tt class="xref py py-func docutils literal"><span class="pre">closing()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">contextlib</span>
+
+<span class="k">class</span> <span class="nc">Door</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;  __init__()&#39;</span>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;  close()&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;Normal Example:&#39;</span>
+<span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">closing</span><span class="p">(</span><span class="n">Door</span><span class="p">())</span> <span class="k">as</span> <span class="n">door</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;  inside with statement&#39;</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;Error handling example:&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">closing</span><span class="p">(</span><span class="n">Door</span><span class="p">())</span> <span class="k">as</span> <span class="n">door</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;  raising from inside with statement&#39;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&#39;error message&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;  Had an error:&#39;</span><span class="p">,</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p><strong class="command">with</strong> ブロック内でエラーが発生するか否かに関わらずハンドラがクローズされます。</p>
+<div class="highlight-python"><pre>$ python contextlib_closing.py
+Normal Example:
+  __init__()
+  inside with statement
+  close()
+
+Error handling example:
+  __init__()
+  raising from inside with statement
+  close()
+  Had an error: error message</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/contextlib.html">contextlib</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0343"><strong>PEP 343</strong></a></dt>
+<dd><strong class="command">with</strong> 文</dd>
+<dt><a class="reference external" href="http://docs.python.org/library/stdtypes.html#typecontextmanager">Context Manager Types</a></dt>
+<dd>標準ライブラリドキュメントのコンテキストマネージャ API の説明</dd>
+<dt><a class="reference external" href="http://docs.python.org/reference/datamodel.html#context-managers">With Statement Context Managers</a></dt>
+<dd>Python リファレンスガイドのコンテキストマネージャ API の説明</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../gc/index.html" title="gc – Garbage Collector"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../atexit/index.html" title="atexit – プログラムの終了時に関数を呼び出す"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../runtime_services.html" >Python ランタイムサービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

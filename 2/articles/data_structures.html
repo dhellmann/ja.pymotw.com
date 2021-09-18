@@ -1,0 +1,290 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>インメモリデータ構造 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="標準ライブラリの機能" href="index.html" />
+    <link rel="next" title="ファイルアクセス" href="file_access.html" />
+    <link rel="prev" title="データの永続化と変換" href="data_persistence.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">インメモリデータ構造</a><ul>
+<li><a class="reference internal" href="#id3">配列</a></li>
+<li><a class="reference internal" href="#id4">ソート</a></li>
+<li><a class="reference internal" href="#id5">キュー</a></li>
+<li><a class="reference internal" href="#id6">コレクション</a></li>
+<li><a class="reference internal" href="#id7">データのデコード</a></li>
+<li><a class="reference internal" href="#id8">カスタムデータ型</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="data_persistence.html" title="前の章へ"><strong>前:</strong> データの永続化と変換</a><br/>
+          <a href="file_access.html" title="次の章へ"><strong>次:</strong> ファイルアクセス</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/articles/data_structures.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="file_access.html" title="ファイルアクセス"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="data_persistence.html" title="データの永続化と変換"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">標準ライブラリの機能</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="article-data-structures">
+<span id="id1"></span><h1>インメモリデータ構造<a class="headerlink" href="#article-data-structures" title="Permalink to this headline">¶</a></h1>
+<p>Python は標準的なプログラミングのデータ構造を <a class="reference external" href="http://docs.python.org/library/stdtypes.html">組み込み型</a>  (リスト、タプル、ディクショナリ、集合) として提供します。ほとんどのアプリケーションではそれ以上のデータ構造は必要ないですが、必要になったとき標準ライブラリが提供してくれます。</p>
+<div class="section" id="id3">
+<h2>配列<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>大量データの用途には <tt class="docutils literal"><span class="pre">list</span></tt> ではなく <a class="reference internal" href="../array/index.html#module-array" title="データ型を数値に固定したシーケンスを効率良く管理する"><tt class="xref py py-mod docutils literal"><span class="pre">array</span></tt></a> を使用した方が効率が良くなるかもしれません。array は1つのデータ型のみに制限されるので、汎用目的のリストよりもメモリ表現が小さくなります。この利点に加えて、array はリストとほとんど同じメソッドで操作できます。そのため、アプリケーションに大きな変更なく、リストから array に置き換えられる可能性があります。</p>
+</div>
+<div class="section" id="id4">
+<h2>ソート<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>値を追加したり削除したりするときにソートされたリストを保持する必要があるときは <a class="reference internal" href="../heapq/index.html#module-heapq" title="インプレースヒープソートアルゴリズム"><tt class="xref py py-mod docutils literal"><span class="pre">heapq</span></tt></a> を調べてみてください。リストから要素を追加したり、削除したりするのに <a class="reference internal" href="../heapq/index.html#module-heapq" title="インプレースヒープソートアルゴリズム"><tt class="xref py py-mod docutils literal"><span class="pre">heapq</span></tt></a> の関数を使用することで、低いオーバーヘッドでリストの順番を保持できます。</p>
+<p>ソートされたリストや array を作成する別の選択肢として <a class="reference internal" href="../bisect/index.html#module-bisect" title="リストへ要素が追加されたときにソートせずにリスト内の順序を保持する"><tt class="xref py py-mod docutils literal"><span class="pre">bisect</span></tt></a> があります。 <a class="reference internal" href="../bisect/index.html#module-bisect" title="リストへ要素が追加されたときにソートせずにリスト内の順序を保持する"><tt class="xref py py-mod docutils literal"><span class="pre">bisect</span></tt></a> は、新しい要素の挿入位置を2分探索で探すことで、変更する毎にリストのソートを繰り返すことの代替方法になります。</p>
+</div>
+<div class="section" id="id5">
+<h2>キュー<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>組み込み型のリストは <tt class="docutils literal"><span class="pre">insert()</span></tt> と <tt class="docutils literal"><span class="pre">pop()</span></tt> メソッドでキューを模倣できますが、それはスレッドセーフではありません。スレッド間で本当の実行順序を保持するために <a class="reference internal" href="../Queue/index.html#module-Queue" title="スレッドセーフな FIFO の実装を提供する"><tt class="xref py py-mod docutils literal"><span class="pre">Queue</span></tt></a> を使用してください。 <a class="reference internal" href="../multiprocessing/index.html#module-multiprocessing" title="スレッドのようにプロセスを管理する"><tt class="xref py py-mod docutils literal"><span class="pre">multiprocessing</span></tt></a> は、モジュール間で簡単にやり取りできるようにプロセス間で動作するキューを提供します。</p>
+</div>
+<div class="section" id="id6">
+<h2>コレクション<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../collections/index.html#module-collections" title="コンテナデータ型"><tt class="xref py py-mod docutils literal"><span class="pre">collections</span></tt></a> はその他のモジュールで見られる拡張データ構造の実装を提供します。例えば、Deque はどちらかの端からも要素を追加したり削除したりできる両端キューです。 <tt class="docutils literal"><span class="pre">defaultdict</span></tt> は、キーが存在しないときにデフォルト値を返すディクショナリです。 <tt class="docutils literal"><span class="pre">namedtuple</span></tt> は、数値インデックスに加えて属性名で要素のメンバーへアクセスできるようにタプルを拡張したものです。</p>
+</div>
+<div class="section" id="id7">
+<h2>データのデコード<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>別のアプリケーションとデータを連携する場合、バイナリファイルまたはデータストリームで入力されるかもしれません。 <a class="reference internal" href="../struct/index.html#module-struct" title="文字列とバイナリデータを変換する"><tt class="xref py py-mod docutils literal"><span class="pre">struct</span></tt></a> は、Python のネイティブ型にデータをデコードすることで簡単に操作させる便利なモジュールです。</p>
+</div>
+<div class="section" id="id8">
+<h2>カスタムデータ型<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>最後に、目的にあう型がなかった場合、カスタマイズするためにネイティブ型の1つをサブクラス化して定義すると良いかもしれません。また <a class="reference internal" href="../collections/index.html#module-collections" title="コンテナデータ型"><tt class="xref py py-mod docutils literal"><span class="pre">collections</span></tt></a> で定義されている抽象ベースクラスで一から定義することもできます。</p>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="file_access.html" title="ファイルアクセス"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="data_persistence.html" title="データの永続化と変換"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="index.html" >標準ライブラリの機能</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

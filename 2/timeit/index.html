@@ -1,0 +1,523 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>timeit &#8211; 小さな Python コードの実行時間を計る - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="デバッグとプロファイリング" href="../profilers.html" />
+    <link rel="next" title="trace – 実行された通りに Python コードを追跡する" href="../trace/index.html" />
+    <link rel="prev" title="profile, cProfile, pstats – Python プログラムのパフォーマンス解析" href="../profile/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">timeit &#8211; 小さな Python コードの実行時間を計る</a><ul>
+<li><a class="reference internal" href="#id1">モジュールコンテンツ</a></li>
+<li><a class="reference internal" href="#id2">基本的なサンプル</a></li>
+<li><a class="reference internal" href="#id3">ディクショナリに値を格納する</a></li>
+<li><a class="reference internal" href="#id4">コマンドラインから</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../profile/index.html" title="前の章へ"><strong>前:</strong> profile, cProfile, pstats &#8211; Python プログラムのパフォーマンス解析</a><br/>
+          <a href="../trace/index.html" title="次の章へ"><strong>次:</strong> trace &#8211; 実行された通りに Python コードを追跡する</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/timeit/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../trace/index.html" title="trace – 実行された通りに Python コードを追跡する"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../profile/index.html" title="profile, cProfile, pstats – Python プログラムのパフォーマンス解析"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../profilers.html" accesskey="U">デバッグとプロファイリング</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="timeit-python">
+<h1>timeit &#8211; 小さな Python コードの実行時間を計る<a class="headerlink" href="#timeit-python" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-timeit"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">小さな Python コードの実行時間を計る</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.3</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-timeit" title="小さな Python コードの実行時間を計る"><tt class="xref py py-mod docutils literal"><span class="pre">timeit</span></tt></a> モジュールは小さな Python コードの実行時間を計るシンプルなインタフェースを提供します。なるべく正確な時間を算出するためにプロットフォーム特有の time 関数を使用します。そして対象のコードを何回も実行することで時間計算のための起動や終了による影響を少なくします。</p>
+<div class="section" id="id1">
+<h2>モジュールコンテンツ<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-timeit" title="小さな Python コードの実行時間を計る"><tt class="xref py py-mod docutils literal"><span class="pre">timeit</span></tt></a> はパブリッククラス <tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> を定義します。 <tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> のコンストラクタは時間を計測するコードと setup 処理(例えば、変数の初期化)を受け取ります。Python のコードは改行を含んだ文字列である必要があります。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">timeit()</span></tt> メソッドは1回 setup 処理を実行してから対象となるコードを何回か実行した処理時間を返します。timeit() へ渡す引数はその対象コードを何回実行するかを制御します。デフォルトは 1,000,000 です。</p>
+</div>
+<div class="section" id="id2">
+<h2>基本的なサンプル<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> へ渡される引数の使用方法を説明するために、コードが実行されるときにデバッグ出力する簡単なサンプルを作成しました。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">timeit</span>
+
+<span class="c"># setitem を使用する</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">&quot;print &#39;main statement&#39;&quot;</span><span class="p">,</span> <span class="s">&quot;print &#39;setup&#39;&quot;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;TIMEIT:&#39;</span>
+<span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;REPEAT:&#39;</span>
+<span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>実行すると次の結果になります。</p>
+<div class="highlight-python"><pre>$ python timeit_example.py
+TIMEIT:
+setup
+main statement
+main statement
+2.14576721191e-06
+REPEAT:
+setup
+main statement
+main statement
+setup
+main statement
+main statement
+setup
+main statement
+main statement
+[1.9073486328125e-06, 9.5367431640625e-07, 9.5367431640625e-07]</pre>
+</div>
+<p>呼び出されたときに <tt class="xref py py-func docutils literal"><span class="pre">timeit()</span></tt> は setup 処理を1回実行した後で対象となるコードを指定した回数で実行します。そして指定した回数分の実行したときの計測時間を小数で返します。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">repeat()</span></tt> を使用すると、数回(このケースでは3) <tt class="xref py py-func docutils literal"><span class="pre">timeit()</span></tt> を実行して、その全ての計測時間をリストで返します。</p>
+</div>
+<div class="section" id="id3">
+<h2>ディクショナリに値を格納する<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>もっと複雑なサンプルに、いろんなメソッドと巨大なディクショナリを生成する処理時間を比較してみましょう。まず最初に <tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> を設定する定数が必要です。そして文字列と整数を含むタプルのリストを使用します。 <tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> は文字列をキーとするディクショナリに整数を格納されるようにします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># {{{cog include(&#39;timeit/timeit_dictionary.py&#39;, &#39;header&#39;)}}}</span>
+<span class="kn">import</span> <span class="nn">timeit</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># 定数定義</span>
+<span class="n">range_size</span><span class="o">=</span><span class="mi">1000</span>
+<span class="n">count</span><span class="o">=</span><span class="mi">1000</span>
+<span class="n">setup_statement</span><span class="o">=</span><span class="s">&quot;l = [ (str(x), x) for x in range(</span><span class="si">%d</span><span class="s">) ]; d = {}&quot;</span> <span class="o">%</span> <span class="n">range_size</span>
+<span class="c"># {{{end}}}</span>
+</pre></div>
+</div>
+<p>次に短いユーティリティ関数で結果を表示するのに便利なフォーマットを定義します。 <tt class="xref py py-func docutils literal"><span class="pre">timeit()</span></tt> メソッドはそのコードを何回か実行したときの計測時間を返します。 <tt class="xref py py-func docutils literal"><span class="pre">show_results()</span></tt> の出力はその計測時間から個々の要素単位で算出します。その後でディクショナリの1つの要素を格納するのにかかった時間をさらに分解します(もちろん平均値でね)。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># {{{cog include(&#39;timeit/timeit_dictionary.py&#39;, &#39;show_results&#39;)}}}</span>
+<span class="k">def</span> <span class="nf">show_results</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+    <span class="s">&quot;Print results in terms of microseconds per pass and per item.&quot;</span>
+    <span class="k">global</span> <span class="n">count</span><span class="p">,</span> <span class="n">range_size</span>
+    <span class="n">per_pass</span> <span class="o">=</span> <span class="mi">1000000</span> <span class="o">*</span> <span class="p">(</span><span class="n">result</span> <span class="o">/</span> <span class="n">count</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%.2f</span><span class="s"> usec/pass&#39;</span> <span class="o">%</span> <span class="n">per_pass</span><span class="p">,</span>
+    <span class="n">per_item</span> <span class="o">=</span> <span class="n">per_pass</span> <span class="o">/</span> <span class="n">range_size</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%.2f</span><span class="s"> usec/item&#39;</span> <span class="o">%</span> <span class="n">per_item</span>
+
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> items&quot;</span> <span class="o">%</span> <span class="n">range_size</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> iterations&quot;</span> <span class="o">%</span> <span class="n">count</span>
+<span class="k">print</span>
+<span class="c"># {{{end}}}</span>
+</pre></div>
+</div>
+<p>基準値を設けるために、既にテストした最初の設定内容は <tt class="xref py py-func docutils literal"><span class="pre">__setitem__()</span></tt> を使用します。このシンプルなコードが最も速くなるように、その他の全ての変数はディクショナリに既に存在する値を上書きしないようにします。</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> へ渡す最初の引数は、実行時に正しく構文解析されるようにインデントを保持した複数行の文字列であることに着目してください。2番目の引数は上述したディクショナリと値のリストを初期化した定数です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># {{{cog include(&#39;timeit/timeit_dictionary.py&#39;, &#39;setitem&#39;)}}}</span>
+<span class="c"># Using __setitem__ without checking for existing values first</span>
+<span class="k">print</span> <span class="s">&#39;__setitem__:</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="c"># setitem を使用する</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">for s, i in l:</span>
+<span class="s">    d[s] = i</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="n">setup_statement</span><span class="p">)</span>
+<span class="n">show_results</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">count</span><span class="p">))</span>
+<span class="c"># {{{end}}}</span>
+</pre></div>
+</div>
+<p>次の変更は、ディクショナリの値が上書きされないように <tt class="xref py py-func docutils literal"><span class="pre">setdefault()</span></tt> を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># {{{cog include(&#39;timeit/timeit_dictionary.py&#39;, &#39;setdefault&#39;)}}}</span>
+<span class="c"># setdefault を使用する</span>
+<span class="k">print</span> <span class="s">&#39;setdefault:</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">for s, i in l:</span>
+<span class="s">    d.setdefault(s, i)</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="n">setup_statement</span><span class="p">)</span>
+<span class="n">show_results</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">count</span><span class="p">))</span>
+<span class="c"># {{{end}}}</span>
+</pre></div>
+</div>
+<p>既存の値を上書きしない別の方法として、ディクショナリのコンテンツを明示的にチェックする <tt class="xref py py-func docutils literal"><span class="pre">has_key()</span></tt> を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># {{{cog include(&#39;timeit/timeit_dictionary.py&#39;, &#39;has_key&#39;)}}}</span>
+<span class="c"># has_key を使用する</span>
+<span class="k">print</span> <span class="s">&#39;has_key:</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="c"># setitem を使用する</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">for s, i in l:</span>
+<span class="s">    if not d.has_key(s):</span>
+<span class="s">        d[s] = i</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="n">setup_statement</span><span class="p">)</span>
+<span class="n">show_results</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">count</span><span class="p">))</span>
+<span class="c"># {{{end}}}</span>
+</pre></div>
+</div>
+<p>もしくは、値が存在しているかを調べたときに <a class="reference internal" href="../exceptions/index.html#exceptions-keyerror"><em>KeyError</em></a> 例外を受け取ったらその値を追加するようにします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># {{{cog include(&#39;timeit/timeit_dictionary.py&#39;, &#39;exception&#39;)}}}</span>
+<span class="c"># exceptions を使用する</span>
+<span class="k">print</span> <span class="s">&#39;KeyError:</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="c"># setitem を使用する</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">for s, i in l:</span>
+<span class="s">    try:</span>
+<span class="s">        existing = d[s]</span>
+<span class="s">    except KeyError:</span>
+<span class="s">        d[s] = i</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="n">setup_statement</span><span class="p">)</span>
+<span class="n">show_results</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">count</span><span class="p">))</span>
+<span class="c"># {{{end}}}</span>
+</pre></div>
+</div>
+<p>最後のメソッドは、ディクショナリがキーを持っているかを &#8220;<tt class="docutils literal"><span class="pre">in</span></tt>&#8221; で調べる(比較的)新しいやり方です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># {{{cog include(&#39;timeit/timeit_dictionary.py&#39;, &#39;in&#39;)}}}</span>
+<span class="c"># &quot;in&quot; を使用する</span>
+<span class="k">print</span> <span class="s">&#39;&quot;not in&quot;:</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="c"># setitem を使用する</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">for s, i in l:</span>
+<span class="s">    if s not in d:</span>
+<span class="s">        d[s] = i</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="n">setup_statement</span><span class="p">)</span>
+<span class="n">show_results</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">count</span><span class="p">))</span>
+<span class="c"># {{{end}}}</span>
+</pre></div>
+</div>
+<p>このスクリプトを実行すると、次のような実行結果が出力されます。</p>
+<div class="highlight-python"><pre>$ python timeit_dictionary.py
+1000 items
+1000 iterations
+
+__setitem__:    103.97 usec/pass 0.10 usec/item
+setdefault:     219.30 usec/pass 0.22 usec/item
+has_key:        176.95 usec/pass 0.18 usec/item
+KeyError:       116.93 usec/pass 0.12 usec/item
+"not in":       90.91 usec/pass 0.09 usec/item</pre>
+</div>
+<p>この結果は MacBook Pro Python 2.6 での計測時間です。あなたの環境では違う結果になるでしょう。 <em>range_size</em> と <em>count</em> 変数の値を違う組み合わせにすると、違う結果になることを実験してみてください。</p>
+</div>
+<div class="section" id="id4">
+<h2>コマンドラインから<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>プログラミングインタフェースに加えて、timeit はインストールせずにモジュールをテストするコマンドラインインタフェースを提供します。</p>
+<p>timeit モジュールを実行するには、モジュールを探す <em class="xref std std-option">-m</em> を使用してメインプログラムとして扱います。</p>
+<div class="highlight-python"><pre>$ python -m timeit</pre>
+</div>
+<p>例えば、ヘルプを確認します。</p>
+<div class="highlight-python"><pre>$ python -m timeit -h
+Tool for measuring execution time of small code snippets.
+
+This module avoids a number of common traps for measuring execution
+times.  See also Tim Peters' introduction to the Algorithms chapter in
+the Python Cookbook, published by O'Reilly.
+
+Library usage: see the Timer class.
+
+Command line usage:
+    python timeit.py [-n N] [-r N] [-s S] [-t] [-c] [-h] [--] [statement]
+
+Options:
+  -n/--number N: how many times to execute 'statement' (default: see below)
+  -r/--repeat N: how many times to repeat the timer (default 3)
+  -s/--setup S: statement to be executed once initially (default 'pass')
+  -t/--time: use time.time() (default on Unix)
+  -c/--clock: use time.clock() (default on Windows)
+  -v/--verbose: print raw timing results; repeat for more digits precision
+  -h/--help: print this usage message and exit
+  --: separate options from statement, use when statement starts with -
+  statement: statement to be timed (default 'pass')
+
+A multi-line statement may be given by specifying each line as a
+separate argument; indented lines are possible by enclosing an
+argument in quotes and using leading spaces.  Multiple -s options are
+treated similarly.
+
+If -n is not given, a suitable number of loops is calculated by trying
+successive powers of 10 until the total time is at least 0.2 seconds.
+
+The difference in default timer function is because on Windows,
+clock() has microsecond granularity but time()'s granularity is 1/60th
+of a second; on Unix, clock() has 1/100th of a second granularity and
+time() is much more precise.  On either platform, the default timer
+functions measure wall clock time, not the CPU time.  This means that
+other processes running on the same computer may interfere with the
+timing.  The best thing to do when accurate timing is necessary is to
+repeat the timing a few times and use the best time.  The -r option is
+good for this; the default of 3 repetitions is probably enough in most
+cases.  On Unix, you can use clock() to measure CPU time.
+
+Note: there is a certain baseline overhead associated with executing a
+pass statement.  The code here doesn't try to hide it, but you should
+be aware of it.  The baseline overhead can be measured by invoking the
+program without arguments.
+
+The baseline overhead differs between Python versions!  Also, to
+fairly compare older Python versions to Python 2.3, you may want to
+use python -O for the older versions to avoid timing SET_LINENO
+instructions.</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Timer</span></tt> へ渡す引数はちょっと違います。1行の長い文字列ではなく、行毎にコマンドライン引数を分割してコードを渡します。(内部ループといった)行をインデントするには、全体をクォートで囲んだ文字列の先頭にスペースを入れてください。例えば、次のようにします。</p>
+<div class="highlight-python"><pre>$ python -m timeit -s "d={}" "for i in range(1000):" "  d[str(i)] = i"
+1000 loops, best of 3: 293 usec per loop</pre>
+</div>
+<p>もっと複雑なコードで関数を定義したり、モジュールをインポートしたり、コマンドラインから関数呼び出しすることもできます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">test_setitem</span><span class="p">(</span><span class="n">range_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">range_size</span><span class="p">)</span> <span class="p">]</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+</pre></div>
+</div>
+<p>このサンプルプログラムを実行します。</p>
+<div class="highlight-python"><pre>$ python -m timeit "import timeit_setitem; timeit_setitem.test_setitem()"
+1000 loops, best of 3: 423 usec per loop</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-timeit.html">timeit</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../profile/index.html#module-profile" title="Python プログラムのパフォーマンス解析"><tt class="xref py py-mod docutils literal"><span class="pre">profile</span></tt></a></dt>
+<dd>パフォーマンス解析には profile モジュールも有効</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../trace/index.html" title="trace – 実行された通りに Python コードを追跡する"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../profile/index.html" title="profile, cProfile, pstats – Python プログラムのパフォーマンス解析"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../profilers.html" >デバッグとプロファイリング</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

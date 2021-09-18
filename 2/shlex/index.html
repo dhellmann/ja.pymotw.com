@@ -1,0 +1,617 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>shlex &#8211; シェルスタイルの字句解析 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="プログラムフレームワーク" href="../frameworks.html" />
+    <link rel="next" title="開発ツール" href="../dev_tools.html" />
+    <link rel="prev" title="cmd – Create line-oriented command processors" href="../cmd/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">shlex &#8211; シェルスタイルの字句解析</a><ul>
+<li><a class="reference internal" href="#id1">引用符で囲まれた文字列</a></li>
+<li><a class="reference internal" href="#id2">組み込みコメント</a></li>
+<li><a class="reference internal" href="#split">Split</a></li>
+<li><a class="reference internal" href="#id3">トークンの他のソースを含める</a></li>
+<li><a class="reference internal" href="#id4">パーサを管理する</a></li>
+<li><a class="reference internal" href="#id5">エラー制御</a></li>
+<li><a class="reference internal" href="#posix-posix">POSIX 対 非 POSIX 解析</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../cmd/index.html" title="前の章へ"><strong>前:</strong> cmd &#8211; Create line-oriented command processors</a><br/>
+          <a href="../dev_tools.html" title="次の章へ"><strong>次:</strong> 開発ツール</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/shlex/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dev_tools.html" title="開発ツール"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../cmd/index.html" title="cmd – Create line-oriented command processors"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../frameworks.html" accesskey="U">プログラムフレームワーク</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="shlex">
+<h1>shlex &#8211; シェルスタイルの字句解析<a class="headerlink" href="#shlex" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-shlex"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">シェルスタイルの字句解析</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.5.2, その後のバージョンで機能追加</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-shlex" title="シェルスタイルの字句解析"><tt class="xref py py-mod docutils literal"><span class="pre">shlex</span></tt></a> モジュールはシェルによく似たシンプルな構文で字句解析するクラスを実装します。それは独自のドメイン特化言語(DSL)を書いたり、引用符で囲まれた文字列(一目見て複雑に見えるタスク)を解析するために使用されます。</p>
+<div class="section" id="id1">
+<h2>引用符で囲まれた文字列<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>入力のテキストを解析するときの共通の課題は、1つの実体として引用符で囲まれたワードのシーケンスを認識することです。引用符でテキストを分割する方法は、いつもうまく行くとは限りません。特に引用符がネストされている場合です。次のテキストを見てください。</p>
+<div class="highlight-python"><pre>This string has embedded "double quotes" and 'single quotes' in it,
+and even "a 'nested example'".
+</pre>
+</div>
+<p>すぐに思い付く方法は、引用符の内側のテキストから引用符の外側のテキスト部分を分離するために正規表現を組み立てても良いかもしれません。もしくはその逆の方法もあります。そういった方法は不必要に複雑になり、アポストロフィや誤字のようなエッジケースの場合にエラーを発生しがちです。もっと良い解決方法は、 <a class="reference internal" href="#module-shlex" title="シェルスタイルの字句解析"><tt class="xref py py-mod docutils literal"><span class="pre">shlex</span></tt></a> モジュールが提供するような本物のパーサを使用することです。次に入力ファイルで認識されたトークンを表示する簡単なサンプルを紹介します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Please specify one filename on the command line.&#39;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">body</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;ORIGINAL:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;TOKENS:&#39;</span>
+<span class="n">lexer</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">shlex</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">lexer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>組み込みの引用符でそのデータを処理すると、このパーサは期待したトークンのリストを生成します。</p>
+<div class="highlight-python"><pre>$ python shlex_example.py quotes.txt
+ORIGINAL: 'This string has embedded "double quotes" and \'single quotes\' in it,\nand even "a \'nested example\'".\n'
+
+TOKENS:
+'This'
+'string'
+'has'
+'embedded'
+'"double quotes"'
+'and'
+"'single quotes'"
+'in'
+'it'
+','
+'and'
+'even'
+'"a \'nested example\'"'
+'.'</pre>
+</div>
+<p>アポストロフィのような独立した引用符も扱えます。次の入力を試してみてください。</p>
+<div class="highlight-python"><pre>This string has an embedded apostrophe, doesn't it?</pre>
+</div>
+<p>アポストロフィを持つトークンでも問題ありません。</p>
+<div class="highlight-python"><pre>$ python shlex_example.py apostrophe.txt
+ORIGINAL: "This string has an embedded apostrophe, doesn't it?"
+
+TOKENS:
+'This'
+'string'
+'has'
+'an'
+'embedded'
+'apostrophe'
+','
+"doesn't"
+'it'
+'?'</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>組み込みコメント<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>パーサはコマンド言語で使用されることを意図しているのでコメントを扱う必要があります。デフォルトでは # に続く任意のテキストをコメントと見なして無視します。パーサの特性上、コメントの接頭辞は一文字のみがサポートされます。コメントの文字セットは commenters プロパティで設定されています。</p>
+<div class="highlight-python"><pre>$ python shlex_example.py comments.txt
+ORIGINAL: 'This line is recognized.\n# But this line is ignored.\nAnd this line is processed.'
+
+TOKENS:
+'This'
+'line'
+'is'
+'recognized'
+'.'
+'And'
+'this'
+'line'
+'is'
+'processed'
+'.'</pre>
+</div>
+</div>
+<div class="section" id="split">
+<h2>Split<a class="headerlink" href="#split" title="Permalink to this headline">¶</a></h2>
+<p>文字列をコメントトークンに分割する必要がある場合、便利な関数 <tt class="xref py py-func docutils literal"><span class="pre">split()</span></tt> がパーサ周りでシンプルなラッパーになります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shlex</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;This text has &quot;quoted parts&quot; inside it.&quot;&quot;&quot;</span>
+<span class="k">print</span> <span class="s">&#39;ORIGINAL:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;TOKENS:&#39;</span>
+<span class="k">print</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この実行結果はリストになります。</p>
+<div class="highlight-python"><pre>$ python shlex_split.py
+ORIGINAL: 'This text has "quoted parts" inside it.'
+
+TOKENS:
+['This', 'text', 'has', 'quoted parts', 'inside', 'it.']</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>トークンの他のソースを含める<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">shlex</span></tt> クラスには、その動作を制御する複数の設定プロパティがあります。 <em>source</em> プロパティはコード(または設定)を再利用するために、1つのトークンストリームへ他のものを含められるようにします。これは Bourne シェルの <tt class="docutils literal"><span class="pre">source</span></tt> 演算子によく似ているので、その名前が付いています。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shlex</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;This text says to source quotes.txt before continuing.&quot;&quot;&quot;</span>
+<span class="k">print</span> <span class="s">&#39;ORIGINAL:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="n">lexer</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">shlex</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="n">lexer</span><span class="o">.</span><span class="n">wordchars</span> <span class="o">+=</span> <span class="s">&#39;.&#39;</span>
+<span class="n">lexer</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="s">&#39;source&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;TOKENS:&#39;</span>
+<span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">lexer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>オリジナルのテキスト内に <tt class="docutils literal"><span class="pre">source</span> <span class="pre">quotes.txt</span></tt> という文字列があることに着目してください。レクサの source プロパティが &#8220;source&#8221; にセットされているので、そのキーワードを見つけたときに次にあるファイル名が自動的に読み込まれます。ファイル名を1つのトークンにするために <tt class="docutils literal"><span class="pre">.</span></tt> 文字をワードに含まれる文字リストへ追加する必要があります(言い換えると &#8220;<tt class="docutils literal"><span class="pre">quotes.txt</span></tt>&#8221; は &#8220;<tt class="docutils literal"><span class="pre">quotes</span></tt>&#8220;, &#8220;<tt class="docutils literal"><span class="pre">.</span></tt>&#8220;, &#8220;<tt class="docutils literal"><span class="pre">txt</span></tt>&#8221; の3つのトークンになります)。この出力は次のようになります。</p>
+<div class="highlight-python"><pre>$ python shlex_source.py
+ORIGINAL: 'This text says to source quotes.txt before continuing.'
+
+TOKENS:
+'This'
+'text'
+'says'
+'to'
+'This'
+'string'
+'has'
+'embedded'
+'"double quotes"'
+'and'
+"'single quotes'"
+'in'
+'it'
+','
+'and'
+'even'
+'"a \'nested example\'"'
+'.'
+'before'
+'continuing.'</pre>
+</div>
+<p>&#8220;source&#8221; 機能は、入力ソースを追加して読み込むために <tt class="xref py py-func docutils literal"><span class="pre">sourcehook()</span></tt> というメソッドを使用します。そのため、独自実装で自由にデータを読み込ませるために <tt class="xref py py-class docutils literal"><span class="pre">shlex</span></tt> をサブクラス化できます。</p>
+</div>
+<div class="section" id="id4">
+<h2>パーサを管理する<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>ワードに含まれる文字を管理するために <em>wordchars</em> を変更するサンプルを前節で紹介しました。さらに <em>quotes</em> 文字も追加や代替の引用符に変更することもできます。それぞれの引用符は一文字でなければならないので、始まりと終わりを表す引用符を違う文字にすることはできません(例えば、一対になっていないと解析されません)。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shlex</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;|Col 1||Col 2||Col 3|&quot;&quot;&quot;</span>
+<span class="k">print</span> <span class="s">&#39;ORIGINAL:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="n">lexer</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">shlex</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="n">lexer</span><span class="o">.</span><span class="n">quotes</span> <span class="o">=</span> <span class="s">&#39;|&#39;</span>
+
+<span class="k">print</span> <span class="s">&#39;TOKENS:&#39;</span>
+<span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">lexer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルでは、それぞれの表のセルは縦線(|)で囲まれます。</p>
+<div class="highlight-python"><pre>$ python shlex_table.py
+ORIGINAL: '|Col 1||Col 2||Col 3|'
+
+TOKENS:
+'|Col 1|'
+'|Col 2|'
+'|Col 3|'</pre>
+</div>
+<p>さらにワードの分割に使用する空白文字を変更することもできます。shlex_example.py のサンプルにピリオドとカンマを含めるように変更するなら次のようにします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shlex</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Please specify one filename on the command line.&#39;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">body</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;ORIGINAL:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;TOKENS:&#39;</span>
+<span class="n">lexer</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">shlex</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+<span class="n">lexer</span><span class="o">.</span><span class="n">whitespace</span> <span class="o">+=</span> <span class="s">&#39;.,&#39;</span>
+<span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">lexer</span><span class="p">:</span>
+    <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>実行結果は次のように変わります。</p>
+<div class="highlight-python"><pre>$ python shlex_whitespace.py quotes.txt
+ORIGINAL: 'This string has embedded "double quotes" and \'single quotes\' in it,\nand even "a \'nested example\'".\n'
+
+TOKENS:
+'This'
+'string'
+'has'
+'embedded'
+'"double quotes"'
+'and'
+"'single quotes'"
+'in'
+'it'
+'and'
+'even'
+'"a \'nested example\'"'</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>エラー制御<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>全ての引用符が閉じられる前にパーサがその入力の終わりに到達するとき <a class="reference internal" href="../exceptions/index.html#exceptions-valueerror"><em>ValueError</em></a> が発生します。その入力を処理しようとするときにこの例外が発生するので、パーサのプロパティを調査するのに便利です。例えば、 <em>infile</em> は処理されるファイル名を参照します(ファイルソースが別のものである場合はオリジナルのファイルではない可能性があります)。 <em>lineno</em> はエラーが発生した行をレポートします。 <em>lineno</em> は通常、最初の引用符から離れてファイルの終わりになるかもしれません。 <em>token</em> 属性は有効なトークンではないテキストのバッファを含みます。 <tt class="xref py py-func docutils literal"><span class="pre">error_leader()</span></tt> メソッドは、Unix コンパイラとよく似たメッセージ形式で接頭辞を生成します。このエラーメッセージは emacs のようなエディタでエラー解析できて無効な行を直接ユーザへ伝えます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shlex</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;This line is ok.</span>
+<span class="s">This line has an &quot;unfinished quote.</span>
+<span class="s">This line is ok, too.</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="k">print</span> <span class="s">&#39;ORIGINAL:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="n">lexer</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">shlex</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;TOKENS:&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">lexer</span><span class="p">:</span>
+        <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="n">first_line_of_error</span> <span class="o">=</span> <span class="n">lexer</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">lexer</span><span class="o">.</span><span class="n">error_leader</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="s">&#39;following &quot;&#39;</span> <span class="o">+</span> <span class="n">first_line_of_error</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+</pre></div>
+</div>
+<p>このサンプルは次のエラーになります。</p>
+<div class="highlight-python"><pre>$ python shlex_errors.py
+ORIGINAL: 'This line is ok.\nThis line has an "unfinished quote.\nThis line is ok, too.\n'
+
+TOKENS:
+'This'
+'line'
+'is'
+'ok'
+'.'
+'This'
+'line'
+'has'
+'an'
+ERROR: "None", line 4:  No closing quotation following ""unfinished quote."</pre>
+</div>
+</div>
+<div class="section" id="posix-posix">
+<h2>POSIX 対 非 POSIX 解析<a class="headerlink" href="#posix-posix" title="Permalink to this headline">¶</a></h2>
+<p>パーサのデフォルトの動作は POSIX 準拠ではない後方互換性のあるスタイルを使用します。POSIX に準拠するには、パーサを構築するときに posix 引数に True をセットしてください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shlex</span>
+
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;Do&quot;Not&quot;Separate&#39;</span><span class="p">,</span>
+           <span class="s">&#39;&quot;Do&quot;Separate&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Escaped \e Character not in quotes&#39;</span><span class="p">,</span>
+           <span class="s">&#39;Escaped &quot;\e&quot; Character in double quotes&#39;</span><span class="p">,</span>
+           <span class="s">&quot;Escaped &#39;\e&#39; Character in single quotes&quot;</span><span class="p">,</span>
+           <span class="s">r&quot;Escaped &#39;\&#39;&#39; </span><span class="se">\&quot;</span><span class="s">\&#39;</span><span class="se">\&quot;</span><span class="s"> single quote&quot;</span><span class="p">,</span>
+           <span class="s">r&#39;Escaped &quot;\&quot;&quot; </span><span class="se">\&#39;</span><span class="s">\&quot;</span><span class="se">\&#39;</span><span class="s"> double quote&#39;</span><span class="p">,</span>
+           <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&#39;Strip extra layer of quotes&#39;</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">,</span>
+           <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;ORIGINAL :&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;non-POSIX:&#39;</span><span class="p">,</span>
+
+    <span class="n">non_posix_lexer</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">shlex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">posix</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">non_posix_lexer</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;error(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">err</span>
+
+    
+    <span class="k">print</span> <span class="s">&#39;POSIX    :&#39;</span><span class="p">,</span>
+    <span class="n">posix_lexer</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">shlex</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">posix</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">posix_lexer</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;error(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">err</span>
+
+    <span class="k">print</span>
+</pre></div>
+</div>
+<p>解析処理が違うサンプルは次のようになります。</p>
+<div class="highlight-python"><pre>$ python shlex_posix.py
+ORIGINAL : 'Do"Not"Separate'
+non-POSIX: ['Do"Not"Separate']
+POSIX    : ['DoNotSeparate']
+
+ORIGINAL : '"Do"Separate'
+non-POSIX: ['"Do"', 'Separate']
+POSIX    : ['DoSeparate']
+
+ORIGINAL : 'Escaped \\e Character not in quotes'
+non-POSIX: ['Escaped', '\\', 'e', 'Character', 'not', 'in', 'quotes']
+POSIX    : ['Escaped', 'e', 'Character', 'not', 'in', 'quotes']
+
+ORIGINAL : 'Escaped "\\e" Character in double quotes'
+non-POSIX: ['Escaped', '"\\e"', 'Character', 'in', 'double', 'quotes']
+POSIX    : ['Escaped', '\\e', 'Character', 'in', 'double', 'quotes']
+
+ORIGINAL : "Escaped '\\e' Character in single quotes"
+non-POSIX: ['Escaped', "'\\e'", 'Character', 'in', 'single', 'quotes']
+POSIX    : ['Escaped', '\\e', 'Character', 'in', 'single', 'quotes']
+
+ORIGINAL : 'Escaped \'\\\'\' \\"\\\'\\" single quote'
+non-POSIX: error(No closing quotation)
+POSIX    : ['Escaped', '\\ \\"\\"', 'single', 'quote']
+
+ORIGINAL : 'Escaped "\\"" \\\'\\"\\\' double quote'
+non-POSIX: error(No closing quotation)
+POSIX    : ['Escaped', '"', '\'"\'', 'double', 'quote']
+
+ORIGINAL : '"\'Strip extra layer of quotes\'"'
+non-POSIX: ['"\'Strip extra layer of quotes\'"']
+POSIX    : ["'Strip extra layer of quotes'"]</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-shlex.html">shlex</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../cmd/index.html#module-cmd" title="Create line-oriented command processors."><tt class="xref py py-mod docutils literal"><span class="pre">cmd</span></tt></a></dt>
+<dd>インタラクティブコマンドインタープリタのツール</dd>
+<dt><a class="reference internal" href="../optparse/index.html#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a></dt>
+<dd>コマンドラインオプション解析</dd>
+<dt><a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a></dt>
+<dd>コマンドラインオプション解析</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dev_tools.html" title="開発ツール"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../cmd/index.html" title="cmd – Create line-oriented command processors"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../frameworks.html" >プログラムフレームワーク</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

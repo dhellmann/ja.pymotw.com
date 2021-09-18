@@ -1,0 +1,583 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>datetime &#8211; 日付/時間の操作 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データタイプ" href="../data_types.html" />
+    <link rel="next" title="calendar – 日付の処理" href="../calendar/index.html" />
+    <link rel="prev" title="array – データ型固定のシーケンス" href="../array/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">datetime &#8211; 日付/時間の操作</a><ul>
+<li><a class="reference internal" href="#id1">時間</a></li>
+<li><a class="reference internal" href="#id2">日付</a></li>
+<li><a class="reference internal" href="#id3">タイムデルタ</a></li>
+<li><a class="reference internal" href="#id4">日付計算</a></li>
+<li><a class="reference internal" href="#id5">値の比較</a></li>
+<li><a class="reference internal" href="#id6">日付と時間を組み合わせる</a></li>
+<li><a class="reference internal" href="#id7">フォーマットと解析</a></li>
+<li><a class="reference internal" href="#id8">タイムゾーン</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../array/index.html" title="前の章へ"><strong>前:</strong> array &#8211; データ型固定のシーケンス</a><br/>
+          <a href="../calendar/index.html" title="次の章へ"><strong>次:</strong> calendar &#8211; 日付の処理</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/datetime/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../calendar/index.html" title="calendar – 日付の処理"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../array/index.html" title="array – データ型固定のシーケンス"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" accesskey="U">データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="datetime">
+<h1>datetime &#8211; 日付/時間の操作<a class="headerlink" href="#datetime" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-datetime"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">datetime モジュールは、日付や時間を解析、書式設定、計算するための関数やクラスを提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.3 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-datetime" title="日付/時間の操作"><tt class="xref py py-mod docutils literal"><span class="pre">datetime</span></tt></a> モジュールの関数やクラスは、単独で同時に日付や時間を扱います。</p>
+<div class="section" id="id1">
+<h2>時間<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>時間は <tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> クラスで表されます。 <tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> は、時・分・秒・マイクロ秒の属性をもちます。また、タイムゾーンの情報も含みます。 <tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> インスタンスを初期化する引数はオプションで選択できますが、デフォルトは望むものとは言い難い <tt class="docutils literal"><span class="pre">0</span></tt> になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">t</span>
+<span class="k">print</span> <span class="s">&#39;hour  :&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">hour</span>
+<span class="k">print</span> <span class="s">&#39;minute:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">minute</span>
+<span class="k">print</span> <span class="s">&#39;second:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">second</span>
+<span class="k">print</span> <span class="s">&#39;microsecond:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">microsecond</span>
+<span class="k">print</span> <span class="s">&#39;tzinfo:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">tzinfo</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python datetime_time.py
+01:02:03
+hour  : 1
+minute: 2
+second: 3
+microsecond: 0
+tzinfo: None</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> インスタンスは、日付に関連付けられていない時間のみを保持します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="k">print</span> <span class="s">&#39;Earliest  :&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span>
+<span class="k">print</span> <span class="s">&#39;Latest    :&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">max</span>
+<span class="k">print</span> <span class="s">&#39;Resolution:&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">resolution</span>
+</pre></div>
+</div>
+<p><em>min</em> と <em>max</em> のクラス属性は、1日の時間の有効範囲を表します。</p>
+<div class="highlight-python"><pre>$ python datetime_time_minmax.py
+Earliest  : 00:00:00
+Latest    : 23:59:59.999999
+Resolution: 0:00:00.000001</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> の <tt class="xref py py-attr docutils literal"><span class="pre">resolution</span></tt> で取得できるのはマイクロ秒までに制限されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span> <span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%02.1f</span><span class="s"> :&#39;</span> <span class="o">%</span> <span class="n">m</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p>実際、マイクロ秒に小数を使用すると <a class="reference internal" href="../exceptions/index.html#exceptions-typeerror"><em>TypeError</em></a> が発生します。</p>
+<div class="highlight-python"><pre>$ python datetime_time_resolution.py
+1.0 : 00:00:00.000001
+0.0 : 00:00:00
+0.1 : ERROR: integer argument expected, got float
+0.6 : ERROR: integer argument expected, got float</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>日付<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>カレンダーの日付は <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> クラスで表されます。このインスタンスは、年・月・日の属性をもちます。 <tt class="xref py py-func docutils literal"><span class="pre">today()</span></tt> クラスメソッドで簡単に今日の日付を表せます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">today</span>
+<span class="k">print</span> <span class="s">&#39;ctime:&#39;</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;tuple:&#39;</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;ordinal:&#39;</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">toordinal</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Year:&#39;</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">year</span>
+<span class="k">print</span> <span class="s">&#39;Mon :&#39;</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">month</span>
+<span class="k">print</span> <span class="s">&#39;Day :&#39;</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">day</span>
+</pre></div>
+</div>
+<p>このサンプルは複数のフォーマットで今日の日付を表示します。</p>
+<div class="highlight-python"><pre>$ python datetime_date.py
+2013-02-17
+ctime: Sun Feb 17 00:00:00 2013
+tuple: time.struct_time(tm_year=2013, tm_mon=2, tm_mday=17, tm_hour=0, tm_min=0, tm_sec=0, tm_wday=6, tm_yday=48, tm_isdst=-1)
+ordinal: 734916
+Year: 2013
+Mon : 2
+Day : 17</pre>
+</div>
+<p>(1年の1月1日から数え始める初期のグレゴリオ序数を使用して)整数からインスタンスを作成するクラスメソッドや POSIX タイムスタンプもあります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">o</span> <span class="o">=</span> <span class="mi">733114</span>
+<span class="k">print</span> <span class="s">&#39;o:&#39;</span><span class="p">,</span> <span class="n">o</span>
+<span class="k">print</span> <span class="s">&#39;fromordinal(o):&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">fromordinal</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;t:&#39;</span><span class="p">,</span> <span class="n">t</span>
+<span class="k">print</span> <span class="s">&#39;fromtimestamp(t):&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルは <tt class="xref py py-func docutils literal"><span class="pre">fromordinal()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">fromtimestamp()</span></tt> が使用する値が違うことを説明します。</p>
+<div class="highlight-python"><pre>$ python datetime_date_fromordinal.py
+o: 733114
+fromordinal(o): 2008-03-13
+t: 1361118741.83
+fromtimestamp(t): 2013-02-17</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> クラスと同様に、日付の有効範囲は <em>min</em> と <em>max</em> 属性で決められます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="k">print</span> <span class="s">&#39;Earliest  :&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">min</span>
+<span class="k">print</span> <span class="s">&#39;Latest    :&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">max</span>
+<span class="k">print</span> <span class="s">&#39;Resolution:&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">resolution</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> の <tt class="xref py py-attr docutils literal"><span class="pre">resolution</span></tt> で取得できるのは丸一日です。</p>
+<div class="highlight-python"><pre>$ python datetime_date_minmax.py
+Earliest  : 0001-01-01
+Latest    : 9999-12-31
+Resolution: 1 day, 0:00:00</pre>
+</div>
+<p>新たな <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> インスタンスを作成する別の方法は、既存の <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> の <tt class="xref py py-func docutils literal"><span class="pre">replace()</span></tt> メソッドを使用します。例えば、日と月はそのままで年を変更できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2008</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;d1:&#39;</span><span class="p">,</span> <span class="n">d1</span>
+
+<span class="n">d2</span> <span class="o">=</span> <span class="n">d1</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">2009</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;d2:&#39;</span><span class="p">,</span> <span class="n">d2</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python datetime_date_replace.py
+d1: 2008-03-12
+d2: 2009-03-12</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>タイムデルタ<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-func docutils literal"><span class="pre">replace()</span></tt> を使用することだけが未来/過去の日付を計算する方法ではありません。 <a class="reference internal" href="#module-datetime" title="日付/時間の操作"><tt class="xref py py-mod docutils literal"><span class="pre">datetime</span></tt></a> の <tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt> を使用して基本的な日付計算ができます。日付の引き算をすると <tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt> を生成します。 <tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt> は足し算や引き算により別の日付を生成します。 <tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt> の内部的な値は、日・秒・マイクロ秒で格納されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="k">print</span> <span class="s">&quot;microseconds:&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">microseconds</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;milliseconds:&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">milliseconds</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;seconds     :&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;minutes     :&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;hours       :&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;days        :&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;weeks       :&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>コンストラクタへ渡される中間の値は、日、秒、マイクロ秒に変換されます。</p>
+<div class="highlight-python"><pre>$ python datetime_timedelta.py
+microseconds: 0:00:00.000001
+milliseconds: 0:00:00.001000
+seconds     : 0:00:01
+minutes     : 0:01:00
+hours       : 1:00:00
+days        : 1 day, 0:00:00
+weeks       : 7 days, 0:00:00</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>日付計算<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>日付の計算は標準の算術演算子を使用します。 <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> オブジェクトを扱うこのサンプルは、新しい日付を計算する <tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt> オブジェクトの使い方と、(マイナスのデルタ値を含む) <tt class="xref py py-class docutils literal"><span class="pre">timedelta</span></tt> を生成する <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> インスタンスの引き算を説明します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Today    :&#39;</span><span class="p">,</span> <span class="n">today</span>
+
+<span class="n">one_day</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;One day  :&#39;</span><span class="p">,</span> <span class="n">one_day</span>
+
+<span class="n">yesterday</span> <span class="o">=</span> <span class="n">today</span> <span class="o">-</span> <span class="n">one_day</span>
+<span class="k">print</span> <span class="s">&#39;Yesterday:&#39;</span><span class="p">,</span> <span class="n">yesterday</span>
+
+<span class="n">tomorrow</span> <span class="o">=</span> <span class="n">today</span> <span class="o">+</span> <span class="n">one_day</span>
+<span class="k">print</span> <span class="s">&#39;Tomorrow :&#39;</span><span class="p">,</span> <span class="n">tomorrow</span>
+
+<span class="k">print</span> <span class="s">&#39;tomorrow - yesterday:&#39;</span><span class="p">,</span> <span class="n">tomorrow</span> <span class="o">-</span> <span class="n">yesterday</span>
+<span class="k">print</span> <span class="s">&#39;yesterday - tomorrow:&#39;</span><span class="p">,</span> <span class="n">yesterday</span> <span class="o">-</span> <span class="n">tomorrow</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python datetime_date_math.py
+Today    : 2013-02-17
+One day  : 1 day, 0:00:00
+Yesterday: 2013-02-16
+Tomorrow : 2013-02-18
+tomorrow - yesterday: 2 days, 0:00:00
+yesterday - tomorrow: -2 days, 0:00:00</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>値の比較<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> の両方とも、どちらの日時が早いか、遅いかを標準の演算子で比較できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">print</span> <span class="s">&#39;Times:&#39;</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">t1:&#39;</span><span class="p">,</span> <span class="n">t1</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">t2:&#39;</span><span class="p">,</span> <span class="n">t2</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">t1 &lt; t2:&#39;</span><span class="p">,</span> <span class="n">t1</span> <span class="o">&lt;</span> <span class="n">t2</span>
+
+<span class="k">print</span> <span class="s">&#39;Dates:&#39;</span>
+<span class="n">d1</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">d1:&#39;</span><span class="p">,</span> <span class="n">d1</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">d2:&#39;</span><span class="p">,</span> <span class="n">d2</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">d1 &gt; d2:&#39;</span><span class="p">,</span> <span class="n">d1</span> <span class="o">&gt;</span> <span class="n">d2</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python datetime_comparing.py
+Times:
+        t1: 12:55:00
+        t2: 13:05:00
+        t1 &lt; t2: True
+Dates:
+        d1: 2013-02-17
+        d2: 2013-02-18
+        d1 &gt; d2: False</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>日付と時間を組み合わせる<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> の両方の値を保持するには <tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> クラスを使用してください。 <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> と同様に、その他の共通の値から <tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> インスタンスを作成する便利なクラスメソッドがあります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="k">print</span> <span class="s">&#39;Now    :&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Today  :&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;UTC Now:&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;year&#39;</span><span class="p">,</span> <span class="s">&#39;month&#39;</span><span class="p">,</span> <span class="s">&#39;day&#39;</span><span class="p">,</span> <span class="s">&#39;hour&#39;</span><span class="p">,</span> <span class="s">&#39;minute&#39;</span><span class="p">,</span> <span class="s">&#39;second&#39;</span><span class="p">,</span> <span class="s">&#39;microsecond&#39;</span><span class="p">]:</span>
+    <span class="k">print</span> <span class="n">attr</span><span class="p">,</span> <span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>予想通り、 <tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> インスタンスは <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> オブジェクトの全ての属性をもちます。</p>
+<div class="highlight-python"><pre>$ python datetime_datetime.py
+Now    : 2013-02-17 11:32:21.977991
+Today  : 2013-02-17 11:32:21.978808
+UTC Now: 2013-02-17 16:32:21.978823
+year : 2013
+month : 2
+day : 17
+hour : 11
+minute : 32
+second : 21
+microsecond : 979096</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> と同様に、 <tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> は、新たなインスタンスを作成する便利なクラスメソッドを提供します。 <tt class="xref py py-func docutils literal"><span class="pre">fromordinal()</span></tt> や <tt class="xref py py-func docutils literal"><span class="pre">fromtimestamp()</span></tt> もあります。さらに <tt class="xref py py-func docutils literal"><span class="pre">combine()</span></tt> は、既に <tt class="xref py py-class docutils literal"><span class="pre">date</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">time</span></tt> インスタンスがあって <tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> を作成したいときに便利です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;t :&#39;</span><span class="p">,</span> <span class="n">t</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;d :&#39;</span><span class="p">,</span> <span class="n">d</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;dt:&#39;</span><span class="p">,</span> <span class="n">dt</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python datetime_datetime_combine.py
+t : 01:02:03
+d : 2013-02-17
+dt: 2013-02-17 01:02:03</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>フォーマットと解析<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> オブジェクトのデフォルトの文字列表現は、 <a class="reference external" href="http://www.iso.org/iso/support/faqs/faqs_widely_used_standards/widely_used_standards_other/date_and_time_format.htm">ISO 8601</a> フォーマット (<tt class="docutils literal"><span class="pre">YYYY-MM-DDTHH:MM:SS.mmmmmm</span></tt>) を使用します。 <tt class="xref py py-func docutils literal"><span class="pre">strftime()</span></tt> を使用して別のフォーマットも生成できます。同様に、入力データが <tt class="xref py py-func docutils literal"><span class="pre">time.strptime()</span></tt> で解析できるタイムスタンプをもつ場合、 <tt class="xref py py-func docutils literal"><span class="pre">datetime.strptime()</span></tt> はそのタイムスタンプを <tt class="xref py py-class docutils literal"><span class="pre">datetime</span></tt> インスタンスに変換するのに便利です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="n">format</span> <span class="o">=</span> <span class="s">&quot;%a %b </span><span class="si">%d</span><span class="s"> %H:%M:%S %Y&quot;</span>
+
+<span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;ISO     :&#39;</span><span class="p">,</span> <span class="n">today</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">today</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;strftime:&#39;</span><span class="p">,</span> <span class="n">s</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">format</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;strptime:&#39;</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python datetime_datetime_strptime.py
+ISO     : 2013-02-17 11:32:22.027173
+strftime: Sun Feb 17 11:32:22 2013
+strptime: Sun Feb 17 11:32:22 2013</pre>
+</div>
+</div>
+<div class="section" id="id8">
+<h2>タイムゾーン<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-datetime" title="日付/時間の操作"><tt class="xref py py-mod docutils literal"><span class="pre">datetime</span></tt></a> モジュールの内部で、タイムゾーンは <tt class="xref py py-class docutils literal"><span class="pre">tzinfo</span></tt> のサブクラスで表されます。 <tt class="xref py py-class docutils literal"><span class="pre">tzinfo</span></tt> は抽象ベースクラスなので、サブクラスを定義して便利なメソッドをもつ適切な実装を提供する必要があります。標準ライブラリドキュメントではサンプル実装が提供されていますが、残念ながら <a class="reference internal" href="#module-datetime" title="日付/時間の操作"><tt class="xref py py-mod docutils literal"><span class="pre">datetime</span></tt></a> 内には実際の実装は含まれていません。独自クラスの作成に関する詳細と DST 対応クラスと同様に固定長のオフセットを使用するサンプルについては、標準ライブラリドキュメントを参照してください。 <a class="reference external" href="http://pytz.sourceforge.net/">pytz</a> もタイムゾーンの実装の詳細を調べるのに良い情報源です。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-datetime.html">datetime</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../calendar/index.html#module-calendar" title="calendar モジュールは年/月/週を管理する日付を処理するクラスを実装する"><tt class="xref py py-mod docutils literal"><span class="pre">calendar</span></tt></a></dt>
+<dd><a class="reference internal" href="../calendar/index.html#module-calendar" title="calendar モジュールは年/月/週を管理する日付を処理するクラスを実装する"><tt class="xref py py-mod docutils literal"><span class="pre">calendar</span></tt></a> モジュール</dd>
+<dt><a class="reference internal" href="../time/index.html#module-time" title="時間を扱う関数"><tt class="xref py py-mod docutils literal"><span class="pre">time</span></tt></a></dt>
+<dd><a class="reference internal" href="../time/index.html#module-time" title="時間を扱う関数"><tt class="xref py py-mod docutils literal"><span class="pre">time</span></tt></a> モジュール</dd>
+<dt><a class="reference external" href="http://labix.org/python-dateutil">dateutil</a></dt>
+<dd>Labix の <a class="reference internal" href="#module-datetime" title="日付/時間の操作"><tt class="xref py py-mod docutils literal"><span class="pre">datetime</span></tt></a> を機能拡張する dateutil モジュール</dd>
+<dt><a class="reference external" href="http://en.wikipedia.org/wiki/Proleptic_Gregorian_calendar">WikiPedia: Proleptic Gregorian calendar</a></dt>
+<dd>グレゴリアンカレンダシステムの説明</dd>
+<dt><a class="reference external" href="http://pytz.sourceforge.net/">pytz</a></dt>
+<dd>世界のタイムゾーンデータベース</dd>
+<dt><a class="reference external" href="http://www.iso.org/iso/support/faqs/faqs_widely_used_standards/widely_used_standards_other/date_and_time_format.htm">ISO 8601</a></dt>
+<dd>日付と時間の数値表現の標準規格</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../calendar/index.html" title="calendar – 日付の処理"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../array/index.html" title="array – データ型固定のシーケンス"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" >データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

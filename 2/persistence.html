@@ -1,0 +1,262 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>データの永続化 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '#',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="_static/jquery.js"></script>
+<script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="contents.html" />
+    <link rel="index" title="インデックス" href="genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="index.html" />
+    <link rel="next" title="anydbm – DBM スタイルのデータベースへのアクセス" href="anydbm/index.html" />
+    <link rel="prev" title="zlib – GNU zlib 圧縮ライブラリへの低レベルアクセス" href="zlib/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">    <h3>ナビゲーション</h3>
+      <p>
+    <a href="contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="zlib/index.html" title="前の章へ"><strong>前:</strong> zlib &#8211; GNU zlib 圧縮ライブラリへの低レベルアクセス</a><br/>
+          <a href="anydbm/index.html" title="次の章へ"><strong>次:</strong> anydbm &#8211; DBM スタイルのデータベースへのアクセス</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="_sources/persistence.txt"
+               rel="nofollow">Show Source</a>
+      </p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="anydbm/index.html" title="anydbm – DBM スタイルのデータベースへのアクセス"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="zlib/index.html" title="zlib – GNU zlib 圧縮ライブラリへの低レベルアクセス"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">PyMOTW</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <span class="target" id="data-persistence"></span><div class="section" id="id1">
+<h1>データの永続化<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>標準ライブラリにはデータの永続化のために様々なモジュールがあります。再利用のために Python オブジェクトからデータを格納する最も一般的なパターンは <a class="reference internal" href="pickle/index.html#module-pickle" title="Python オブジェクトシリアライゼーション"><tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt></a> でシリアライズすることです。そして、そのデータをファイルへ直接的に書き込むか、 <em>dbm</em> API で利用できる多くの Key-Value 型のデータベースから1つを選択してそのデータを格納します。もし dbm フォーマットの下位層に関して考慮しないなら、 <a class="reference internal" href="shelve/index.html#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> が最も適切な永続化インタフェースを提供します。下位層を考慮するなら、直接的に他の dbm ベースのモジュールから選択できます。</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="anydbm/index.html">anydbm &#8211; DBM スタイルのデータベースへのアクセス</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dbhash/index.html">dbhash &#8211; BSD データベースライブラリ向けの DBM スタイル API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dbm/index.html">dbm &#8211; シンプルなデータベースインタフェース</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dumbdbm/index.html">dumbdbm &#8211; 移植性の高い DBM 実装</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gdbm/index.html">gdbm &#8211; dbm ライブラリの GNU バージョン</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pickle/index.html">pickle と cPickle &#8211; Python オブジェクトシリアライゼーション</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shelve/index.html">shelve &#8211; 任意の Python オブジェクトの永続ストレージ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whichdb/index.html">whichdb &#8211; DBM スタイルのデータベースフォーマットを確認する</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite3/index.html">sqlite3 &#8211; 組み込み関係データベース</a></li>
+</ul>
+</div>
+<p>web 上でシリアライズするには、フォーマットの移植性の高さから <a class="reference internal" href="json/index.html#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> モジュールが最も良い選択です。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="articles/data_persistence.html#article-data-persistence"><em>データの永続化と変換</em></a></p>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="anydbm/index.html" title="anydbm – DBM スタイルのデータベースへのアクセス"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="zlib/index.html" title="zlib – GNU zlib 圧縮ライブラリへの低レベルアクセス"
+             >previous</a> |</li>
+        <li><a href="contents.html">PyMOTW</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

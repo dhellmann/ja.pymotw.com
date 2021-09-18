@@ -1,0 +1,521 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>EasyDialogs &#8211; Mac OS X 向けの Carbon ダイアログ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="種々雑多なもの" href="../miscelaneous.html" />
+    <link rel="next" title="plistlib – Mac OS X のプロパティリストファイルを扱う" href="../plistlib/index.html" />
+    <link rel="prev" title="種々雑多なもの" href="../miscelaneous.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">EasyDialogs &#8211; Mac OS X 向けの Carbon ダイアログ</a><ul>
+<li><a class="reference internal" href="#id1">メッセージ</a></li>
+<li><a class="reference internal" href="#id2">プログレスバー</a></li>
+<li><a class="reference internal" href="#id3">シンプルプロンプト</a></li>
+<li><a class="reference internal" href="#id4">パスワード</a></li>
+<li><a class="reference internal" href="#id5">ファイルとディレクトリ</a></li>
+<li><a class="reference internal" href="#getargv">GetArgv</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../miscelaneous.html" title="前の章へ"><strong>前:</strong> 種々雑多なもの</a><br/>
+          <a href="../plistlib/index.html" title="次の章へ"><strong>次:</strong> plistlib &#8211; Mac OS X のプロパティリストファイルを扱う</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/EasyDialogs/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../plistlib/index.html" title="plistlib – Mac OS X のプロパティリストファイルを扱う"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../miscelaneous.html" title="種々雑多なもの"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../miscelaneous.html" accesskey="U">種々雑多なもの</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="easydialogs-mac-os-x-carbon">
+<h1>EasyDialogs &#8211; Mac OS X 向けの Carbon ダイアログ<a class="headerlink" href="#easydialogs-mac-os-x-carbon" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-EasyDialogs"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">Python から Carbon ダイアログのシンプルなインタフェースを提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できる バージョン:</th><td class="field-body">2.0 以上、マッキントッシュのみ(Windows の実装は以下のリファレンスを参照)</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-EasyDialogs" title="Python から Carbon ダイアログのシンプルなインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">EasyDialogs</span></tt></a> モジュールは、ファイルやディレクトリ名をユーザーに尋ねる普通のダイアログと同様に、シンプルなメッセージとプロンプトダイアログで動作するクラスや関数を提供します。このダイアログは Carbon API を使用します。この記事で説明しないオプションの詳細は Apple の <a class="reference external" href="http://developer.apple.com/documentation/Carbon/Reference/Navigation_Services_Ref/Reference/reference.html">Navigation Services Reference</a> を参照してください。</p>
+<div class="section" id="id1">
+<h2>メッセージ<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>シンプルな <tt class="xref py py-func docutils literal"><span class="pre">Message()</span></tt> 関数はユーザへのメッセージを含むモーダルダイアログを表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+
+<span class="n">EasyDialogs</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="s">&#39;This is a Message dialog&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/MessageDialog.png" src="../_images/MessageDialog.png" />
+<p><tt class="docutils literal"><span class="pre">ok</span></tt> 引数で &#8220;OK&#8221; ボタンのラベルを簡単に変更できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+
+<span class="n">EasyDialogs</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="s">&#39;The button label has changed&#39;</span><span class="p">,</span> <span class="n">ok</span><span class="o">=</span><span class="s">&#39;Continue&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/MessageDialog_continue.png" src="../_images/MessageDialog_continue.png" />
+</div>
+<div class="section" id="id2">
+<h2>プログレスバー<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">ProgressBar</span></tt> クラスは、進捗メータをもつモードレスダイアログを管理します。それは確定モード(どのぐらいの処理を終了したかが分かるとき)か、不定モード(アプリケーションが動作していることは表示したいが、どのぐらいの処理が行われるか分からないとき)で操作できます。そのコンストラクタは、タイトル、最大値、操作のカレントフェーズで表示するラベルの引数を取ります。</p>
+<p>確定モードでは、処理の段階の数、ダウンロードするデータサイズ等を <tt class="docutils literal"><span class="pre">maxval</span></tt> 引数にセットします。次に 0 から <tt class="docutils literal"><span class="pre">maxval</span></tt> へ進捗を増加させる <tt class="xref py py-func docutils literal"><span class="pre">incr()</span></tt> メソッドを使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">meter</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="s">&#39;Making progress...&#39;</span><span class="p">,</span>
+                                <span class="n">maxval</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                <span class="n">label</span><span class="o">=</span><span class="s">&#39;Starting&#39;</span><span class="p">,</span>
+                                <span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="s">&#39;Phase </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span>
+    <span class="k">print</span> <span class="n">phase</span>
+    <span class="n">meter</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+    <span class="n">meter</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Done with loop&#39;</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">del</span> <span class="n">meter</span>
+<span class="k">print</span> <span class="s">&#39;The dialog should be gone now&#39;</span>
+
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ProgressBar_partial.png" src="../_images/ProgressBar_partial.png" />
+<div class="highlight-python"><pre>$ python EasyDialogs_ProgressBar.py
+Phase 1
+Phase 2
+Phase 3
+Phase 4
+Phase 5
+Phase 6
+Phase 7
+Phase 8
+Phase 9
+Phase 10
+Done with loop</pre>
+</div>
+<img alt="../_images/ProgressBar_complete.png" src="../_images/ProgressBar_complete.png" />
+<div class="highlight-python"><pre>The dialog should be gone now</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">del</span></tt> を使用して <tt class="xref py py-class docutils literal"><span class="pre">ProgressBar</span></tt> インスタンスを明示的に削除すると画面からも削除されます。</p>
+<p>一様ではない進捗状況を測定している場合、進捗メータを <tt class="xref py py-func docutils literal"><span class="pre">incr()</span></tt> ではなく <tt class="xref py py-func docutils literal"><span class="pre">set()</span></tt> に変更してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">meter</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="s">&#39;Making progress...&#39;</span><span class="p">,</span>
+                                <span class="n">maxval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                <span class="n">label</span><span class="o">=</span><span class="s">&#39;Starting&#39;</span><span class="p">,</span>
+                                <span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1001</span><span class="p">,</span> <span class="mi">123</span><span class="p">):</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;Bytes: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span>
+    <span class="n">meter</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">meter</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ProgressBar_set_partial.png" src="../_images/ProgressBar_set_partial.png" />
+</div>
+<div class="section" id="id3">
+<h2>シンプルプロンプト<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>さらに <a class="reference internal" href="#module-EasyDialogs" title="Python から Carbon ダイアログのシンプルなインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">EasyDialogs</span></tt></a> はユーザに情報を問い合わせることもできます。ユーザにシンプルな文字列を入力させるモーダルダイアログを表示するには <tt class="xref py py-class docutils literal"><span class="pre">AskString</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">AskString</span><span class="p">(</span><span class="s">&#39;What is your favorite color?&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;RESPONSE:&#39;</span><span class="p">,</span> <span class="n">response</span>
+</pre></div>
+</div>
+<img alt="../_images/AskString.png" src="../_images/AskString.png" />
+<p>返り値はユーザの入力次第です。ユーザが入力したテキストか、</p>
+<div class="highlight-python"><pre>$ python EasyDialogs_AskString.py
+RESPONSE: blue</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">Cancel</span></tt> ボタンを押した場合は <tt class="xref docutils literal"><span class="pre">None</span></tt> が返されます。</p>
+<div class="highlight-python"><pre>$ python EasyDialogs_AskString.py
+RESPONSE: None</pre>
+</div>
+<p>文字列は254文字の長さ制限があります。それ以上長い文字列が入力された場合は切り捨てられます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="n">default</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="k">print</span> <span class="s">&#39;len(default)=&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">AskString</span><span class="p">(</span><span class="s">&#39;Enter a long string&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;len(response)=&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/AskString_too_long.png" src="../_images/AskString_too_long.png" />
+<div class="highlight-python"><pre>$ python EasyDialogs_AskString_too_long.py
+len(default)= 520
+len(response)= 254</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>パスワード<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>画面にテキストを表示しない秘密の値をユーザへ入力させるには <tt class="xref py py-class docutils literal"><span class="pre">AskPassword</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">AskPassword</span><span class="p">(</span><span class="s">&#39;Password:&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;s3cr3t&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Shh!:&#39;</span><span class="p">,</span> <span class="n">response</span>
+</pre></div>
+</div>
+<img alt="../_images/AskPassword.png" src="../_images/AskPassword.png" />
+<div class="highlight-python"><pre>$ python EasyDialogs_AskPassword.py
+Shh!: s3cr3t</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">AskPassword</span></tt> の <tt class="docutils literal"><span class="pre">Ok</span></tt> / <tt class="docutils literal"><span class="pre">Cancel</span></tt> の動作は <tt class="xref py py-class docutils literal"><span class="pre">AskString</span></tt> と同じです。</p>
+</div>
+<div class="section" id="id5">
+<h2>ファイルとディレクトリ<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>ファイルまたはディレクトリ名を尋ねるための特別な関数があります。これらはネイティブのファイルセレクタダイアログを使用するので、ユーザはファイルのパスを入力する必要はありません。例えば、ユーザに開くファイルを尋ねるには <tt class="xref py py-class docutils literal"><span class="pre">AskFileForOpen</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">AskFileForOpen</span><span class="p">(</span>
+    <span class="n">message</span><span class="o">=</span><span class="s">&#39;Select a Python source file&#39;</span><span class="p">,</span>
+    <span class="n">defaultLocation</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+    <span class="n">wanted</span><span class="o">=</span><span class="nb">unicode</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;Selected:&#39;</span><span class="p">,</span> <span class="n">filename</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">wanted=unicode</span></tt> の引数は、ユニコード文字列としてファイル名を返すように <tt class="xref py py-class docutils literal"><span class="pre">AskFileForOpen</span></tt> へ伝えます。その他の利用できる返り値の型は、ASCII 文字列とファイルリファレンスを扱う Apple のデータ構造です。</p>
+<p><tt class="docutils literal"><span class="pre">DefaultLocation</span></tt> を指定することで、このサンプルはカレントのワークディレクトリでダイアログを初期化します。それでもユーザーはファイルシステムを移動して任意の操作ができます。</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">AskFileForOpen</span></tt> に対するその他のオプションは、表示されるファイルをフィルタしたり、ユーザへ見せるファイルの種別コードを制御したり、コールバック関数でダイアログとやり取りできます。詳細は標準ライブラリドキュメントと Apple のリファレンスガイドを参照してください。</p>
+<img alt="../_images/AskForFileOpen.png" src="../_images/AskForFileOpen.png" />
+<div class="highlight-python"><pre>$ python EasyDialogs_AskFileForOpen.py
+Selected: /Users/dhellmann/Documents/PyMOTW/in_progress/EasyDialogs/EasyDialogs_AskFileForOpen.py</pre>
+</div>
+<p>ファイルを保存したときにユーザへ新たなファイル名を表示するには <tt class="xref py py-class docutils literal"><span class="pre">AskFileForSave</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">AskFileForSave</span><span class="p">(</span>
+    <span class="n">message</span><span class="o">=</span><span class="s">&#39;Name the destination&#39;</span><span class="p">,</span>
+    <span class="n">defaultLocation</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+    <span class="n">wanted</span><span class="o">=</span><span class="nb">unicode</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;Selected:&#39;</span><span class="p">,</span> <span class="n">filename</span>
+</pre></div>
+</div>
+<img alt="../_images/AskFileForSave.png" src="../_images/AskFileForSave.png" />
+<div class="highlight-python"><pre>$ python EasyDialogs_AskFileForSave.py
+Selected: /Users/dhellmann/Documents/PyMOTW/in_progress/EasyDialogs/new_file.py</pre>
+</div>
+<p>ユーザにディレクトリを選択させる必要がある場合は <tt class="xref py py-class docutils literal"><span class="pre">AskFolder</span></tt> を使用してください。このダイアログは新しいフォルダを作成できるボタンもあります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">AskFolder</span><span class="p">(</span>
+    <span class="n">message</span><span class="o">=</span><span class="s">&#39;Name the destination&#39;</span><span class="p">,</span>
+    <span class="n">defaultLocation</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+    <span class="n">wanted</span><span class="o">=</span><span class="nb">unicode</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;Selected:&#39;</span><span class="p">,</span> <span class="n">filename</span>
+</pre></div>
+</div>
+<img alt="../_images/AskFolder.png" src="../_images/AskFolder.png" />
+<div class="highlight-python"><pre>$ python EasyDialogs_AskFolder.py
+Selected: /Users/dhellmann/Documents/PyMOTW/in_progress/EasyDialogs</pre>
+</div>
+</div>
+<div class="section" id="getargv">
+<h2>GetArgv<a class="headerlink" href="#getargv" title="Permalink to this headline">¶</a></h2>
+<p>かなり複雑なダイアログ <tt class="xref py py-class docutils literal"><span class="pre">GetArgv</span></tt> は、メニューからオプションを選択することでユーザにコマンドライン文字列を作成させます。これは <a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a> 構文で有効なオプションを記述するために、 <a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a> で解析できる文字列のリストを返します。今週の私の調査では、ユーザがコマンドラインで引数を指定しないときに <tt class="xref py py-class docutils literal"><span class="pre">GetArgv</span></tt> を使用するスクリプトをいくつか見つけました。</p>
+<p>Python インタープリタでサポートされているオプションを使用してコマンドを作成するサンプルをみてみましょう。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">EasyDialogs</span>
+
+<span class="n">arguments</span> <span class="o">=</span> <span class="n">EasyDialogs</span><span class="o">.</span><span class="n">GetArgv</span><span class="p">([</span> 
+        <span class="p">(</span><span class="s">&#39;c=&#39;</span><span class="p">,</span> <span class="s">&#39;program passed in as string (terminates option list)&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;d&#39;</span><span class="p">,</span> <span class="s">&#39;Debug&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="s">&#39;Ignore environment variables&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;Inspect interactively after running&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;m=&#39;</span><span class="p">,</span> <span class="s">&#39;run library module as a script (terminates option list)&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">,</span> <span class="s">&#39;Optimize generated bytecode&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;Q=&#39;</span><span class="p">,</span> <span class="s">&#39;division options: -Qold (default), -Qwarn, -Qwarnall, -Qnew&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;S&#39;</span><span class="p">,</span> <span class="s">&quot;don&#39;t imply &#39;import site&#39; on initialization&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;issue warnings about inconsistent tab usage&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;tt&#39;</span><span class="p">,</span> <span class="s">&#39;issue errors about inconsistent tab usage&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;unbuffered binary stdout and stderr&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;v&#39;</span><span class="p">,</span> <span class="s">&#39;verbose (trace import statements)&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;V&#39;</span><span class="p">,</span> <span class="s">&#39;print the Python version number and exit&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;W=&#39;</span><span class="p">,</span> <span class="s">&#39;warning control  (arg is action:message:category:module:lineno)&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;skip first line of source, allowing use of non-Unix forms of #!cmd&#39;</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">commandlist</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;python&#39;</span><span class="p">,</span> <span class="s">&#39;Default Interpreter&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;python2.5&#39;</span><span class="p">,</span> <span class="s">&#39;Python 2.5&#39;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;pyhton2.4&#39;</span><span class="p">,</span> <span class="s">&#39;Python 2.4&#39;</span><span class="p">),</span>
+                     <span class="p">],</span>
+        <span class="n">addoldfile</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">addnewfile</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">addfolder</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="p">)</span>
+<span class="k">print</span> <span class="n">arguments</span>
+</pre></div>
+</div>
+<img alt="../_images/GetArgv_1.png" src="../_images/GetArgv_1.png" />
+<p>最初の引数はオプションの識別子とテキストの説明を含むタプルのリストです。その識別子はシンプルなブーリアンスイッチを一文字で表せます。引数を取る一文字オプションにコロン(&#8220;:&#8221;)か、等号(&#8220;=&#8221;)が続きます。複数文字は長いスイッチです(&#8220;opt&#8221; は &#8220;&#8211;opt&#8221; に変換されます)。引数を取る長いオプション名はコロンか、等号に続く複数の文字列です。オプションの説明はダイアログで表示される文字列です。</p>
+<img alt="../_images/GetArgv_2.png" src="../_images/GetArgv_2.png" />
+<p>このダイアログは4つのセクションに分かれています。上部は指定したオプションのリストです。ユーザーはリストからオプションを選択できます。オプションが引数を取る場合、テキストフィールドが表示されるのでユーザーが値を入力できます。 <tt class="docutils literal"><span class="pre">Add</span></tt> ボタンは、選択されたオプションをダイアログ下部のコマンドラインフィールドに追加します。</p>
+<img alt="../_images/GetArgv_3.png" src="../_images/GetArgv_3.png" />
+<p><tt class="xref py py-class docutils literal"><span class="pre">GetArgv</span></tt> への2番目の引数は、コマンドとその説明のリストです。ユーザーは、ダイアログの中央のメニューから引数リストに含められるコマンドを選択できます。</p>
+<img alt="../_images/GetArgv_4.png" src="../_images/GetArgv_4.png" />
+<p><tt class="docutils literal"><span class="pre">addoldfile</span></tt>, <tt class="docutils literal"><span class="pre">addnewfile</span></tt>, <tt class="docutils literal"><span class="pre">addfolder</span></tt> の3つの引数は、ボタンのダイアログの3番目のセクションにあるボタンの内容を設定します。このサンプルでは <tt class="docutils literal"><span class="pre">Add</span> <span class="pre">file...</span></tt> ボタンのみが有効です。それは Python インタープリタがディレクトリや存在しないファイルを引数として受け取らないからです。</p>
+<p>ダイアログの下部は、ユーザが作成したコマンドラインです。ユーザが <tt class="docutils literal"><span class="pre">OK</span></tt> を押すと、 <tt class="xref py py-class docutils literal"><span class="pre">GetArgv</span></tt> は <tt class="xref py py-attr docutils literal"><span class="pre">sys.argv</span></tt> と同様に全てのオプションのリストを返します。</p>
+<div class="highlight-python"><pre>$ python EasyDialogs_GetArgv.py
+['python', '-d', '-v', '/Users/dhellmann/Documents/PyMOTW/in_progress/EasyDialogs/EasyDialogs_GetArgv.py']</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/easydialogs.html">EasyDialogs</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference external" href="http://developer.apple.com/documentation/Carbon/Reference/Navigation_Services_Ref/Reference/reference.html">Navigation Services Reference</a></dt>
+<dd>Mac OS X でファイルオブジェクトを扱う Apple の API ドキュメント</dd>
+<dt><a class="reference external" href="http://www.averdevelopment.com/python/EasyDialogs.html">EasyDialogs for Windows</a></dt>
+<dd>本モジュールの Windows バージョン</dd>
+<dt><a class="reference external" href="http://code.google.com/p/optparse-gui/">optparse-gui</a></dt>
+<dd><tt class="xref py py-class docutils literal"><span class="pre">GetArgv</span></tt> に <a class="reference internal" href="../optparse/index.html#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> を使うように置き換えたもの</dd>
+<dt><a class="reference external" href="http://easygui.sourceforge.net/">EasyGui</a></dt>
+<dd>シンプルでグラフィカルなユーザインタフェースを作成する同様のライブラリの移植版</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../plistlib/index.html" title="plistlib – Mac OS X のプロパティリストファイルを扱う"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../miscelaneous.html" title="種々雑多なもの"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../miscelaneous.html" >種々雑多なもの</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

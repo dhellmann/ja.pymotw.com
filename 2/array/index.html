@@ -1,0 +1,462 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>array &#8211; データ型固定のシーケンス - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データタイプ" href="../data_types.html" />
+    <link rel="next" title="datetime – 日付/時間の操作" href="../datetime/index.html" />
+    <link rel="prev" title="データタイプ" href="../data_types.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">array &#8211; データ型固定のシーケンス</a><ul>
+<li><a class="reference internal" href="#id1">アレイの初期化</a></li>
+<li><a class="reference internal" href="#id2">アレイを巧みに扱う</a></li>
+<li><a class="reference internal" href="#id3">アレイとファイル</a></li>
+<li><a class="reference internal" href="#id4">バイトオーダの代替</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../data_types.html" title="前の章へ"><strong>前:</strong> データタイプ</a><br/>
+          <a href="../datetime/index.html" title="次の章へ"><strong>次:</strong> datetime &#8211; 日付/時間の操作</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/array/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../datetime/index.html" title="datetime – 日付/時間の操作"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../data_types.html" title="データタイプ"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" accesskey="U">データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="module-array">
+<span id="array"></span><h1>array &#8211; データ型固定のシーケンス<a class="headerlink" href="#module-array" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">データ型を数値に固定したシーケンスを効率良く管理する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-array" title="データ型を数値に固定したシーケンスを効率良く管理する"><tt class="xref py py-mod docutils literal"><span class="pre">array</span></tt></a> モジュールは全ての要素が同じデータ型でなければいけないことを除けば :class:<tt class="docutils literal"><span class="pre">list</span></tt> そっくりのシーケンスデータ構造を定義します。サポートされているデータ型は全て数値か、バイト型のような古くからある固定長のデータ型になります。</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="33%" />
+<col width="46%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">コード</th>
+<th class="head">データ型</th>
+<th class="head">最小サイズ (バイト)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">c</span></tt></td>
+<td>character</td>
+<td>1</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">b</span></tt></td>
+<td>int</td>
+<td>1</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">B</span></tt></td>
+<td>int</td>
+<td>1</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">u</span></tt></td>
+<td>Unicode character</td>
+<td>2 or 4 (build-dependent)</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">h</span></tt></td>
+<td>int</td>
+<td>2</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">H</span></tt></td>
+<td>int</td>
+<td>2</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">i</span></tt></td>
+<td>int</td>
+<td>2</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">I</span></tt></td>
+<td>long</td>
+<td>2</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">l</span></tt></td>
+<td>int</td>
+<td>4</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">L</span></tt></td>
+<td>long</td>
+<td>4</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">f</span></tt></td>
+<td>float</td>
+<td>4</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">d</span></tt></td>
+<td>float</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="id1">
+<h2>アレイの初期化<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">array</span></tt> は許容されたデータ型を表す引数と、おそらくはアレイに格納する初期データシーケンスと一緒にインスタンス化されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">array</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="s">&#39;This is the array.&#39;</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;As string:&#39;</span><span class="p">,</span> <span class="n">s</span>
+<span class="k">print</span> <span class="s">&#39;As array :&#39;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s">&#39;As hex   :&#39;</span><span class="p">,</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>この例のアレイはバイト列を持つように設定されて単純な文字列で初期化されます。</p>
+<div class="highlight-python"><pre>$ python array_string.py
+As string: This is the array.
+As array : array('c', 'This is the array.')
+As hex   : 54686973206973207468652061727261792e</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>アレイを巧みに扱う<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">array</span></tt> は伸長できて、さらに他の Python シーケンスと同様に巧みに扱えます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">array</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Initial :&#39;</span><span class="p">,</span> <span class="n">a</span>
+
+<span class="n">a</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Extended:&#39;</span><span class="p">,</span> <span class="n">a</span>
+
+<span class="k">print</span> <span class="s">&#39;Slice   :&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+
+<span class="k">print</span> <span class="s">&#39;Iterator:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python array_sequence.py
+Initial : array('i', [0, 1, 2, 3, 4])
+Extended: array('i', [0, 1, 2, 3, 4, 0, 1, 2, 3, 4])
+Slice   : array('i', [3, 4, 0])
+Iterator: [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 0), (6, 1), (7, 2), (8, 3), (9, 4)]</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>アレイとファイル<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>アレイのコンテンツは効率的にコーディングされたビルトインメソッドを使用して、アレイへの書き込みとファイルからの読み込みを行うことができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">array</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;A1:&#39;</span><span class="p">,</span> <span class="n">a</span>
+
+<span class="c"># Write the array of numbers to the file</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span>
+<span class="n">a</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">file</span><span class="p">)</span> <span class="c"># must pass an *actual* file</span>
+<span class="n">output</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+<span class="c"># Read the raw data</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+<span class="n">raw_data</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Raw Contents:&#39;</span><span class="p">,</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+
+<span class="c"># Read the data into an array</span>
+<span class="nb">input</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">a2</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">)</span>
+<span class="n">a2</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;A2:&#39;</span><span class="p">,</span> <span class="n">a2</span>
+</pre></div>
+</div>
+<p>このサンプルは、直接バイナリファイルから &#8220;raw&#8221; データを読み込むのと、新たなアレイに格納してバイト型から適切な型へ変換するのを対比して説明しています。</p>
+<div class="highlight-python"><pre>$ python array_file.py
+A1: array('i', [0, 1, 2, 3, 4])
+Raw Contents: 0000000001000000020000000300000004000000
+A2: array('i', [0, 1, 2, 3, 4])</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>バイトオーダの代替<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>アレイ内のデータがネイティブのバイトオーダではない、又は違うバイトオーダを持つシステムで使用するファイルへ書き込まれる前にスワップ処理を行う必要がある場合、Python からその要素のスワップ処理を繰り返し適用せずにアレイ全体を簡単に変換できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">array</span>
+<span class="kn">import</span> <span class="nn">binascii</span>
+
+<span class="k">def</span> <span class="nf">to_hex</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="n">chars_per_item</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="mi">2</span> <span class="c"># 2 hex digits</span>
+    <span class="n">hex_version</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">num_chunks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hex_version</span><span class="p">)</span> <span class="o">/</span> <span class="n">chars_per_item</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">num_chunks</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">chars_per_item</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">chars_per_item</span>
+        <span class="k">yield</span> <span class="n">hex_version</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+
+<span class="n">a1</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">a2</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">a2</span><span class="o">.</span><span class="n">byteswap</span><span class="p">()</span>
+
+<span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%10s</span><span class="s"> </span><span class="si">%10s</span><span class="s"> </span><span class="si">%10s</span><span class="s"> </span><span class="si">%10s</span><span class="s">&#39;</span>
+<span class="k">print</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="s">&#39;A1 hex&#39;</span><span class="p">,</span> <span class="s">&#39;A1&#39;</span><span class="p">,</span> <span class="s">&#39;A2 hex&#39;</span><span class="p">,</span> <span class="s">&#39;A2&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">((</span><span class="s">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">to_hex</span><span class="p">(</span><span class="n">a1</span><span class="p">),</span> <span class="n">a1</span><span class="p">,</span> <span class="n">to_hex</span><span class="p">(</span><span class="n">a2</span><span class="p">),</span> <span class="n">a2</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">fmt</span> <span class="o">%</span> <span class="n">values</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python array_byteswap.py
+    A1 hex         A1     A2 hex         A2
+---------- ---------- ---------- ----------
+  00000000          0   00000000          0
+  01000000          1   00000001   16777216
+  02000000          2   00000002   33554432
+  03000000          3   00000003   50331648
+  04000000          4   00000004   67108864</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/array.html">array</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../struct/index.html#module-struct" title="文字列とバイナリデータを変換する"><tt class="xref py py-mod docutils literal"><span class="pre">struct</span></tt></a></dt>
+<dd>struct モジュール</dd>
+<dt><a class="reference external" href="http://www.scipy.org">Numerical Python</a></dt>
+<dd>NumPy は巨大なデータセットを効率的に扱うための Python ライブラリ</dd>
+</dl>
+<p class="last"><a class="reference internal" href="../articles/data_structures.html#article-data-structures"><em>インメモリデータ構造</em></a></p>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../datetime/index.html" title="datetime – 日付/時間の操作"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../data_types.html" title="データタイプ"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" >データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,895 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>optparse &#8211; getopt に代わるコマンドラインオプションパーサ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="汎用 OS サービス" href="../generic_os.html" />
+    <link rel="next" title="argparse – コマンドラインオプションと引数の解析" href="../argparse/index.html" />
+    <link rel="prev" title="getopt – Command line option parsing" href="../getopt/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">optparse &#8211; getopt に代わるコマンドラインオプションパーサ</a><ul>
+<li><a class="reference internal" href="#optionparser">OptionParser を作成する</a><ul>
+<li><a class="reference internal" href="#id1">オプションを定義する</a></li>
+<li><a class="reference internal" href="#id2">コマンドラインを解析する</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">短いオプション名と長いオプション名</a></li>
+<li><a class="reference internal" href="#getopt">getopt と比較する</a></li>
+<li><a class="reference internal" href="#id4">オプション値</a><ul>
+<li><a class="reference internal" href="#id5">デフォルト値の設定</a></li>
+<li><a class="reference internal" href="#id6">型変換</a></li>
+<li><a class="reference internal" href="#id7">選択肢</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">オプションのアクション</a><ul>
+<li><a class="reference internal" href="#id9">定数</a></li>
+<li><a class="reference internal" href="#id10">ブーリアンフラグ</a></li>
+<li><a class="reference internal" href="#id11">繰り返しオプション</a></li>
+<li><a class="reference internal" href="#id12">コールバック</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id13">ヘルプメッセージ</a><ul>
+<li><a class="reference internal" href="#id14">オプションを構成する</a></li>
+<li><a class="reference internal" href="#id15">アプリケーション設定</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../getopt/index.html" title="前の章へ"><strong>前:</strong> getopt &#8211; Command line option parsing</a><br/>
+          <a href="../argparse/index.html" title="次の章へ"><strong>次:</strong> argparse &#8211; コマンドラインオプションと引数の解析</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/optparse/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../argparse/index.html" title="argparse – コマンドラインオプションと引数の解析"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../getopt/index.html" title="getopt – Command line option parsing"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../generic_os.html" accesskey="U">汎用 OS サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="optparse-getopt">
+<h1>optparse &#8211; getopt に代わるコマンドラインオプションパーサ<a class="headerlink" href="#optparse-getopt" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-optparse"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body"><a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a> に代わるコマンドラインオプションパーサ</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.3</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> モジュールはコマンドラインオプションを解析するためのモダンな代替方法で、データ型の変換、オプション処理のコールバック、自動ヘルプ生成といった <a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a> にはない機能を提供します。ここで説明する内容よりも <a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> にはもっと多くの機能があります。とはいえ、本稿ではより汎用的な機能の使用方法を紹介します。</p>
+<div class="section" id="optionparser">
+<h2>OptionParser を作成する<a class="headerlink" href="#optionparser" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> を使用してオプションを解析するには2つの段階があります。先ずは <tt class="xref py py-class docutils literal"><span class="pre">OptionParser</span></tt> インスタンスを構築して、使用するオプションを設定します。次にオプションが渡されて処理されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>通常 parser は1度だけ作成されます。そのオプションがコマンドラインで現れたときにどう処理するかに関しての情報と共に、各オプションは parser へ明示的に追加されます。 <tt class="xref py py-class docutils literal"><span class="pre">OptionParser</span></tt> コンストラクタへオプションのリストを引数で渡すことも可能ですが、その方法はあまり使用されないと思います。</p>
+<div class="section" id="id1">
+<h3>オプションを定義する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>オプションは :func:<tt class="docutils literal"><span class="pre">add_option()</span></tt> メソッドを使用して1度に1つだけ追加すべきです。引数リストの最初にある文字列はオプション名として扱います。あるオプションのエイリアスを作成するために(例えば、同じオプションを表す短いオプション名と長いオプション名を持つには)、単純に両方のオプション名を引数に渡します。</p>
+</div>
+<div class="section" id="id2">
+<h3>コマンドラインを解析する<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>すべてのオプションが定義された後で <tt class="xref py py-func docutils literal"><span class="pre">parse_args()</span></tt> へコマンドラインの引数文字列を渡すことで解析されます。デフォルトでは、その引数は <tt class="docutils literal"><span class="pre">sys.argv[1:]</span></tt> から取得されますが、任意のリストで明示的に渡すことができます。そのオプションは GNU/POSIX 構文を使用して処理されるので、オプションと引数の値はシーケンスに混在してセットされます。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">parse_args()</span></tt> は <tt class="xref py py-class docutils literal"><span class="pre">Values</span></tt> インスタンスとオプションと見なされないコマンドの引数リストの2つの値を持つタプルを返します。オプションのデフォルトアクションは <tt class="xref py py-func docutils literal"><span class="pre">add_option()</span></tt> への <em>dest</em> 引数に渡される名前を使用してその値を保持します。 <tt class="xref py py-func docutils literal"><span class="pre">parse_args()</span></tt> が返す <tt class="xref py py-class docutils literal"><span class="pre">Values</span></tt> インスタンスは属性としてオプションの値を保持します。そのため、もしオプションの <tt class="xref py py-data docutils literal"><span class="pre">dest</span></tt> が <tt class="docutils literal"><span class="pre">&quot;myoption&quot;</span></tt> の場合、その値は <tt class="docutils literal"><span class="pre">options.myoption</span></tt> でアクセスします。</p>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>短いオプション名と長いオプション名<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>3つの異なるオプションを使用する簡単なサンプルを紹介します。ブーリアンオプション (<tt class="docutils literal"><span class="pre">-a</span></tt>)、シンプルな文字列オプション (<tt class="docutils literal"><span class="pre">-b</span></tt>)、そして整数オプション (<tt class="docutils literal"><span class="pre">-c</span></tt>) です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;b&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;int&quot;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="s">&#39;-bval&#39;</span><span class="p">,</span> <span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="s">&#39;3&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>コマンドラインオプションは <tt class="xref py py-func docutils literal"><span class="pre">getopt.gnu_getopt()</span></tt> を使用するのと同じルールで解析されます。そのため、1文字オプションへ値を渡す方法が2つあります。</p>
+<div class="highlight-python"><pre>$ python optparse_short.py
+(&lt;Values at 0x1004d23f8: {'a': True, 'c': 3, 'b': 'val'}&gt;, [])</pre>
+</div>
+<p>実行後の出力の <tt class="docutils literal"><span class="pre">'c'</span></tt> に対する値のデータ型が整数型であることに注意してください。それは <tt class="xref py py-class docutils literal"><span class="pre">OptionParser</span></tt> クラスがその値を格納する前にその引数を変換して保持するからです。</p>
+<p><a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a> と違い、 <a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> は &#8220;長い&#8221; オプション名を別処理として扱いません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--noarg&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--witharg&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;witharg&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--witharg2&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;witharg2&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;int&quot;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span> <span class="s">&#39;--noarg&#39;</span><span class="p">,</span> <span class="s">&#39;--witharg&#39;</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">,</span> <span class="s">&#39;--witharg2=3&#39;</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>その出力結果も似ています。</p>
+<div class="highlight-python"><pre>$ python optparse_long.py
+(&lt;Values at 0x1004da3f8: {'noarg': True, 'witharg': 'val', 'witharg2': 3}&gt;, [])</pre>
+</div>
+</div>
+<div class="section" id="getopt">
+<h2>getopt と比較する<a class="headerlink" href="#getopt" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> は <a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a> を置き換えるためにサポートされたので、このサンプルは <a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a>: のセクションで使用した同じサンプルプログラムを再実装します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">print</span> <span class="s">&#39;ARGV      :&#39;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="s">&#39;--output&#39;</span><span class="p">,</span> 
+                  <span class="n">dest</span><span class="o">=</span><span class="s">&quot;output_filename&quot;</span><span class="p">,</span> 
+                  <span class="n">default</span><span class="o">=</span><span class="s">&quot;default.out&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-v&#39;</span><span class="p">,</span> <span class="s">&#39;--verbose&#39;</span><span class="p">,</span>
+                  <span class="n">dest</span><span class="o">=</span><span class="s">&quot;verbose&quot;</span><span class="p">,</span>
+                  <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                  <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--version&#39;</span><span class="p">,</span>
+                  <span class="n">dest</span><span class="o">=</span><span class="s">&quot;version&quot;</span><span class="p">,</span>
+                  <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                  <span class="nb">type</span><span class="o">=</span><span class="s">&quot;float&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
+<span class="n">options</span><span class="p">,</span> <span class="n">remainder</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;VERSION   :&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">version</span>
+<span class="k">print</span> <span class="s">&#39;VERBOSE   :&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">verbose</span>
+<span class="k">print</span> <span class="s">&#39;OUTPUT    :&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">output_filename</span>
+<span class="k">print</span> <span class="s">&#39;REMAINING :&#39;</span><span class="p">,</span> <span class="n">remainder</span>
+</pre></div>
+</div>
+<p>オプション <tt class="docutils literal"><span class="pre">-o</span></tt> と <tt class="docutils literal"><span class="pre">--output</span></tt> が同時に追加されるようにエイリアス化する方法に注意してください。どちらか一方のオプションがコマンドラインで使用されます。短いオプション名で実行します。</p>
+<div class="highlight-python"><pre>$ python optparse_getoptcomparison.py -o output.txt
+ARGV      : ['-o', 'output.txt']
+VERSION   : 1.0
+VERBOSE   : False
+OUTPUT    : output.txt
+REMAINING : []</pre>
+</div>
+<p>又は、長いオプション名で実行します。</p>
+<div class="highlight-python"><pre>$ python optparse_getoptcomparison.py --output output.txt
+ARGV      : ['--output', 'output.txt']
+VERSION   : 1.0
+VERBOSE   : False
+OUTPUT    : output.txt
+REMAINING : []</pre>
+</div>
+<p>長いオプション名のユニークな接頭辞も使用することができます。</p>
+<div class="highlight-python"><pre>$ python optparse_getoptcomparison.py --out output.txt
+ARGV      : ['--out', 'output.txt']
+VERSION   : 1.0
+VERBOSE   : False
+OUTPUT    : output.txt
+REMAINING : []</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>オプション値<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>デフォルトのアクション処理はオプションに対する引数を保持するためのものです。もし型が提供されるなら、引数の値はその値が保持される前に指定された型に変換されます。</p>
+<div class="section" id="id5">
+<h3>デフォルト値の設定<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>オプションの指定は任意なので、アプリケーションはコマンドラインでオプションが与えられなかったときにデフォルトの振る舞いを定義すべきです。個々のオプションのデフォルト値はそのオプションが定義されたときに提供されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&quot;default value&quot;</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">options</span><span class="o">.</span><span class="n">o</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python optparse_default.py
+default value
+
+$ python optparse_default.py -o "different value"
+different value</pre>
+</div>
+<p>また、デフォルト値はオプションが定義された後で <tt class="xref py py-func docutils literal"><span class="pre">set_defaults()</span></tt> に対するキーワード引数を使用して読み込むこともできます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">o</span><span class="o">=</span><span class="s">&#39;default value&#39;</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">options</span><span class="o">.</span><span class="n">o</span>
+</pre></div>
+</div>
+<p>この方法は、ハードコーディングせずに設定ファイルか、その他のソースファイルからデフォルト値を読み込むときに便利です。</p>
+<div class="highlight-python"><pre>$ python optparse_set_defaults.py
+default value
+
+$ python optparse_set_defaults.py -o "different value"
+different value</pre>
+</div>
+<p>定義された全オプションは <tt class="xref py py-func docutils literal"><span class="pre">parse_args()</span></tt> が返す <tt class="xref py py-class docutils literal"><span class="pre">Values</span></tt> インスタンスの属性として利用できます。そのため、アプリケーションはその値を使用しようとする前にオプションの存在を確認する必要がありません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">options</span><span class="o">.</span><span class="n">o</span>
+</pre></div>
+</div>
+<p>もしオプションのデフォルト値がなく、コマンドラインでも指定されなかった場合、その値は <tt class="xref docutils literal"><span class="pre">None</span></tt> になります。</p>
+<div class="highlight-python"><pre>$ python optparse_no_default.py
+None
+
+$ python optparse_no_default.py -o "different value"
+different value</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>型変換<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> はオプションの値を文字列から整数、小数、長整数や複雑な値へ変換します。変換を行うためには、 <tt class="xref py py-func docutils literal"><span class="pre">add_option()</span></tt> に対する引数としてオプションの <em>type</em> を指定します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;int&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;float&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-l&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;long&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;complex&quot;</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;int    : </span><span class="si">%-16r</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">i</span><span class="p">),</span> <span class="n">options</span><span class="o">.</span><span class="n">i</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;float  : </span><span class="si">%-16r</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">f</span><span class="p">),</span> <span class="n">options</span><span class="o">.</span><span class="n">f</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;long   : </span><span class="si">%-16r</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">l</span><span class="p">),</span> <span class="n">options</span><span class="o">.</span><span class="n">l</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;complex: </span><span class="si">%-16r</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">c</span><span class="p">),</span> <span class="n">options</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>もしオプションの値が指定された型に変換できない場合、エラーを表示してプログラムを終了します。</p>
+<div class="highlight-python"><pre>$ python optparse_types.py -i 1 -f 3.14 -l 1000000 -c 1+2j
+int    : &lt;type 'int'&gt;     1
+float  : &lt;type 'float'&gt;   3.14
+long   : &lt;type 'long'&gt;    1000000
+complex: &lt;type 'complex'&gt; (1+2j)
+
+$ python optparse_types.py -i a
+Usage: optparse_types.py [options]
+
+optparse_types.py: error: option -i: invalid integer value: 'a'</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Option</span></tt> クラスをサブクラス化することでカスタム変換を行うことができます。詳細は標準ライブラリドキュメントを参照してください。</p>
+</div>
+<div class="section" id="id7">
+<h3>選択肢<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p><tt class="xref py py-const docutils literal"><span class="pre">choice</span></tt> 型は候補文字列のリストを使用するバリデーションを提供します。 <em>type</em> に choise をセットして <tt class="xref py py-func docutils literal"><span class="pre">add_option()</span></tt> に対する <em>choises</em> 引数に有効な値リストを指定します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&#39;choice&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">])</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;Choice:&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">c</span>
+</pre></div>
+</div>
+<p>不正な入力を行うと、許容される値リストのエラーメッセージを表示します。</p>
+<div class="highlight-python"><pre>$ python optparse_choice.py -c a
+Choice: a
+
+$ python optparse_choice.py -c b
+Choice: b
+
+$ python optparse_choice.py -c d
+Usage: optparse_choice.py [options]
+optparse_choice.py: error: option -c: invalid choice: 'd' (choose from
+ 'a', 'b', 'c')</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id8">
+<h2>オプションのアクション<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>オプションの解析のみを行う <a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a> と違い <a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> は完全なオプション <em>処理</em> ライブラリです。オプションは違うアクションのトリガーになることができます。それは <tt class="xref py py-func docutils literal"><span class="pre">add_option()</span></tt> への action 引数で指定されます。サポートされているアクションは、その引数を格納する(1つずつか、リストの一部)、定数の引数オプションが指定されたときに定数の値(真偽値を扱うために特化した操作も含む)を格納する、あるオプションが現れた回数をカウントする、そしてコールバック関数を呼び出すがあります。デフォルトアクションは <tt class="xref py py-const docutils literal"><span class="pre">store</span></tt> で、明示的に指定する必要はありません。</p>
+<div class="section" id="id9">
+<h3>定数<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>アプリケーションの操作モードのような、オプションがある選択範囲に固定されるとき、それを分かり易くするために明示的に独立したオプションを作成します。 <tt class="xref py py-const docutils literal"><span class="pre">store_const</span></tt> アクションはこの目的に適しています。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--earth&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_const&quot;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;earth&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;element&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;earth&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--air&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;air&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;element&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--water&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;water&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;element&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--fire&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;fire&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;element&#39;</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">options</span><span class="o">.</span><span class="n">element</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-const docutils literal"><span class="pre">store_const</span></tt> アクションは、ユーザが指定したオプションでアプリケーションの定数を関連付けます。同じ <em>dest</em> 名に対して違う定数値を格納するために複数のオプションが設定されるので、アプリケーションは1つの設定のみを確認する必要があります。</p>
+<div class="highlight-python"><pre>$ python optparse_store_const.py
+earth
+
+$ python optparse_store_const.py --fire
+fire</pre>
+</div>
+</div>
+<div class="section" id="id10">
+<h3>ブーリアンフラグ<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>ブーリアンオプションは True や False の定数値を格納する特別なアクションを使用して実装されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-t&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;flag&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;flag&#39;</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;Flag:&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">flag</span>
+</pre></div>
+</div>
+<p>同じフラグの True や Faslse バージョンは同じ値に対する <em>dest</em> 名を設定することで作成されます。</p>
+<div class="highlight-python"><pre>$ python optparse_boolean.py
+Flag: False
+
+$ python optparse_boolean.py -t
+Flag: True
+
+$ python optparse_boolean.py -f
+Flag: False</pre>
+</div>
+</div>
+<div class="section" id="id11">
+<h3>繰り返しオプション<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>繰り返しオプションを扱うために3つの方法があります。デフォルトは指定された最後のオプションを使用するように既存の値を上書きすることです。 <tt class="xref py py-const docutils literal"><span class="pre">store</span></tt> アクションはこの方法で動作します。</p>
+<p><tt class="xref py py-const docutils literal"><span class="pre">append</span></tt> アクションを使用すると、オプションが繰り返されると値を蓄積することができます。追加モードは複数の応答が返されるときに便利で、ユーザは解析可能な構文を構築するよりも簡単に指定できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-o&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;append&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;outputs&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">options</span><span class="o">.</span><span class="n">outputs</span>
+</pre></div>
+</div>
+<p>コマンドラインで与えられた値の順番は保持されます。それはアプリケーションによっては重要なときがあります。</p>
+<div class="highlight-python"><pre>$ python optparse_append.py
+[]
+
+$ python optparse_append.py -o a.out
+['a.out']
+
+$ python optparse_append.py -o a.out -o b.out
+['a.out', 'b.out']</pre>
+</div>
+<p>1つのオプションが何回与えられたかを知りたくて関連付けられた値が必要ではないときがあります。例えば、多くのアプリケーションは出力の冗長レベルを上げるために <tt class="docutils literal"><span class="pre">-v</span></tt> オプションを繰り返すことができます。 <tt class="xref py py-const docutils literal"><span class="pre">count</span></tt> アクションはそのオプションが現れる毎にその値が増加します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;count&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;verbosity&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-q&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;verbosity&#39;</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">options</span><span class="o">.</span><span class="n">verbosity</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">-v</span></tt> オプションは引数を受け取らないので、個別にオプションが指定されたときと同様に <tt class="docutils literal"><span class="pre">-vv</span></tt> といった構文で繰り返すことができます。</p>
+<div class="highlight-python"><pre>$ python optparse_count.py
+1
+
+$ python optparse_count.py -v
+2
+
+$ python optparse_count.py -v -v
+3
+
+$ python optparse_count.py -vv
+3
+
+$ python optparse_count.py -q
+0</pre>
+</div>
+</div>
+<div class="section" id="id12">
+<h3>コールバック<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>オプションの引数を直接保持することに加えて、コマンドラインでそのオプションが指定されたときに呼び出されるコールバック関数を定義することもできます。オプションのためのコールバック関数は4つの引数を取ります。それらはコールバックを呼び出す <tt class="xref py py-class docutils literal"><span class="pre">Option</span></tt> インスタンス、コマンドラインからのオプションの文字列、そのオプションに渡される引数の値、オプションの解析を行う <tt class="xref py py-class docutils literal"><span class="pre">OptionParser</span></tt> インスタンスです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="k">def</span> <span class="nf">flag_callback</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">opt_str</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;flag_callback:&#39;</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">option:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">opt_str:&#39;</span><span class="p">,</span> <span class="n">opt_str</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">value:&#39;</span><span class="p">,</span> <span class="n">value</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">parser:&#39;</span><span class="p">,</span> <span class="n">parser</span>
+    <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">with_callback</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">opt_str</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;with_callback:&#39;</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">option:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">opt_str:&#39;</span><span class="p">,</span> <span class="n">opt_str</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">value:&#39;</span><span class="p">,</span> <span class="n">value</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">parser:&#39;</span><span class="p">,</span> <span class="n">parser</span>
+    <span class="k">return</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--flag&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;callback&quot;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">flag_callback</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--with&#39;</span><span class="p">,</span> 
+                  <span class="n">action</span><span class="o">=</span><span class="s">&quot;callback&quot;</span><span class="p">,</span>
+                  <span class="n">callback</span><span class="o">=</span><span class="n">with_callback</span><span class="p">,</span>
+                  <span class="nb">type</span><span class="o">=</span><span class="s">&quot;string&quot;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s">&quot;Include optional feature&quot;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s">&#39;--with&#39;</span><span class="p">,</span> <span class="s">&#39;foo&#39;</span><span class="p">,</span> <span class="s">&#39;--flag&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>このサンプルでは <tt class="docutils literal"><span class="pre">--with</span></tt> オプションが文字列の引数を取るように設定されています(同様に整数型や浮動小数点型のようなデータ型もサポートされています)。</p>
+<div class="highlight-python"><pre>$ python optparse_callback.py
+with_callback:
+        option: &lt;Option at 0x1004d1248: --with&gt;
+        opt_str: --with
+        value: foo
+        parser: &lt;optparse.OptionParser instance at 0x100468518&gt;
+flag_callback:
+        option: &lt;Option at 0x1004687a0: --flag&gt;
+        opt_str: --flag
+        value: None
+        parser: &lt;optparse.OptionParser instance at 0x100468518&gt;</pre>
+</div>
+<p>コールバックは <em>nargs</em> オプションを使用して複数の引数を取得して設定することができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="k">def</span> <span class="nf">with_callback</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">opt_str</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;with_callback:&#39;</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">option:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">opt_str:&#39;</span><span class="p">,</span> <span class="n">opt_str</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">value:&#39;</span><span class="p">,</span> <span class="n">value</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">parser:&#39;</span><span class="p">,</span> <span class="n">parser</span>
+    <span class="k">return</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--with&#39;</span><span class="p">,</span> 
+                  <span class="n">action</span><span class="o">=</span><span class="s">&quot;callback&quot;</span><span class="p">,</span>
+                  <span class="n">callback</span><span class="o">=</span><span class="n">with_callback</span><span class="p">,</span>
+                  <span class="nb">type</span><span class="o">=</span><span class="s">&quot;string&quot;</span><span class="p">,</span>
+                  <span class="n">nargs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s">&quot;Include optional feature&quot;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="s">&#39;--with&#39;</span><span class="p">,</span> <span class="s">&#39;foo&#39;</span><span class="p">,</span> <span class="s">&#39;bar&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>このケースでは、引数は value 引数で1つのタプルとしてコールバック関数へ渡されます。</p>
+<div class="highlight-python"><pre>$ python optparse_callback_nargs.py
+with_callback:
+        option: &lt;Option at 0x1004676c8: --with&gt;
+        opt_str: --with
+        value: ('foo', 'bar')
+        parser: &lt;optparse.OptionParser instance at 0x100467440&gt;</pre>
+</div>
+</div>
+</div>
+<div class="section" id="id13">
+<h2>ヘルプメッセージ<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">OptionParser</span></tt> は自動的に全てのオプションセットに対して <tt class="docutils literal"><span class="pre">--help</span></tt> オプションを追加します。そのため、ユーザはコマンドラインで <tt class="docutils literal"><span class="pre">--help</span></tt> を指定することで、プログラム実行のためのヘルプを確認することができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--no-foo&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> 
+                  <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> 
+                  <span class="n">dest</span><span class="o">=</span><span class="s">&quot;foo&quot;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s">&quot;Turn off foo&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--with&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Include optional feature&quot;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>オプションは同行にエイリアスも追加してアルファベット順に表示されます。そのオプションが引数を取るとき <tt class="docutils literal"><span class="pre">dest</span></tt> にセットした名前はヘルプ出力において引数の名前になります。ヘルプのテキストは右側のカラムに表示されます。</p>
+<div class="highlight-python"><pre>$ python optparse_help.py --help
+Usage: optparse_help.py [options]
+
+Options:
+  -h, --help   show this help message and exit
+  --no-foo     Turn off foo
+  --with=WITH  Include optional feature</pre>
+</div>
+<p>そのオプションが対象とする変数として <tt class="docutils literal"><span class="pre">WITH</span></tt> という名前が <tt class="docutils literal"><span class="pre">--with</span></tt> オプションと一緒に表示されます。プログラム内の変数名がそのドキュメントを提供するのに適切な場合は違う名前をセットするために <em>metavar</em> 引数を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--no-foo&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> 
+                  <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> 
+                  <span class="n">dest</span><span class="o">=</span><span class="s">&quot;foo&quot;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s">&quot;Turn off foo&quot;</span><span class="p">,</span>
+                  <span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--with&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Include optional feature&quot;</span><span class="p">,</span>
+                  <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;feature_NAME&#39;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>大文字もしくは句読点への変更を行わず、その値が与えられたものとして正確に表示されます。</p>
+<div class="highlight-python"><pre>$ python optparse_metavar.py -h
+Usage: optparse_metavar.py [options]
+
+Options:
+  -h, --help           show this help message and exit
+  --no-foo             Turn off foo
+  --with=feature_NAME  Include optional feature</pre>
+</div>
+<div class="section" id="id14">
+<h3>オプションを構成する<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>多くのアプリケーションは関連するオプションセットを含みます。例えば <strong class="command">rpm</strong> コマンドはそれぞれの操作モードに応じた独立したオプションを含みます。 <a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> はヘルプ出力のオプションを構成するために <em>option groups</em> を使用します。それでも全てのオプションの値は1つの <tt class="xref py py-class docutils literal"><span class="pre">Values</span></tt> インスタンスに保存されます。そのため、オプション名の名前空間もフラットな状態です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-q&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;query&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;mode&#39;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s">&#39;Query&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;install&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;mode&#39;</span><span class="p">,</span>
+                  <span class="n">help</span><span class="o">=</span><span class="s">&#39;Install&#39;</span><span class="p">)</span>
+
+<span class="n">query_opts</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionGroup</span><span class="p">(</span>
+    <span class="n">parser</span><span class="p">,</span> <span class="s">&#39;Query Options&#39;</span><span class="p">,</span>
+    <span class="s">&#39;These options control the query mode.&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">query_opts</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-l&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;list&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;query_mode&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;List contents&#39;</span><span class="p">)</span>
+<span class="n">query_opts</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;file&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;query_mode&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;Show owner of file&#39;</span><span class="p">)</span>
+<span class="n">query_opts</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_const&#39;</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;query_mode&#39;</span><span class="p">,</span>
+                      <span class="n">help</span><span class="o">=</span><span class="s">&#39;Show all packages&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option_group</span><span class="p">(</span><span class="n">query_opts</span><span class="p">)</span>
+
+<span class="n">install_opts</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionGroup</span><span class="p">(</span>
+    <span class="n">parser</span><span class="p">,</span> <span class="s">&#39;Installation Options&#39;</span><span class="p">,</span>
+    <span class="s">&#39;These options control installation.&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">install_opts</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--hash&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&#39;Show hash marks as progress indication&#39;</span><span class="p">)</span>
+<span class="n">install_opts</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;--force&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;install_force&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&#39;Install, regardless of depdencies or existing version&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option_group</span><span class="p">(</span><span class="n">install_opts</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>それぞれのグループはタイトルと説明の独自セクションを持ちます。また、そのオプションは一緒に表示されます。</p>
+<div class="highlight-python"><pre>$ python optparse_groups.py -h
+Usage: optparse_groups.py [options]
+
+Options:
+  -h, --help  show this help message and exit
+  -q          Query
+  -i          Install
+
+  Query Options:
+    These options control the query mode.
+
+    -l        List contents
+    -f        Show owner of file
+    -a        Show all packages
+
+  Installation Options:
+    These options control installation.
+
+    --hash    Show hash marks as progress indication
+    --force   Install, regardless of depdencies or existing version</pre>
+</div>
+</div>
+<div class="section" id="id15">
+<h3>アプリケーション設定<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p>自動的なヘルプ生成機能は複数のヘルプ出力の外観を扱うための設定をサポートしています。プログラムの <em>usage</em> 文字列は、 <tt class="xref py py-class docutils literal"><span class="pre">OptionParser</span></tt> が作成されたときに引数の位置がどうであるかを表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="s">&#39;%prog [options] &lt;arg1&gt; &lt;arg2&gt; [&lt;arg3&gt;...]&#39;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;b&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;int&quot;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">%prog</span></tt> というリテラルは実行時にプログラムの名前に展開されます。そのため、スクリプトに対するフルパスが反映されます。 <strong class="command">python</strong> コマンドでそのスクリプトを実行する場合、直接的に実行されずにそのスクリプト名が使用されます。</p>
+<div class="highlight-python"><pre>$ python optparse_usage.py -h
+Usage: optparse_usage.py [options] &lt;arg1&gt; &lt;arg2&gt; [&lt;arg3&gt;...]
+
+Options:
+  -h, --help  show this help message and exit
+  -a
+  -b B
+  -c C</pre>
+</div>
+<p>プログラム名は <em>prog</em> 引数を使用して変更することができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="s">&#39;%prog [options] &lt;arg1&gt; &lt;arg2&gt; [&lt;arg3&gt;...]&#39;</span><span class="p">,</span>
+                               <span class="n">prog</span><span class="o">=</span><span class="s">&#39;my_program_name&#39;</span><span class="p">,</span>
+                               <span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-a&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;b&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&quot;c&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s">&quot;int&quot;</span><span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>この方法のようにプログラム名をハードコーディングすることは一般的には悪い考えです。とは言うものの、もしプログラムがリネームされるなら、そのヘルプはその名前変更に影響を受けません。</p>
+<div class="highlight-python"><pre>$ python optparse_prog.py -h
+Usage: my_program_name [options] &lt;arg1&gt; &lt;arg2&gt; [&lt;arg3&gt;...]
+
+Options:
+  -h, --help  show this help message and exit
+  -a
+  -b B
+  -c C</pre>
+</div>
+<p>アプリケーションのバージョンは <em>version</em> 引数を使用して設定します。バージョンが指定されたときに <a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> は自動的にパーサへ <tt class="docutils literal"><span class="pre">--version</span></tt> オプションを追加します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">optparse</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">(</span><span class="n">usage</span><span class="o">=</span><span class="s">&#39;%prog [options] &lt;arg1&gt; &lt;arg2&gt; [&lt;arg3&gt;...]&#39;</span><span class="p">,</span>
+                               <span class="n">version</span><span class="o">=</span><span class="s">&#39;1.0&#39;</span><span class="p">,</span>
+                               <span class="p">)</span>
+
+<span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>ユーザが <tt class="docutils literal"><span class="pre">--version</span></tt> オプションでそのプログラムを実行するとき <a class="reference internal" href="#module-optparse" title=":mod:`getopt` に代わるコマンドラインオプションパーサ"><tt class="xref py py-mod docutils literal"><span class="pre">optparse</span></tt></a> はバージョン文字列を表示して終了します。</p>
+<div class="highlight-python"><pre>$ python optparse_version.py -h
+Usage: optparse_version.py [options] &lt;arg1&gt; &lt;arg2&gt; [&lt;arg3&gt;...]
+
+Options:
+  --version   show program's version number and exit
+  -h, --help  show this help message and exit
+
+$ python optparse_version.py --version
+1.0</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-optparse.html">optparse</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../getopt/index.html#module-getopt" title="Command line option parsing"><tt class="xref py py-mod docutils literal"><span class="pre">getopt</span></tt></a></dt>
+<dd>optparse により置き換えられる getopt モジュール</dd>
+<dt><a class="reference internal" href="../argparse/index.html#module-argparse" title="コマンドラインオプションと引数の解析"><tt class="xref py py-mod docutils literal"><span class="pre">argparse</span></tt></a></dt>
+<dd>optparse に置き換わる新たなモジュール</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../argparse/index.html" title="argparse – コマンドラインオプションと引数の解析"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../getopt/index.html" title="getopt – Command line option parsing"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../generic_os.html" >汎用 OS サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

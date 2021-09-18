@@ -1,0 +1,439 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>platform &#8211; システムのバージョン情報にアクセスする - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="汎用 OS サービス" href="../generic_os.html" />
+    <link rel="next" title="オプション OS サービス" href="../optional_os.html" />
+    <link rel="prev" title="getpass – パスワードのために入力文字を表示しないプロンプト" href="../getpass/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">platform &#8211; システムのバージョン情報にアクセスする</a><ul>
+<li><a class="reference internal" href="#id1">インタープリタ</a></li>
+<li><a class="reference internal" href="#id2">プラットフォーム</a></li>
+<li><a class="reference internal" href="#id3">オペレーティングシステムとハードウェアの情報</a></li>
+<li><a class="reference internal" href="#id4">実行可能なアーキテクチャ</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../getpass/index.html" title="前の章へ"><strong>前:</strong> getpass &#8211; パスワードのために入力文字を表示しないプロンプト</a><br/>
+          <a href="../optional_os.html" title="次の章へ"><strong>次:</strong> オプション OS サービス</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/platform/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../optional_os.html" title="オプション OS サービス"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../getpass/index.html" title="getpass – パスワードのために入力文字を表示しないプロンプト"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../generic_os.html" accesskey="U">汎用 OS サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="platform">
+<h1>platform &#8211; システムのバージョン情報にアクセスする<a class="headerlink" href="#platform" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-platform"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">システムのハードウェア、OS、インタープリタバージョン情報にアクセスする</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.3 以上</td>
+</tr>
+</tbody>
+</table>
+<p>Python は、クロスプラットフォームな言語としてよく使用されていますが、プログラムが実行されているシステムの情報を知りたいときがあります。ビルドツールはその情報を必要とし、アプリケーションも同様にそれぞれのオペレーティングシステムで別のインタフェースをもつライブラリや外部コマンドがあります。例えば、オペレーティングシステムのネットワーク設定を管理するツールは、ネットワークインタフェース、エイリアス、IPアドレス等の移植性の高い表現を定義できます。しかし、実際に設定ファイルを編集する必要がある場合、正しいオペレーティングシステムの設定コマンドとファイルを使用できるように、そのホストの詳細について知っておかなければなりません。 <a class="reference internal" href="#module-platform" title="システムのハードウェア、OS、インタープリタバージョン情報にアクセスする"><tt class="xref py py-mod docutils literal"><span class="pre">platform</span></tt></a> モジュールは、プログラムを実行しているインタープリタ、オペレーティングシステム、ハードウェアプラットフォームについて知るためのツールを提供します。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">この記事のサンプル出力は、MacBook Pro3.1 の OS X 10.6.4、VMware Fusion VM の CentOS 5.5、Dell PC の Microsoft Windows 2008 で実行したものです。Python は python.org にあるコンパイル済みのインストーラを使用して OS X と Windodws にインストールしました。Linux は、ソースからローカルでビルドしたインタープリタを実行しています。</p>
+</div>
+<div class="section" id="id1">
+<h2>インタープリタ<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>使用している Python インタープリタに関する情報を取得する関数が4つあります。 <tt class="xref py py-func docutils literal"><span class="pre">python_version()</span></tt> と <tt class="xref py py-func docutils literal"><span class="pre">python_version_tuple()</span></tt> は、メジャー、マイナー、パッチレベルのコンポーネントをもつインタープリタのバージョンを別の形式で返します。 <tt class="xref py py-func docutils literal"><span class="pre">python_compiler()</span></tt> は、インタープリタをビルドするために使用したコンパイラを返します。 <tt class="xref py py-func docutils literal"><span class="pre">python_build()</span></tt> は、インタープリタのビルド番号の文字列を返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="k">print</span> <span class="s">&#39;Version      :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Version tuple:&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version_tuple</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Compiler     :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_compiler</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Build        :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_build</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>OS X:</p>
+<div class="highlight-python"><pre>$ python platform_python.py
+Version      : 2.7.2
+Version tuple: ('2', '7', '2')
+Compiler     : GCC 4.2.1 (Apple Inc. build 5666) (dot 3)
+Build        : ('v2.7.2:8527427914a2', 'Jun 11 2011 15:22:34')</pre>
+</div>
+<p>Linux:</p>
+<div class="highlight-python"><pre>$ python platform_python.py
+Version      : 2.7.0
+Version tuple: ('2', '7', '0')
+Compiler     : GCC 4.1.2 20080704 (Red Hat 4.1.2-46)
+Build        : ('r27', 'Aug 20 2010 11:37:51')</pre>
+</div>
+<p>Windows:</p>
+<div class="highlight-python"><pre>C:&gt; python.exe platform_python.py
+Version      : 2.7.0
+Version tuple: ['2', '7', '0']
+Compiler     : MSC v.1500 64 bit (AMD64)
+Build        : ('r27:82525', 'Jul  4 2010 07:43:08')</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>プラットフォーム<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-func docutils literal"><span class="pre">platform()</span></tt> は、汎用的なプラットフォームの識別子を含む文字列を返します。この関数は2つのオプション引数をブーリアン値で受け取ります。 <em>aliased</em> が True の場合、返り値の名前は公式名から一般名に変換されます。 <em>terse</em> が True の場合、一部が削除された短い名前が返されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="k">print</span> <span class="s">&#39;Normal :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;Aliased:&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">(</span><span class="n">aliased</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Terse  :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">(</span><span class="n">terse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>OS X:</p>
+<div class="highlight-python"><pre>$ python platform_platform.py
+Normal : Darwin-11.4.2-x86_64-i386-64bit
+Aliased: Darwin-11.4.2-x86_64-i386-64bit
+Terse  : Darwin-11.4.2</pre>
+</div>
+<p>Linux:</p>
+<div class="highlight-python"><pre>$ python platform_platform.py
+Normal : Linux-2.6.18-194.3.1.el5-i686-with-redhat-5.5-Final
+Aliased: Linux-2.6.18-194.3.1.el5-i686-with-redhat-5.5-Final
+Terse  : Linux-2.6.18-194.3.1.el5-i686-with-glibc2.3</pre>
+</div>
+<p>Windows:</p>
+<div class="highlight-python"><pre>C:&gt; python.exe platform_platform.py
+Normal : Windows-2008ServerR2-6.1.7600
+Aliased: Windows-2008ServerR2-6.1.7600
+Terse  : Windows-2008ServerR2</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>オペレーティングシステムとハードウェアの情報<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>同様にインタープリタが実行されているオペレーティングシステムとハードウェアに関する詳細情報も取り出せます。 <tt class="docutils literal"><span class="pre">uname()</span></tt> はシステム、ノード、リリース、バージョン、マシン、プロセッサの値を含むタプルを返します。個々の値は、同じ名前の関数でアクセスできます。</p>
+<dl class="docutils">
+<dt><tt class="xref py py-func docutils literal"><span class="pre">system()</span></tt></dt>
+<dd>オペレーティングシステム名を返す</dd>
+<dt><tt class="xref py py-func docutils literal"><span class="pre">node()</span></tt></dt>
+<dd>完全修飾ではないサーバのホスト名を返す</dd>
+<dt><tt class="xref py py-func docutils literal"><span class="pre">release()</span></tt></dt>
+<dd>オペレーティングシステムのリリース番号を返す</dd>
+<dt><tt class="xref py py-func docutils literal"><span class="pre">version()</span></tt></dt>
+<dd>より詳細なシステムのバージョン番号を返す</dd>
+<dt><tt class="xref py py-func docutils literal"><span class="pre">machine()</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">'i386'</span></tt> といったハードウェアタイプの識別子を返す</dd>
+<dt><tt class="xref py py-func docutils literal"><span class="pre">processor()</span></tt></dt>
+<dd>プロセッサの実際の識別子か、ほとんどの場合は <tt class="xref py py-func docutils literal"><span class="pre">machine()</span></tt> と同じ値を返す</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="k">print</span> <span class="s">&#39;uname:&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">uname</span><span class="p">()</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;system   :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;node     :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">node</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;release  :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;version  :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">version</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;machine  :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;processor:&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">processor</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>OS X:</p>
+<div class="highlight-python"><pre>$ python platform_os_info.py
+uname: ('Darwin', 'hubert.local', '11.4.2', 'Darwin Kernel Version 11.4.2: Thu Aug 23 16:25:48 PDT 2012; root:xnu-1699.32.7~1/RELEASE_X86_64', 'x86_64', 'i386')
+
+system   : Darwin
+node     : hubert.local
+release  : 11.4.2
+version  : Darwin Kernel Version 11.4.2: Thu Aug 23 16:25:48 PDT 2012; root:xnu-1699.32.7~1/RELEASE_X86_64
+machine  : x86_64
+processor: i386</pre>
+</div>
+<p>Linux:</p>
+<div class="highlight-python"><pre>$ python platform_os_info.py
+uname: ('Linux', 'hermes.hellfly.net', '2.6.18-194.3.1.el5',
+'#1 SMP Thu May 13 13:09:10 EDT 2010', 'i686', 'i686')
+
+system   : Linux
+node     : hermes.hellfly.net
+release  : 2.6.18-194.3.1.el5
+version  : #1 SMP Thu May 13 13:09:10 EDT 2010
+machine  : i686
+processor: i686</pre>
+</div>
+<p>Windows:</p>
+<div class="highlight-python"><pre>C:&gt; python.exe platform_os_info.py
+uname: ('Windows', 'dhellmann', '2008ServerR2', '6.1.7600', 'AMD64',
+'Intel64 Family 6 Model 15 Stepping 11, GenuineIntel')
+
+system   : Windows
+node     : dhellmann
+release  : 2008ServerR2
+version  : 6.1.7600
+machine  : AMD64
+processor: Intel64 Family 6 Model 15 Stepping 11, GenuineIntel</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>実行可能なアーキテクチャ<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>個別のプログラムアーキテクチャの情報は <tt class="xref py py-func docutils literal"><span class="pre">architecture()</span></tt> 関数を使用して調べられます。最初の引数は、実行可能なプログラム(デフォルトは <tt class="docutils literal"><span class="pre">sys.executable</span></tt> の Python インタープリタ)へのパスです。返り値は、ビットアーキテクチャと使用されるリンケージフォーマットを含むタプルです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="k">print</span> <span class="s">&#39;interpreter:&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">architecture</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&#39;/bin/ls    :&#39;</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">architecture</span><span class="p">(</span><span class="s">&#39;/bin/ls&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>OS X:</p>
+<div class="highlight-python"><pre>$ python platform_architecture.py
+interpreter: ('64bit', '')
+/bin/ls    : ('64bit', '')</pre>
+</div>
+<p>Linux:</p>
+<div class="highlight-python"><pre>$ python platform_architecture.py
+interpreter: ('32bit', 'ELF')
+/bin/ls    : ('32bit', 'ELF')</pre>
+</div>
+<p>Windows:</p>
+<div class="highlight-python"><pre>C:&gt; python.exe platform_architecture.py
+interpreter  : ('64bit', 'WindowsPE')
+iexplore.exe : ('64bit', '')</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-platform.html">platform</a></dt>
+<dd><p class="first">Standard library documentation for this module.</p>
+<p class="last">本モジュールの標準ライブラリドキュメント</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../optional_os.html" title="オプション OS サービス"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../getpass/index.html" title="getpass – パスワードのために入力文字を表示しないプロンプト"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../generic_os.html" >汎用 OS サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

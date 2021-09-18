@@ -1,0 +1,466 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>uuid &#8211; 汎用一意識別子 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="インターネットプロトコルとサポート" href="../internet_protocols.html" />
+    <link rel="next" title="webbrowser – web ページを表示する" href="../webbrowser/index.html" />
+    <link rel="prev" title="urlparse – URL を部分文字列に分割する" href="../urlparse/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">uuid &#8211; 汎用一意識別子</a><ul>
+<li><a class="reference internal" href="#uuid-1-ieee-802-mac">UUID 1 - IEEE 802 MAC アドレス</a></li>
+<li><a class="reference internal" href="#uuid-3-5">UUID 3 と 5 - 名前ベースの値</a></li>
+<li><a class="reference internal" href="#uuid-4">UUID 4 - ランダムな値</a></li>
+<li><a class="reference internal" href="#id1">UUID オブジェクトと連携する</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../urlparse/index.html" title="前の章へ"><strong>前:</strong> urlparse &#8211; URL を部分文字列に分割する</a><br/>
+          <a href="../webbrowser/index.html" title="次の章へ"><strong>次:</strong> webbrowser &#8211; web ページを表示する</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/uuid/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../webbrowser/index.html" title="webbrowser – web ページを表示する"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../urlparse/index.html" title="urlparse – URL を部分文字列に分割する"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_protocols.html" accesskey="U">インターネットプロトコルとサポート</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="uuid">
+<h1>uuid &#8211; 汎用一意識別子<a class="headerlink" href="#uuid" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-uuid"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body"><span class="target" id="index-0"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc4122.html"><strong>RFC 4122</strong></a> 準拠の汎用一意識別子を実装する <a class="reference internal" href="#module-uuid" title="汎用一意識別子"><tt class="xref py py-mod docutils literal"><span class="pre">uuid</span></tt></a> モジュール</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.5 以上</td>
+</tr>
+</tbody>
+</table>
+<p><span class="target" id="index-1"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc4122.html"><strong>RFC 4122</strong></a> はセントラルレジストラを必要としない方法でリソースの汎用一意識別子を作成するためのシステムを定義します。UUID は128ビット長で &#8220;空間と時間を交差して一意性を保証することができます&#8221; 。UUID はドキュメント、ホスト、アプリケーションクライアントや一意な値が必要な様々な状況において識別子に便利です。具体的に言うと、その RFC は Uniform Resource Name 名前空間を作成することを対象とします。</p>
+<p>3つのメインアルゴリズムがその仕様により適用されます。</p>
+<ul class="simple">
+<li>一意性のソースとして IEEE 802 MAC アドレスを使用する</li>
+<li>疑似乱数を使用する</li>
+<li>暗号ハッシュで組み合わせてよく知られた文字列を使用する</li>
+</ul>
+<p>全てのケースにおいて、その種の値はシステムクロックと(そのクロックが後進的にセットされたときに一意性を維持するために)クロックシーケンスの値を組み合わせます。</p>
+<div class="section" id="uuid-1-ieee-802-mac">
+<h2>UUID 1 - IEEE 802 MAC アドレス<a class="headerlink" href="#uuid-1-ieee-802-mac" title="Permalink to this headline">¶</a></h2>
+<p>UUID バージョン1の値はホストの MAC アドレスを使用して算出されます。 <a class="reference internal" href="#module-uuid" title="汎用一意識別子"><tt class="xref py py-mod docutils literal"><span class="pre">uuid</span></tt></a> モジュールはシステムから MAC アドレスを取得するために <tt class="xref py py-func docutils literal"><span class="pre">getnode()</span></tt> を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">print</span> <span class="nb">hex</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">getnode</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python uuid_getnode.py
+0x70cd60f2c980</pre>
+</div>
+<p>もしシステムが1つ以上のネットワークカードを持ち、1つ以上の MAC アドレスがあるなら、その値のどれか1つが返されます。</p>
+<p>ホストの UUID を生成するには、その MAC アドレスで識別される <tt class="xref py py-func docutils literal"><span class="pre">uuid1()</span></tt> 関数を使用してください。ノード識別子を渡すか、 <tt class="xref py py-func docutils literal"><span class="pre">getnode()</span></tt> が返す値を使用するためにそのフィールドを空白にすることができます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="n">u</span>
+<span class="k">print</span> <span class="nb">type</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;bytes   :&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">bytes</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;hex     :&#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">hex</span>
+<span class="k">print</span> <span class="s">&#39;int     :&#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">int</span>
+<span class="k">print</span> <span class="s">&#39;urn     :&#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">urn</span>
+<span class="k">print</span> <span class="s">&#39;variant :&#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">variant</span>
+<span class="k">print</span> <span class="s">&#39;version :&#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">version</span>
+<span class="k">print</span> <span class="s">&#39;fields  :&#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">fields</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">time_low            : &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">time_low</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">time_mid            : &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">time_mid</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">time_hi_version     : &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">time_hi_version</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">clock_seq_hi_variant: &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">clock_seq_hi_variant</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">clock_seq_low       : &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">clock_seq_low</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">node                : &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">node</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">time                : &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">time</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">clock_seq           : &#39;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">clock_seq</span>
+</pre></div>
+</div>
+<p>返される UUID オブジェクトのコンポーネントは読み込み専用インスタンス属性を経由してアクセスされます。 <em>hex</em>, <em>int</em> や <em>urn</em> のような属性は UUID の別の表現方法です。</p>
+<div class="highlight-python"><pre>$ python uuid_uuid1.py
+eb118663-791f-11e2-a2c4-70cd60f2c980
+&lt;class 'uuid.UUID'&gt;
+bytes   : '\xeb\x11\x86cy\x1f\x11\xe2\xa2\xc4p\xcd`\xf2\xc9\x80'
+hex     : eb118663791f11e2a2c470cd60f2c980
+int     : 312459573780010547787799707915419568512
+urn     : urn:uuid:eb118663-791f-11e2-a2c4-70cd60f2c980
+variant : specified in RFC 4122
+version : 1
+fields  : (3943794275L, 31007L, 4578L, 162L, 196L, 124027397130624L)
+        time_low            :  3943794275
+        time_mid            :  31007
+        time_hi_version     :  4578
+        clock_seq_hi_variant:  162
+        clock_seq_low       :  196
+        node                :  124027397130624
+        time                :  135804116769277539
+        clock_seq           :  8900</pre>
+</div>
+<p>時間コンポーネントにより <tt class="xref py py-func docutils literal"><span class="pre">uuid1()</span></tt> が呼び出される毎に新しい値が返されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(文字列の最初の方にある)時間コンポーネントのみが変更されるこの出力に注意してください。</p>
+<div class="highlight-python"><pre>$ python uuid_uuid1_repeat.py
+eb17eba6-791f-11e2-998f-70cd60f2c980
+eb190bdc-791f-11e2-80f7-70cd60f2c980
+eb190d26-791f-11e2-bb86-70cd60f2c980</pre>
+</div>
+<p>あなたのコンピュータは私のものとは違う MAC アドレスを持っているので、そのサンプルをあなたが実行すると全く違う値が表示されます。UUID の最後にあるノード識別子も同様に変更されるでしょう。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="n">node1</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">getnode</span><span class="p">()</span>
+<span class="k">print</span> <span class="nb">hex</span><span class="p">(</span><span class="n">node1</span><span class="p">),</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">(</span><span class="n">node1</span><span class="p">)</span>
+
+<span class="n">node2</span> <span class="o">=</span>  <span class="mh">0x1e5274040e</span>
+<span class="k">print</span> <span class="nb">hex</span><span class="p">(</span><span class="n">node2</span><span class="p">),</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">(</span><span class="n">node2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python uuid_uuid1_othermac.py
+0x70cd60f2c980 eb1f026b-791f-11e2-b4c6-70cd60f2c980
+0x1e5274040e eb1f6d23-791f-11e2-bdc6-001e5274040e</pre>
+</div>
+</div>
+<div class="section" id="uuid-3-5">
+<h2>UUID 3 と 5 - 名前ベースの値<a class="headerlink" href="#uuid-3-5" title="Permalink to this headline">¶</a></h2>
+<p>乱数や時間ベースの値の代わりに名前から UUID を作成するためのコンテキストも便利です。UUID 仕様のバージョン3と5は &#8220;名前&#8221; (DNS ホスト名, URL, オブジェクト id 等) と名前空間特有の種の値を組み合わせるために暗号ハッシュ値(MD5 または SHA-1)を使用します。あらかじめ定義された UUID の値により識別される、DNS, URL, ISO OID や X.500 Distinguished Names と連携するよく知られた名前空間があります。</p>
+<p>DNS 名から UUID を作成するには、 <tt class="xref py py-func docutils literal"><span class="pre">uuid3()</span></tt> または <tt class="xref py py-func docutils literal"><span class="pre">uuid5()</span></tt> の名前空間引数として <tt class="docutils literal"><span class="pre">uuid.NAMESPACE_DNS</span></tt> を渡してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="n">hostnames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;www.doughellmann.com&#39;</span><span class="p">,</span> <span class="s">&#39;blog.doughellmann.com&#39;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">hostnames</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">name</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">MD5   :&#39;</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid3</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">NAMESPACE_DNS</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">SHA-1 :&#39;</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid5</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">NAMESPACE_DNS</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python uuid_uuid3_uuid5.py
+www.doughellmann.com
+        MD5   : bcd02e22-68f0-3046-a512-327cca9def8f
+        SHA-1 : e3329b12-30b7-57c4-8117-c2cd34a87ce9
+blog.doughellmann.com
+        MD5   : 9bdabfce-dfd6-37ab-8a3f-7f7293bcf111
+        SHA-1 : fa829736-7ef8-5239-9906-b4775a5abacb</pre>
+</div>
+<p>名前空間で与えられた名前の UUID の値は、いつ、どこで算出されたとしても常に同じです。異なる名前空間による同じ名前の値は違います。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid3</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">NAMESPACE_DNS</span><span class="p">,</span> <span class="s">&#39;www.doughellmann.com&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python uuid_uuid3_repeat.py
+bcd02e22-68f0-3046-a512-327cca9def8f
+bcd02e22-68f0-3046-a512-327cca9def8f
+bcd02e22-68f0-3046-a512-327cca9def8f</pre>
+</div>
+</div>
+<div class="section" id="uuid-4">
+<h2>UUID 4 - ランダムな値<a class="headerlink" href="#uuid-4" title="Permalink to this headline">¶</a></h2>
+<p>ホストベースや名前空間ベースの UUID の値は &#8220;全然違うものではない&#8221; ときがあります。例えば、ある探索キーとして UUID を使用したい状況では、ハッシュテーブルの衝突を避けるためにランダムな値のシーケンスに違いがあるほど望ましいです。また少数の汎用ダイジェストで値を持つこともログファイルではその値を見つけ易くなります。UUID に全然違う値を追加するには、ランダムな入力値を使用して生成する <tt class="xref py py-func docutils literal"><span class="pre">uuid4()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python uuid_uuid4.py
+41ddd08a-383c-49d4-8491-6d66bb41e6a1
+c5b0018e-efab-47ed-b1c4-ec100b334a1d
+989a52b9-d2c0-415a-af6f-e412c0e31f33</pre>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>UUID オブジェクトと連携する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>新たな UUID を生成することに加えて、UUID オブジェクトを作成するために様々なフォーマットの文字列を構文解析することができます。そうすることで対象の値の比較やソートが簡単になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">msg</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">v</span>
+    <span class="k">print</span>
+
+<span class="n">input_values</span> <span class="o">=</span> <span class="p">[</span> 
+    <span class="s">&#39;urn:uuid:f2f84497-b3bf-493a-bba9-7c68e6def80b&#39;</span><span class="p">,</span>
+    <span class="s">&#39;{417a5ebb-01f7-4ed5-aeac-3d56cd5037b0}&#39;</span><span class="p">,</span>
+    <span class="s">&#39;2115773a-5bf1-11dd-ab48-001ec200d9e0&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+<span class="n">show</span><span class="p">(</span><span class="s">&#39;input_values&#39;</span><span class="p">,</span> <span class="n">input_values</span><span class="p">)</span>
+
+<span class="n">uuids</span> <span class="o">=</span> <span class="p">[</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">input_values</span> <span class="p">]</span>
+<span class="n">show</span><span class="p">(</span><span class="s">&#39;converted to uuids&#39;</span><span class="p">,</span> <span class="n">uuids</span><span class="p">)</span>
+
+<span class="n">uuids</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="n">show</span><span class="p">(</span><span class="s">&#39;sorted&#39;</span><span class="p">,</span> <span class="n">uuids</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python uuid_uuid_objects.py
+input_values
+        urn:uuid:f2f84497-b3bf-493a-bba9-7c68e6def80b
+        {417a5ebb-01f7-4ed5-aeac-3d56cd5037b0}
+        2115773a-5bf1-11dd-ab48-001ec200d9e0
+
+converted to uuids
+        f2f84497-b3bf-493a-bba9-7c68e6def80b
+        417a5ebb-01f7-4ed5-aeac-3d56cd5037b0
+        2115773a-5bf1-11dd-ab48-001ec200d9e0
+
+sorted
+        2115773a-5bf1-11dd-ab48-001ec200d9e0
+        417a5ebb-01f7-4ed5-aeac-3d56cd5037b0
+        f2f84497-b3bf-493a-bba9-7c68e6def80b</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-uuid.html">uuid</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><span class="target" id="index-2"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc4122.html"><strong>RFC 4122</strong></a></dt>
+<dd>汎用一意識別子(UUID) URN 名前空間</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../webbrowser/index.html" title="webbrowser – web ページを表示する"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../urlparse/index.html" title="urlparse – URL を部分文字列に分割する"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_protocols.html" >インターネットプロトコルとサポート</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

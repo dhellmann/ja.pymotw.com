@@ -1,0 +1,284 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>データの永続化と変換 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="標準ライブラリの機能" href="index.html" />
+    <link rel="next" title="インメモリデータ構造" href="data_structures.html" />
+    <link rel="prev" title="標準ライブラリの機能" href="index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">データの永続化と変換</a><ul>
+<li><a class="reference internal" href="#id2">オブジェクトをシリアライズする</a></li>
+<li><a class="reference internal" href="#id3">シリアライズされたオブジェクトを保存する</a></li>
+<li><a class="reference internal" href="#id4">関係データベース</a></li>
+<li><a class="reference internal" href="#id5">標準フォーマット経由のデータ変換</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="index.html" title="前の章へ"><strong>前:</strong> 標準ライブラリの機能</a><br/>
+          <a href="data_structures.html" title="次の章へ"><strong>次:</strong> インメモリデータ構造</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/articles/data_persistence.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="data_structures.html" title="インメモリデータ構造"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="標準ライブラリの機能"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">標準ライブラリの機能</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="article-data-persistence">
+<span id="id1"></span><h1>データの永続化と変換<a class="headerlink" href="#article-data-persistence" title="Permalink to this headline">¶</a></h1>
+<p>Python はデータを保存するための複数のモジュールを提供します。基本的に永続化は2つの様相があります。1つはインメモリオブジェクトを変換して保存用フォーマットにする、もう1つは変換されたデータのストレージと連携することです。</p>
+<div class="section" id="id2">
+<h2>オブジェクトをシリアライズする<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Python は、通信可能または保存可能なフォーマットにオブジェクトを変換 (<em>シリアライズ</em>) できる2つのモジュール <a class="reference internal" href="../pickle/index.html#module-pickle" title="Python オブジェクトシリアライゼーション"><tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt></a> と <a class="reference internal" href="../json/index.html#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> を提供します。最も一般的なのは <a class="reference internal" href="../pickle/index.html#module-pickle" title="Python オブジェクトシリアライゼーション"><tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt></a> です。というのは、高速な C 言語実装があり、 <a class="reference internal" href="../shelve/index.html#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> のように他の標準ライブラリで実際にデータをシリアライズして保存するのに利用されているからです。web ベースのアプリケーションは、既存の web サービスのストレージアプリケーションと連携するのに適した <a class="reference internal" href="../json/index.html#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> を調べると良いです。</p>
+</div>
+<div class="section" id="id3">
+<h2>シリアライズされたオブジェクトを保存する<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>インメモリオブジェクトを保存可能なフォーマットに変換したら、次はそのデータを保存する方法を決めます。後続の処理においてインデクシングする必要がないデータなら、シリアライズされたオブジェクトを単純にファイルへ書き込みます。しかし、Python は DBM フォーマットの一種としてキーバリューを保存するシンプルなデータベースのために複数のモジュールを提供します。</p>
+<p><a class="reference internal" href="../shelve/index.html#module-shelve" title="任意の Python オブジェクトの永続ストレージ"><tt class="xref py py-mod docutils literal"><span class="pre">shelve</span></tt></a> は DBM フォーマットを活用する最もシンプルなインタフェースです。shelve ファイルを単純にオープンして、ディクショナリのような API でアクセスします。shelve ファイルに保存するオブジェクトは自動的に pickle 化されて、特に意識する必要はありません。</p>
+<p>shelve の欠点の1つは、デフォルトのインタフェースでどの DBM フォーマットを使用するかを指定できないことです。そのことは、アプリケーションが異なるライブラリ間や複数ホスト間でデータベースファイルを共有する必要がない場合は大した問題ではあありません。しかし、そうした必要性がある場合、モジュールのクラスの1つを選択して特定のフォーマットを指定できます(<a class="reference internal" href="../shelve/index.html#shelve-shelf-types"><em>特別なシェルフ</em></a>)。</p>
+<p>もし JSON 経由で大量データを渡す必要があるなら <a class="reference internal" href="../json/index.html#module-json" title="JavaScript Object Notation シリアライザ"><tt class="xref py py-mod docutils literal"><span class="pre">json</span></tt></a> と <a class="reference internal" href="../anydbm/index.html#module-anydbm" title="anydbm は DBM スタイルという文字列をキーとするデータベースに対してディクショナリによく似たインタフェースを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">anydbm</span></tt></a> を使用して別の永続化の仕組みを提供します。DBM データベースのキーと値は文字列でなければならないので、データベースの値にアクセスするときにそのオブジェクトが自動的に再作成されることはありません。</p>
+</div>
+<div class="section" id="id4">
+<h2>関係データベース<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../sqlite3/index.html#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> という優れたインプロセス関係データベースがほとんどの Python 環境で利用できます。それはメモリまたはローカルファイルにデータベースを保存します。そして、全てのアクセスが同一プロセス内から行われるのでネットワークの遅延がありません。小型軽量な特徴をもつ <a class="reference internal" href="../sqlite3/index.html#module-sqlite3" title="組み込み関係データベース"><tt class="xref py py-mod docutils literal"><span class="pre">sqlite3</span></tt></a> は特にデスクトップアプリケーションの組み込み用途や web アプリケーションの開発バージョンに適しています。</p>
+<p>データベースへの全てのアクセスは Python DBI 2.0 API を経由して行われます。デフォルトでは、オブジェクト関係マッパ(ORM)は提供されません。</p>
+<p>最も汎用的で人気のある ORM は <a class="reference external" href="http://www.sqlalchemy.org/">SQLAlchemy</a> です。しかし、Django のネイティブ ORM もまた SQLite をサポートします。SQLAlchemy のインストールと設定は簡単ですが、対象アプリケーションのオブジェクトがあまり複雑ではない、もしくはそのオーバーヘッドが気になるなら、直接 DBI インタフェースを使用した方が良いかもしれません。</p>
+</div>
+<div class="section" id="id5">
+<h2>標準フォーマット経由のデータ変換<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../csv/index.html#module-csv" title="カンマ区切りのファイルを読み書きする"><tt class="xref py py-mod docutils literal"><span class="pre">csv</span></tt></a> やカンマで分割される値は、本来、永続化目的には考えられていませんが、アプリケーション間でデータを移行するときにそういったファイルの方が効率的です。ほとんどのスプレッドシートプログラムやデータベースは CSV によるインポート/エクスポート機能をサポートします。そのため、CSV ファイルに出力するのは、アプリケーションや解析ツールにデータを移行する最も簡単な方法です。</p>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="data_structures.html" title="インメモリデータ構造"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="標準ライブラリの機能"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="index.html" >標準ライブラリの機能</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

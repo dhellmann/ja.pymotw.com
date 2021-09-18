@@ -1,0 +1,492 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>string &#8211; テキストを扱う - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="文字列サービス" href="../string_services.html" />
+    <link rel="next" title="StringIO と cStringIO – ファイルのような API でテキストバッファを扱う" href="../StringIO/index.html" />
+    <link rel="prev" title="difflib – シーケンスを比較する" href="../difflib/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">string &#8211; テキストを扱う</a><ul>
+<li><a class="reference internal" href="#id1">定数</a></li>
+<li><a class="reference internal" href="#id2">関数</a></li>
+<li><a class="reference internal" href="#id3">テンプレート</a></li>
+<li><a class="reference internal" href="#id4">高度なテンプレート</a></li>
+<li><a class="reference internal" href="#id5">非推奨な関数</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../difflib/index.html" title="前の章へ"><strong>前:</strong> difflib &#8211; シーケンスを比較する</a><br/>
+          <a href="../StringIO/index.html" title="次の章へ"><strong>次:</strong> StringIO と cStringIO &#8211; ファイルのような API でテキストバッファを扱う</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/string/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../StringIO/index.html" title="StringIO と cStringIO – ファイルのような API でテキストバッファを扱う"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../difflib/index.html" title="difflib – シーケンスを比較する"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../string_services.html" accesskey="U">文字列サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="string">
+<h1>string &#8211; テキストを扱う<a class="headerlink" href="#string" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-string"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">テキストを扱う定数やクラスを提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.5</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-string" title="テキストを扱う定数やクラスを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">string</span></tt></a> モジュールは Python の初期バージョンを端緒とします。バージョン 2.0 では、このモジュールのみに実装されていた多くの関数が <tt class="xref py py-class docutils literal"><span class="pre">str</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">unicode</span></tt> オブジェクトのメソッドに移行されました。そういった関数のレガシーバージョンはまだ有効ですが、その使用は非推奨であり Python 3.0 で削除されます。それでも <a class="reference internal" href="#module-string" title="テキストを扱う定数やクラスを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">string</span></tt></a> モジュールは、文字列やユニコードオブジェクトを扱う便利な定数やクラスを提供します。そして、この記事はそういった内容に特化しています。</p>
+<div class="section" id="id1">
+<h2>定数<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-string" title="テキストを扱う定数やクラスを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">string</span></tt></a> モジュールの定数は、 <tt class="docutils literal"><span class="pre">ascii_letters</span></tt> や <tt class="docutils literal"><span class="pre">digits</span></tt> のような特殊な特性のカテゴリで使用されます。定数によっては、 <tt class="docutils literal"><span class="pre">lowercase</span></tt> のようにロケールに依存するので、その値はユーザの言語設定を考慮して変更します。一方 <tt class="docutils literal"><span class="pre">hexdigits</span></tt> のような定数は、ロケールが違っても変更する必要はありません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">string</span>
+
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">):</span>
+        <span class="k">continue</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">print</span>
+</pre></div>
+</div>
+<p>ほとんどの定数の名前は自己説明的です。</p>
+<div class="highlight-python"><pre>$ python string_constants.py
+ascii_letters='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+ascii_lowercase='abcdefghijklmnopqrstuvwxyz'
+
+ascii_uppercase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+digits='0123456789'
+
+hexdigits='0123456789abcdefABCDEF'
+
+letters='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+lowercase='abcdefghijklmnopqrstuvwxyz'
+
+octdigits='01234567'
+
+printable='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&amp;\'()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~ \t\n\r\x0b\x0c'
+
+punctuation='!"#$%&amp;\'()*+,-./:;&lt;=&gt;?@[\\]^_`{|}~'
+
+uppercase='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+whitespace='\t\n\x0b\x0c\r '</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>関数<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-string" title="テキストを扱う定数やクラスを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">string</span></tt></a> モジュールから移行されなかった2つの関数があります。 <tt class="xref py py-func docutils literal"><span class="pre">capwords()</span></tt> は文字列の全ての単語の先頭を大文字にします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">string</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="s">&#39;The quick brown fox jumped over the lazy dog.&#39;</span>
+
+<span class="k">print</span> <span class="n">s</span>
+<span class="k">print</span> <span class="n">string</span><span class="o">.</span><span class="n">capwords</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>文字列を <tt class="xref py py-func docutils literal"><span class="pre">split()</span></tt> して、その出力リストの単語の先頭を大文字にしてから、 <tt class="xref py py-func docutils literal"><span class="pre">join()</span></tt> でそれらの単語を結合するのと同じ結果です。</p>
+<div class="highlight-python"><pre>$ python string_capwords.py
+The quick brown fox jumped over the lazy dog.
+The Quick Brown Fox Jumped Over The Lazy Dog.</pre>
+</div>
+<p>もう1つの関数は、文字セットを別のものに変更する <tt class="xref py py-func docutils literal"><span class="pre">translate()</span></tt> メソッドで使用される変換テーブルを作成します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">string</span>
+
+<span class="n">leet</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s">&#39;abegiloprstz&#39;</span><span class="p">,</span> <span class="s">&#39;463611092572&#39;</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="s">&#39;The quick brown fox jumped over the lazy dog.&#39;</span>
+
+<span class="k">print</span> <span class="n">s</span>
+<span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">leet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルでは、文字が <a class="reference external" href="http://en.wikipedia.org/wiki/Leet">l33t</a> による数字で置き換えられます。</p>
+<div class="highlight-python"><pre>$ python string_maketrans.py
+The quick brown fox jumped over the lazy dog.
+Th3 qu1ck 620wn f0x jum93d 0v32 7h3 142y d06.</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>テンプレート<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>文字列テンプレートが <span class="target" id="index-0"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0292"><strong>PEP 292</strong></a> の一部として Python 2.4 で追加されました。それは組み込みの補間構文の代替方法を意図しています。 <tt class="xref py py-class docutils literal"><span class="pre">string.Template</span></tt> の補間では、変数は <tt class="docutils literal"><span class="pre">$</span></tt> (例 <tt class="docutils literal"><span class="pre">$var</span></tt>) を接頭辞とする名前で識別されます。また、変数名の周りの文字列を無効にする必要があるなら、変数名を中括弧で囲むこともできます(例 <tt class="docutils literal"><span class="pre">${var}</span></tt>)。</p>
+<p>このサンプルは、シンプルなテンプレートと同じような文字列の補間設定を比較します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">string</span>
+
+<span class="n">values</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;var&#39;</span><span class="p">:</span><span class="s">&#39;foo&#39;</span> <span class="p">}</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">$var</span>
+<span class="s">$$</span>
+<span class="s">${var}iable</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;TEMPLATE:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="si">%(var)s</span><span class="s"></span>
+<span class="si">%%</span><span class="s"></span>
+<span class="si">%(var)s</span><span class="s">iable</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="k">print</span> <span class="s">&#39;INTERPLOATION:&#39;</span><span class="p">,</span> <span class="n">s</span> <span class="o">%</span> <span class="n">values</span>
+</pre></div>
+</div>
+<p>ご覧の通り、両方のケースでトリガー文字 (<tt class="docutils literal"><span class="pre">$</span></tt> や <tt class="docutils literal"><span class="pre">%</span></tt>) は2文字続けることでエスケープされます。</p>
+<div class="highlight-python"><pre>$ python string_template.py
+TEMPLATE:
+foo
+$
+fooiable
+
+INTERPLOATION:
+foo
+%
+fooiable</pre>
+</div>
+<p>テンプレートと標準の文字列補間の大きな違いの1つは、引数の型を考慮しない点です。その値は文字列に変換されて、その変換された文字列は結果出力に追加されます。フォーマットオプションは指定しなくても構いません。例えば、浮動小数を表す数値の桁数を管理する方法はありません。</p>
+<p><tt class="xref py py-func docutils literal"><span class="pre">safe_substitute()</span></tt> を使用することの利点でもありますが、テンプレートが要求する全ての値が引数として提供されない場合でも例外を発生させません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">string</span>
+
+<span class="n">values</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;var&#39;</span><span class="p">:</span><span class="s">&#39;foo&#39;</span> <span class="p">}</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="s">&quot;$var is here but $missing is not provided&quot;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;TEMPLATE:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;ERROR:&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    
+<span class="k">print</span> <span class="s">&#39;TEMPLATE:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>values ディクショナリには missing の値はないので、 <tt class="xref py py-func docutils literal"><span class="pre">substitute()</span></tt> は <a class="reference internal" href="../exceptions/index.html#exceptions-keyerror"><em>KeyError</em></a> を発生させます。 <tt class="xref py py-func docutils literal"><span class="pre">safe_substitute()</span></tt> は、このエラーを発生させずに捕捉して、テキストに変数表現がそのまま残ります。</p>
+<div class="highlight-python"><pre>$ python string_template_missing.py
+TEMPLATE: ERROR: 'missing'
+TEMPLATE: foo is here but $missing is not provided</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>高度なテンプレート<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">string.Template</span></tt> のデフォルトの構文が好みではないなら、テンプレート本文の変数名を見つける正規表現を調整することでその振る舞いを変更できます。最も簡単な方法は <em>delimiter</em> と <em>idpattern</em> のクラス属性を変更します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">string</span>
+
+<span class="k">class</span> <span class="nc">MyTemplate</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">Template</span><span class="p">):</span>
+    <span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39;%&#39;</span>
+    <span class="n">idpattern</span> <span class="o">=</span> <span class="s">&#39;[a-z]+_[a-z]+&#39;</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">MyTemplate</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%%</span><span class="s"> %with_underscore %notunderscored&#39;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;with_underscore&#39;</span><span class="p">:</span><span class="s">&#39;replaced&#39;</span><span class="p">,</span> 
+      <span class="s">&#39;notunderscored&#39;</span><span class="p">:</span><span class="s">&#39;not replaced&#39;</span><span class="p">,</span>
+      <span class="p">}</span>
+
+<span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルでは、変数の ID は中間にアンダースコアを含めなければならないので、 <tt class="docutils literal"><span class="pre">%notunderscored</span></tt> は置き換えられません。</p>
+<div class="highlight-python"><pre>$ python string_template_advanced.py
+% replaced %notunderscored</pre>
+</div>
+<p>もっと複雑な変更だと、 <em>pattern</em> 属性をオーバーライドして全く新しい正規表現を定義できます。そのパターンは、エスケープされるデリミタ、名前付き変数、括弧付きの名前付き変数、不正なデリミタパターンの4つの名前付きグループを含めなければなりません。</p>
+<p>デフォルトのパターンを見てみましょう。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">string</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="s">&#39;$var&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">pattern</span><span class="o">.</span><span class="n">pattern</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">t.pattern</span></tt> は複雑な正規表現なので、実際の文字列を見るためにその <em>pattern</em> 属性にアクセスする必要があります。</p>
+<div class="highlight-python"><pre>$ python string_template_defaultpattern.py
+
+    \$(?:
+      (?P&lt;escaped&gt;\$) |   # Escape sequence of two delimiters
+      (?P&lt;named&gt;[_a-z][_a-z0-9]*)      |   # delimiter and a Python identifier
+      {(?P&lt;braced&gt;[_a-z][_a-z0-9]*)}   |   # delimiter and a braced identifier
+      (?P&lt;invalid&gt;)              # Other ill-formed delimiter exprs
+    )</pre>
+</div>
+<p>例えば、変数の構文として <tt class="docutils literal"><span class="pre">{{var}}</span></tt> といったテンプレートの新しい型を作成したいなら、次のようなパターンを使用できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="k">class</span> <span class="nc">MyTemplate</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">Template</span><span class="p">):</span>
+    <span class="n">delimiter</span> <span class="o">=</span> <span class="s">&#39;{{&#39;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s">r&#39;&#39;&#39;</span>
+<span class="s">    \{\{(?:</span>
+<span class="s">    (?P&lt;escaped&gt;\{\{)|</span>
+<span class="s">    (?P&lt;named&gt;[_a-z][_a-z0-9]*)\}\}|</span>
+<span class="s">    (?P&lt;braced&gt;[_a-z][_a-z0-9]*)\}\}|</span>
+<span class="s">    (?P&lt;invalid&gt;)</span>
+<span class="s">    )</span>
+<span class="s">    &#39;&#39;&#39;</span>
+    
+<span class="n">t</span> <span class="o">=</span> <span class="n">MyTemplate</span><span class="p">(</span><span class="s">&#39;&#39;&#39;</span>
+<span class="s">{{{{</span>
+<span class="s">{{var}}</span>
+<span class="s">&#39;&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;MATCHES:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">template</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;SUBSTITUTED:&#39;</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">safe_substitute</span><span class="p">(</span><span class="n">var</span><span class="o">=</span><span class="s">&#39;replacement&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>変数名と括弧付きの変数名のパターンが同じだったとしても、両方とも提供する必要があります。実行結果は次のようになります。</p>
+<div class="highlight-python"><pre>$ python string_template_newsyntax.py
+MATCHES: [('{{', '', '', ''), ('', 'var', '', '')]
+SUBSTITUTED:
+{{
+replacement</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>非推奨な関数<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>非推奨なメソッドの情報は <tt class="xref py py-class docutils literal"><span class="pre">string</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">unicode</span></tt>  クラスへ移行されました。 <a class="reference external" href="http://docs.python.org/lib/string-methods.html#string-methods">String メソッド</a> のドキュメントを参照してください。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-string.html">string</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><span class="target" id="index-1"></span><a class="pep reference external" href="http://www.python.org/dev/peps/pep-0292"><strong>PEP 292</strong></a></dt>
+<dd>シンプルな文字列置換</dd>
+</dl>
+<p class="last"><a class="reference internal" href="../articles/text_processing.html#article-text-processing"><em>テキスト処理ツール</em></a></p>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../StringIO/index.html" title="StringIO と cStringIO – ファイルのような API でテキストバッファを扱う"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../difflib/index.html" title="difflib – シーケンスを比較する"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../string_services.html" >文字列サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,383 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>compileall &#8211; ソースファイルをバイトコンパイルする - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="Python 言語サービス" href="../language.html" />
+    <link rel="next" title="dis – Python バイトコードディスアセンブラ" href="../dis/index.html" />
+    <link rel="prev" title="Python 言語サービス" href="../language.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">compileall &#8211; ソースファイルをバイトコンパイルする</a><ul>
+<li><a class="reference internal" href="#id1">ディレクトリ単位でコンパイルする</a></li>
+<li><a class="reference internal" href="#sys-path">sys.path をコンパイルする</a></li>
+<li><a class="reference internal" href="#id2">コマンドラインから</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../language.html" title="前の章へ"><strong>前:</strong> Python 言語サービス</a><br/>
+          <a href="../dis/index.html" title="次の章へ"><strong>次:</strong> dis &#8211; Python バイトコードディスアセンブラ</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/compileall/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dis/index.html" title="dis – Python バイトコードディスアセンブラ"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../language.html" title="Python 言語サービス"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../language.html" accesskey="U">Python 言語サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="compileall">
+<h1>compileall &#8211; ソースファイルをバイトコンパイルする<a class="headerlink" href="#compileall" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-compileall"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">ソースファイルをバイトコンパイルされたファイルに変換する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-compileall" title="ソースファイルをバイトコンパイルする"><tt class="xref py py-mod docutils literal"><span class="pre">compileall</span></tt></a> モジュールは Python のソースファイルを見つけてバイトコンパイルされたファイルにコンパイルします。その出力は <tt class="docutils literal"><span class="pre">.pyc</span></tt> か <tt class="docutils literal"><span class="pre">.pyo</span></tt> ファイルに保存されます。</p>
+<div class="section" id="id1">
+<h2>ディレクトリ単位でコンパイルする<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">compile_dir()</span></tt> はディレクトリを再帰的に調べて、その中にあるファイルをバイトコンパイルします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">compileall</span>
+
+<span class="n">compileall</span><span class="o">.</span><span class="n">compile_dir</span><span class="p">(</span><span class="s">&#39;examples&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>デフォルトでは、深さ10までの全サブディレクトリを調べます。subversion のようなバージョン管理システムを使用しているときは次のように不要な調査を行います。</p>
+<div class="highlight-python"><pre>$ python compileall_compile_dir.py
+Listing examples ...
+Listing examples/.svn ...
+Listing examples/.svn/prop-base ...
+Listing examples/.svn/text-base ...
+Compiling examples/a.py ...
+Listing examples/subdir ...
+Listing examples/subdir/.svn ...
+Listing examples/subdir/.svn/prop-base ...
+Listing examples/subdir/.svn/text-base ...
+Compiling examples/subdir/b.py ...</pre>
+</div>
+<p>ディレクトリをフィルタするには <tt class="docutils literal"><span class="pre">rx</span></tt> 引数に除外する名前にマッチする正規表現を渡します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">compileall</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">compileall</span><span class="o">.</span><span class="n">compile_dir</span><span class="p">(</span><span class="s">&#39;examples&#39;</span><span class="p">,</span> 
+    <span class="n">rx</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;/\.svn&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python compileall_exclude_dirs.py
+Listing examples ...
+Listing examples/.svn ...
+Listing examples/.svn/prop-base ...
+Listing examples/.svn/text-base ...
+Compiling examples/a.py ...
+Listing examples/subdir ...
+Listing examples/subdir/.svn ...
+Listing examples/subdir/.svn/prop-base ...
+Listing examples/subdir/.svn/text-base ...
+Compiling examples/subdir/b.py ...</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">maxlevels</span></tt> 引数は再帰的に調べる深さを制御します。例えば、再帰的に調べないには <tt class="docutils literal"><span class="pre">0</span></tt> を渡します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">compileall</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">compileall</span><span class="o">.</span><span class="n">compile_dir</span><span class="p">(</span><span class="s">&#39;examples&#39;</span><span class="p">,</span> 
+    <span class="n">maxlevels</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+    <span class="n">rx</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;/\.svn&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python compileall_recursion_depth.py
+Listing examples ...
+Compiling examples/a.py ...</pre>
+</div>
+</div>
+<div class="section" id="sys-path">
+<h2>sys.path をコンパイルする<a class="headerlink" href="#sys-path" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">compile_path()</span></tt> を呼び出すと sys.path で見つけた全ての Python ソースファイルをコンパイルします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">compileall</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;examples&#39;</span><span class="p">,</span> <span class="s">&#39;notthere&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;sys.path =&#39;</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="n">compileall</span><span class="o">.</span><span class="n">compile_path</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このサンプルは、実行してパーミッションエラーが起きないようにデフォルトの sys.path を置き換えています。それでも、デフォルトの動作は把握できます。 <tt class="docutils literal"><span class="pre">maxlevels</span></tt> の値はデフォルトから <tt class="docutils literal"><span class="pre">0</span></tt> になるので注意してください。</p>
+<div class="highlight-python"><pre>$ python compileall_path.py
+sys.path = ['examples', 'notthere']
+Listing examples ...
+Compiling examples/a.py ...
+Listing notthere ...
+Can't list notthere</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>コマンドラインから<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Makefile 経由でビルドシステムから利用するといったコマンドラインからも <a class="reference internal" href="#module-compileall" title="ソースファイルをバイトコンパイルする"><tt class="xref py py-mod docutils literal"><span class="pre">compileall</span></tt></a> を実行できます。例えば、次の通りです。</p>
+<div class="highlight-python"><pre>$ python -m compileall -h
+option -h not recognized
+usage: python compileall.py [-l] [-f] [-q] [-d destdir] [-x regexp] [-i list] [directory|file ...]
+-l: don't recurse down
+-f: force rebuild even if timestamps are up-to-date
+-q: quiet operation
+-d destdir: purported directory name for error messages
+   if no directory arguments, -l sys.path is assumed
+-x regexp: skip files matching the regular expression regexp
+   the regexp is searched for in the full path of the file
+-i list: expand list with its content (file and directory names)</pre>
+</div>
+<p>前節で紹介したサンプルと同様に <tt class="docutils literal"><span class="pre">.svn</span></tt> ディレクトリをスキップするには次のように実行します。</p>
+<div class="highlight-python"><pre>$ python -m compileall -x '/\.svn' examples
+Listing examples ...
+Listing examples/.svn ...
+Listing examples/.svn/prop-base ...
+Listing examples/.svn/text-base ...
+Compiling examples/a.py ...
+Listing examples/subdir ...
+Listing examples/subdir/.svn ...
+Listing examples/subdir/.svn/prop-base ...
+Listing examples/subdir/.svn/text-base ...
+Compiling examples/subdir/b.py ...</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/compileall.html">compileall</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../dis/index.html" title="dis – Python バイトコードディスアセンブラ"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../language.html" title="Python 言語サービス"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../language.html" >Python 言語サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,656 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>operator &#8211; ビルトイン演算子に対する関数インタフェース - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="数値や数学に関するモジュール" href="../numeric.html" />
+    <link rel="next" title="random – 疑似乱数の生成" href="../random/index.html" />
+    <link rel="prev" title="math – 数学に関する関数" href="../math/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">operator &#8211; ビルトイン演算子に対する関数インタフェース</a><ul>
+<li><a class="reference internal" href="#id1">論理演算</a></li>
+<li><a class="reference internal" href="#id2">比較演算子</a></li>
+<li><a class="reference internal" href="#id3">算術演算子</a></li>
+<li><a class="reference internal" href="#id4">シーケンス演算子</a></li>
+<li><a class="reference internal" href="#id5">インプレース演算子</a></li>
+<li><a class="reference internal" href="#id6">属性と要素の &#8220;ゲッタ&#8221;</a></li>
+<li><a class="reference internal" href="#id7">演算子とカスタムクラスを組み合わせる</a></li>
+<li><a class="reference internal" href="#id8">型チェック</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../math/index.html" title="前の章へ"><strong>前:</strong> math &#8211; 数学に関する関数</a><br/>
+          <a href="../random/index.html" title="次の章へ"><strong>次:</strong> random &#8211; 疑似乱数の生成</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/operator/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../random/index.html" title="random – 疑似乱数の生成"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../math/index.html" title="math – 数学に関する関数"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../numeric.html" accesskey="U">数値や数学に関するモジュール</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="operator">
+<h1>operator &#8211; ビルトイン演算子に対する関数インタフェース<a class="headerlink" href="#operator" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-operator"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">ビルトイン演算子に対する関数インタフェース</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4 以上</td>
+</tr>
+</tbody>
+</table>
+<p>イテレータを折に触れて使用する関数プログラミングはシンプルな表現のために小さな関数を作成するように要求します。それは lambda 関数として表現されるときもありますが、幾つかの演算では全く独自の関数で実装される必要はありません。 <a class="reference internal" href="#module-operator" title="ビルトイン演算子に対する関数インタフェース"><tt class="xref py py-mod docutils literal"><span class="pre">operator</span></tt></a> モジュールはシーケンスやディクショナリの操作と同様に算術や比較演算のためにビルトイン演算に対応する関数を定義します。</p>
+<div class="section" id="id1">
+<h2>論理演算<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>真偽値の評価、逆の真偽値を作成するための否定やそういった値が等価かどうかを確認するための比較オブジェクトを決定する関数があります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="k">print</span> <span class="s">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s">&#39;b =&#39;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;not_(a)     :&#39;</span><span class="p">,</span> <span class="n">not_</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;truth(a)    :&#39;</span><span class="p">,</span> <span class="n">truth</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;is_(a, b)   :&#39;</span><span class="p">,</span> <span class="n">is_</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;is_not(a, b):&#39;</span><span class="p">,</span> <span class="n">is_not</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong class="command">not</strong> は Python のキーワードなので <tt class="xref py py-func docutils literal"><span class="pre">not_()</span></tt> は最後にアンダースコアが続きます。 <tt class="xref py py-func docutils literal"><span class="pre">truth()</span></tt> は <strong class="command">if</strong> 文の式がテストされるときと同じロジックを適用します。 <tt class="xref py py-func docutils literal"><span class="pre">is_()</span></tt> は <strong class="command">is</strong> キーワードにより使用される同じチェックを実装します。そして <tt class="xref py py-func docutils literal"><span class="pre">is_not()</span></tt> は同じテストを行い逆の内容を返します。</p>
+<div class="highlight-python"><pre>$ python operator_boolean.py
+a = -1
+b = 5
+
+not_(a)     : False
+truth(a)    : True
+is_(a, b)   : False
+is_not(a, b): True</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>比較演算子<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>実用に十分な比較演算子が全てサポートされています。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s">&#39;b =&#39;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">(</span><span class="n">lt</span><span class="p">,</span> <span class="n">le</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">ne</span><span class="p">,</span> <span class="n">ge</span><span class="p">,</span> <span class="n">gt</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">(a, b):&#39;</span> <span class="o">%</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>それらの関数群は <tt class="docutils literal"><span class="pre">&lt;</span></tt>, <tt class="docutils literal"><span class="pre">&lt;=</span></tt>, <tt class="docutils literal"><span class="pre">==</span></tt>, <tt class="docutils literal"><span class="pre">&gt;=</span></tt> と <tt class="docutils literal"><span class="pre">&gt;</span></tt> を使用する式の構文と等価です。</p>
+<div class="highlight-python"><pre>$ python operator_comparisons.py
+
+a = 1
+b = 5.0
+lt(a, b): True
+le(a, b): True
+eq(a, b): False
+ne(a, b): True
+ge(a, b): False
+gt(a, b): False</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>算術演算子<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>数値の値を操作するために算術演算子もサポートされています。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">d</span> <span class="o">=</span> <span class="mi">6</span>
+
+<span class="k">print</span> <span class="s">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s">&#39;b =&#39;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="s">&#39;c =&#39;</span><span class="p">,</span> <span class="n">c</span>
+<span class="k">print</span> <span class="s">&#39;d =&#39;</span><span class="p">,</span> <span class="n">d</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Positive/Negative:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;abs(a):&#39;</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;neg(a):&#39;</span><span class="p">,</span> <span class="n">neg</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;neg(b):&#39;</span><span class="p">,</span> <span class="n">neg</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;pos(a):&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;pos(b):&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Arithmetic:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;add(a, b)     :&#39;</span><span class="p">,</span> <span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;div(a, b)     :&#39;</span><span class="p">,</span> <span class="n">div</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;div(d, c)     :&#39;</span><span class="p">,</span> <span class="n">div</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;floordiv(a, b):&#39;</span><span class="p">,</span> <span class="n">floordiv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;floordiv(d, c):&#39;</span><span class="p">,</span> <span class="n">floordiv</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;mod(a, b)     :&#39;</span><span class="p">,</span> <span class="n">mod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;mul(a, b)     :&#39;</span><span class="p">,</span> <span class="n">mul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;pow(c, d)     :&#39;</span><span class="p">,</span> <span class="nb">pow</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;sub(b, a)     :&#39;</span><span class="p">,</span> <span class="n">sub</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;truediv(a, b) :&#39;</span><span class="p">,</span> <span class="n">truediv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;truediv(d, c) :&#39;</span><span class="p">,</span> <span class="n">truediv</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Bitwise:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;and_(c, d)  :&#39;</span><span class="p">,</span> <span class="n">and_</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;invert(c)   :&#39;</span><span class="p">,</span> <span class="n">invert</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;lshift(c, d):&#39;</span><span class="p">,</span> <span class="n">lshift</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;or_(c, d)   :&#39;</span><span class="p">,</span> <span class="n">or_</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;rshift(d, c):&#39;</span><span class="p">,</span> <span class="n">rshift</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;xor(c, d)   :&#39;</span><span class="p">,</span> <span class="n">xor</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first last admonition-title">Note</p>
+</div>
+<div class="highlight-python"><pre>$ python operator_math.py
+a = -1
+b = 5.0
+c = 2
+d = 6
+
+Positive/Negative:
+abs(a): 1
+neg(a): 1
+neg(b): -5.0
+pos(a): -1
+pos(b): 5.0
+
+Arithmetic:
+add(a, b)     : 4.0
+div(a, b)     : -0.2
+div(d, c)     : 3
+floordiv(a, b): -1.0
+floordiv(d, c): 3
+mod(a, b)     : 4.0
+mul(a, b)     : -5.0
+pow(c, d)     : 64
+sub(b, a)     : 6.0
+truediv(a, b) : -0.2
+truediv(d, c) : 3.0
+
+Bitwise:
+and_(c, d)  : 2
+invert(c)   : -3
+lshift(c, d): 128
+or_(c, d)   : 6
+rshift(d, c): 1
+xor(c, d)   : 4</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>シーケンス演算子<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>シーケンスで動作する演算子は4つのグループに分けられます。それらはシーケンスの構築、要素の検索、中身へのアクセス、シーケンスから要素を削除するものです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">]</span>
+<span class="n">b</span> <span class="o">=</span> <span class="p">[</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span> <span class="p">]</span>
+
+<span class="k">print</span> <span class="s">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s">&#39;b =&#39;</span><span class="p">,</span> <span class="n">b</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Constructive:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;  concat(a, b):&#39;</span><span class="p">,</span> <span class="n">concat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  repeat(a, 3):&#39;</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Searching:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;  contains(a, 1)  :&#39;</span><span class="p">,</span> <span class="n">contains</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  contains(b, &quot;d&quot;):&#39;</span><span class="p">,</span> <span class="n">contains</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s">&quot;d&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  countOf(a, 1)   :&#39;</span><span class="p">,</span> <span class="n">countOf</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  countOf(b, &quot;d&quot;) :&#39;</span><span class="p">,</span> <span class="n">countOf</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s">&quot;d&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  indexOf(a, 5)   :&#39;</span><span class="p">,</span> <span class="n">indexOf</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Access Items:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;  getitem(b, 1)            :&#39;</span><span class="p">,</span> <span class="n">getitem</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  getslice(a, 1, 3)        :&#39;</span><span class="p">,</span> <span class="n">getslice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  setitem(b, 1, &quot;d&quot;)       :&#39;</span><span class="p">,</span> <span class="n">setitem</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;d&quot;</span><span class="p">),</span> <span class="s">&#39;, after b =&#39;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="s">&#39;  setslice(a, 1, 3, [4, 5]):&#39;</span><span class="p">,</span> <span class="n">setslice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span> <span class="s">&#39;, after a =&#39;</span><span class="p">,</span> <span class="n">a</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Destructive:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;  delitem(b, 1)    :&#39;</span><span class="p">,</span> <span class="n">delitem</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s">&#39;, after b =&#39;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="s">&#39;  delslice(a, 1, 3):&#39;</span><span class="p">,</span> <span class="n">delslice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s">&#39;, after a =&#39;</span><span class="p">,</span> <span class="n">a</span>
+</pre></div>
+</div>
+<p>そういった演算子には <tt class="xref py py-func docutils literal"><span class="pre">setitem()</span></tt> や <tt class="xref py py-func docutils literal"><span class="pre">delitem()</span></tt> のように特定位置のシーケンスを変更して値を返さないものがあります。</p>
+<div class="highlight-python"><pre>$ python operator_sequences.py
+a = [1, 2, 3]
+b = ['a', 'b', 'c']
+
+Constructive:
+  concat(a, b): [1, 2, 3, 'a', 'b', 'c']
+  repeat(a, 3): [1, 2, 3, 1, 2, 3, 1, 2, 3]
+
+Searching:
+  contains(a, 1)  : True
+  contains(b, "d"): False
+  countOf(a, 1)   : 1
+  countOf(b, "d") : 0
+  indexOf(a, 5)   : 0
+
+Access Items:
+  getitem(b, 1)            : b
+  getslice(a, 1, 3)        : [2, 3]
+  setitem(b, 1, "d")       : None , after b = ['a', 'd', 'c']
+  setslice(a, 1, 3, [4, 5]): None , after a = [1, 4, 5]
+
+Destructive:
+  delitem(b, 1)    : None , after b = ['a', 'c']
+  delslice(a, 1, 3): None , after a = [1]</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>インプレース演算子<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>標準演算子に加えて、多くのオブジェクト型が <tt class="docutils literal"><span class="pre">+=</span></tt> のような特種な演算子を通して入力データを直接書き換える &#8220;インプレース&#8221; 処理をサポートします。インプレース処理と同等の関数もあります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">c</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">]</span>
+<span class="n">d</span> <span class="o">=</span> <span class="p">[</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span> <span class="s">&#39;b =&#39;</span><span class="p">,</span> <span class="n">b</span>
+<span class="k">print</span> <span class="s">&#39;c =&#39;</span><span class="p">,</span> <span class="n">c</span>
+<span class="k">print</span> <span class="s">&#39;d =&#39;</span><span class="p">,</span> <span class="n">d</span>
+<span class="k">print</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">iadd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;a = iadd(a, b) =&gt;&#39;</span><span class="p">,</span> <span class="n">a</span>
+<span class="k">print</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">iconcat</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;c = iconcat(c, d) =&gt;&#39;</span><span class="p">,</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>このサンプルはインプレース処理を行う関数を少しだけ紹介します。その他の関数の詳細は標準ライブラリを参照してください。</p>
+<div class="highlight-python"><pre>$ python operator_inplace.py
+a = -1
+b = 5.0
+c = [1, 2, 3]
+d = ['a', 'b', 'c']
+
+a = iadd(a, b) =&gt; 4.0
+
+c = iconcat(c, d) =&gt; [1, 2, 3, 'a', 'b', 'c']</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>属性と要素の &#8220;ゲッタ&#8221;<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-operator" title="ビルトイン演算子に対する関数インタフェース"><tt class="xref py py-mod docutils literal"><span class="pre">operator</span></tt></a> モジュールで最も独特な機能の1つは <em>ゲッタ</em> の概念です。オブジェクトの属性、又はシーケンスから要素を取り出すために実行時に構築された呼び出し可能オブジェクトです。ゲッタは lambda 又は Python 関数よりもオーバーヘッドを少なくする目的でイテレータかジェネレータと一緒に使用すると特に便利です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MyObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;example class for attrgetter&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyObj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;MyObj(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">arg</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span> <span class="n">MyObj</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="p">]</span>
+<span class="k">print</span> <span class="n">l</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">attrgetter</span><span class="p">(</span><span class="s">&#39;arg&#39;</span><span class="p">)</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="p">[</span> <span class="n">g</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span> <span class="p">]</span>
+<span class="k">print</span> <span class="n">vals</span>
+</pre></div>
+</div>
+<p>属性のゲッタは <tt class="docutils literal"><span class="pre">lambda</span> <span class="pre">x,</span> <span class="pre">n='attrname':</span> <span class="pre">getattr(x,</span> <span class="pre">n)</span></tt> のように動作します。</p>
+<div class="highlight-python"><pre>$ python operator_attrgetter.py
+[MyObj(0), MyObj(1), MyObj(2), MyObj(3), MyObj(4)]
+[0, 1, 2, 3, 4]</pre>
+</div>
+<p>要素のゲッタは <tt class="docutils literal"><span class="pre">lambda</span> <span class="pre">x,</span> <span class="pre">y=5:</span> <span class="pre">x[y]</span></tt> のように動作します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">print</span> <span class="s">&#39;Dictionaries:&#39;</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">dict</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="p">]</span>
+<span class="k">print</span> <span class="n">l</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">itemgetter</span><span class="p">(</span><span class="s">&#39;val&#39;</span><span class="p">)</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="p">[</span> <span class="n">g</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span> <span class="p">]</span>
+<span class="k">print</span> <span class="n">vals</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;Tuples:&#39;</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="p">]</span>
+<span class="k">print</span> <span class="n">l</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="p">[</span> <span class="n">g</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span> <span class="p">]</span>
+<span class="k">print</span> <span class="n">vals</span>
+</pre></div>
+</div>
+<p>要素のゲッタはシーケンスと同様にマッピングされて動作します。</p>
+<div class="highlight-python"><pre>$ python operator_itemgetter.py
+Dictionaries:
+[{'val': 0}, {'val': 1}, {'val': 2}, {'val': 3}, {'val': 4}]
+[0, 1, 2, 3, 4]
+
+Tuples:
+[(0, 0), (1, 2), (2, 4), (3, 6), (4, 8)]
+[0, 2, 4, 6, 8]</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>演算子とカスタムクラスを組み合わせる<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-operator" title="ビルトイン演算子に対する関数インタフェース"><tt class="xref py py-mod docutils literal"><span class="pre">operator</span></tt></a> モジュールの関数は演算のために標準の Python インタフェース経由で動作します。そのため、ビルトイン型と同様にユーザ定義クラスで動作します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MyObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Example for operator overloading&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MyObj</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">return</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;MyObj(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">val</span>
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;compare for less-than&quot;&quot;&quot;</span>
+        <span class="k">print</span> <span class="s">&#39;Testing </span><span class="si">%s</span><span class="s"> &lt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">val</span>
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;add values&quot;&quot;&quot;</span>
+        <span class="k">print</span> <span class="s">&#39;Adding </span><span class="si">%s</span><span class="s"> + </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MyObj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">MyObj</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">MyObj</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;Comparison:&#39;</span>
+<span class="k">print</span> <span class="n">lt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Arithmetic:&#39;</span>
+<span class="k">print</span> <span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>それぞれの演算子で使用される特殊メソッドの完全なリストは Python リファレンスガイドを参照してください。</p>
+<div class="highlight-python"><pre>$ python operator_classes.py
+Comparison:
+Testing MyObj(1) &lt; MyObj(2)
+True
+
+Arithmetic:
+Adding MyObj(1) + MyObj(2)
+MyObj(3)</pre>
+</div>
+</div>
+<div class="section" id="id8">
+<h2>型チェック<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>実際の演算子に加えて、マッピング、数値やシーケンスのデータ型のためにテスト API 準拠の関数があります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">NoType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Supports none of the type APIs&quot;&quot;&quot;</span>
+    
+<span class="k">class</span> <span class="nc">MultiType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Supports multiple type APIs&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;mapping&#39;</span>
+    <span class="k">def</span> <span class="nf">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+<span class="n">o</span> <span class="o">=</span> <span class="n">NoType</span><span class="p">()</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">MultiType</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">(</span><span class="n">isMappingType</span><span class="p">,</span> <span class="n">isNumberType</span><span class="p">,</span> <span class="n">isSequenceType</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">(o):&#39;</span> <span class="o">%</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">(t):&#39;</span> <span class="o">%</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サンプルのテストはインタフェースが厳密に定義されていないので完璧ではありません。しかし、そういったインタフェースの何がサポートされているかのアイディアを与えてくれます。</p>
+<div class="highlight-python"><pre>$ python operator_typechecking.py
+isMappingType(o): False
+isMappingType(t): True
+isNumberType(o): False
+isNumberType(t): True
+isSequenceType(o): False
+isSequenceType(t): True</pre>
+</div>
+<p><a class="reference internal" href="../abc/index.html#module-abc" title="抽象基底クラス"><tt class="xref py py-mod docutils literal"><span class="pre">abc</span></tt></a> はコレクション型の API を定義する <a class="reference internal" href="../abc/index.html#abc-collection-types"><em>抽象基底クラス</em></a> を含みます。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-operator.html">operator</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../functools/index.html#module-functools" title="関数を操作するためのツール"><tt class="xref py py-mod docutils literal"><span class="pre">functools</span></tt></a></dt>
+<dd>関数プログラミングツールで、拡張比較(rich comparison)メソッドをクラスに追加する <tt class="xref py py-func docutils literal"><span class="pre">total_ordering()</span></tt> デコレータを提供します</dd>
+<dt><a class="reference internal" href="../itertools/index.html#module-itertools" title="効率的なループ処理のためのイテレータ関数"><tt class="xref py py-mod docutils literal"><span class="pre">itertools</span></tt></a></dt>
+<dd>イテレータの操作</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../random/index.html" title="random – 疑似乱数の生成"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../math/index.html" title="math – 数学に関する関数"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../numeric.html" >数値や数学に関するモジュール</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,449 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>copy &#8211; オブジェクトのコピー - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データタイプ" href="../data_types.html" />
+    <link rel="next" title="pprint – データ構造を見やすい形で出力する" href="../pprint/index.html" />
+    <link rel="prev" title="weakref – オブジェクトのガベージコレクション可能な参照" href="../weakref/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">copy &#8211; オブジェクトのコピー</a><ul>
+<li><a class="reference internal" href="#id1">浅いコピー</a></li>
+<li><a class="reference internal" href="#id2">深いコピー</a></li>
+<li><a class="reference internal" href="#id3">コピーの振る舞いの制御</a></li>
+<li><a class="reference internal" href="#id4">深いコピーにおける再帰</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../weakref/index.html" title="前の章へ"><strong>前:</strong> weakref &#8211; オブジェクトのガベージコレクション可能な参照</a><br/>
+          <a href="../pprint/index.html" title="次の章へ"><strong>次:</strong> pprint &#8211; データ構造を見やすい形で出力する</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/copy/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../pprint/index.html" title="pprint – データ構造を見やすい形で出力する"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../weakref/index.html" title="weakref – オブジェクトのガベージコレクション可能な参照"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" accesskey="U">データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="copy">
+<h1>copy &#8211; オブジェクトのコピー<a class="headerlink" href="#copy" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-copy"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">浅いコピー(shallow copy)や深いコピー(deep copy)でオブジェクトをコピーする関数を提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4</td>
+</tr>
+</tbody>
+</table>
+<p>copy モジュールは既存のオブジェクトをコピーする copy() と deepcopy() の2つの関数を提供します。</p>
+<div class="section" id="id1">
+<h2>浅いコピー<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>copy() 関数が作成する浅いコピーは、元のオブジェクトのコンテンツへの参照をもつコンテナです。例えば、新しいリストが作られて、元のリストの要素がそのリストへ加えられます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__cmp__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span> <span class="n">a</span> <span class="p">]</span>
+<span class="n">dup</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;l  :&#39;</span><span class="p">,</span> <span class="n">l</span>
+<span class="k">print</span> <span class="s">&#39;dup:&#39;</span><span class="p">,</span> <span class="n">dup</span>
+<span class="k">print</span> <span class="s">&#39;dup is l:&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">dup</span> <span class="ow">is</span> <span class="n">l</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;dup == l:&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">dup</span> <span class="o">==</span> <span class="n">l</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;dup[0] is l[0]:&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">dup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&#39;dup[0] == l[0]:&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">dup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>浅いコピーでは、MyClass のインスタンスはコピーされません。そのため、dup リストのオブジェクトの参照先は l リストのオブジェクトと同じです。</p>
+<div class="highlight-python"><pre>$ python copy_shallow.py
+l  : [&lt;__main__.MyClass instance at 0x100468cf8&gt;]
+dup: [&lt;__main__.MyClass instance at 0x100468cf8&gt;]
+dup is l: False
+dup == l: True
+dup[0] is l[0]: True
+dup[0] == l[0]: True</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>深いコピー<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>deepcopy() 関数が作成する深いコピーは、元のオブジェクトのコンテンツのコピーをもつ新しいコンテナです。例えば、新しいリストが作られて、元のリストの要素がコピーされます。それからコピーされた要素が新しいリストへ加えられます。</p>
+<p>先程の例において、copy() 関数の呼び出しを deepcopy() に置き換えることにより、その違いは明らかになります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dup</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>リストの最初の要素がもはや同じオブジェクトへの参照でないことに注意してください。しかし、2つのオブジェクトはそれでも等しいと評価されます。</p>
+<div class="highlight-python"><pre>$ python copy_deep.py
+l  : [&lt;__main__.MyClass instance at 0x100468cf8&gt;]
+dup: [&lt;__main__.MyClass instance at 0x100468d40&gt;]
+dup is l: False
+dup == l: True
+dup[0] is l[0]: False
+dup[0] == l[0]: True</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>コピーの振る舞いの制御<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>__copy__ と __deepcopy__ フックを使用して、コピーする方法を制御することができます。</p>
+<ul class="simple">
+<li>__copy__() は引数なしで呼び出され、オブジェクトの浅いコピーを返します。</li>
+</ul>
+<ul class="simple">
+<li>__deepcopy__() はメモディクショナリと共に呼び出され、オブジェクトの深いコピーを返します。深いコピーが行われる全てのメンバ属性は、再起を制御するためにメモディクショナリと共に copy.deepcopy() へ渡されます。(以下を参照)</li>
+</ul>
+<p>以下の例はどのようにメソッドが呼び出されるかを示しています。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__cmp__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">cmp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__copy__()&#39;</span>
+        <span class="k">return</span> <span class="n">MyClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;__deepcopy__(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">memo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MyClass</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">memo</span><span class="p">))</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+
+<span class="n">sc</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">dc</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python copy_hooks.py
+__copy__()
+__deepcopy__({})</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>深いコピーにおける再帰<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>再帰的なデータ構造のコピーによる問題を避けるために <tt class="docutils literal"><span class="pre">deepcopy()</span></tt> 関数は既にコピーされたオブジェクトを保持するディクショナリを使用します。このディクショナリは <tt class="docutils literal"><span class="pre">__deepcopy__()</span></tt> メソッドに渡されるので、そこでも同様に使用されます。</p>
+<p>この例は <tt class="docutils literal"><span class="pre">__deepcopy__()</span></tt> メソッドを実装することにより、有向グラフのような相互に連結されたデータ構造が再起に対して保護し易くする方法を説明します。デフォルトの <tt class="docutils literal"><span class="pre">deepcopy()</span></tt> 実装が再起のデータ構造を正しく扱うので、この例はただ説明目的だけのものです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">connections</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="n">connections</span>
+    <span class="k">def</span> <span class="nf">addConnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;Graph(</span><span class="si">%s</span><span class="s">) id=</span><span class="si">%s</span><span class="s">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
+        <span class="k">print</span>
+        <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">not_there</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">existing</span> <span class="o">=</span> <span class="n">memo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">not_there</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">not_there</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;  ALREADY COPIED TO&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">existing</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">existing</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">memo</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+        <span class="n">dup</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">memo</span><span class="p">),</span> <span class="p">[])</span>
+        <span class="k">print</span> <span class="s">&#39;  COPYING TO&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">dup</span><span class="p">)</span>
+        <span class="n">memo</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span> <span class="o">=</span> <span class="n">dup</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="n">dup</span><span class="o">.</span><span class="n">addConnection</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">memo</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">dup</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="s">&#39;root&#39;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">root</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">root</span><span class="p">])</span>
+<span class="n">root</span><span class="o">.</span><span class="n">addConnection</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">root</span><span class="o">.</span><span class="n">addConnection</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+<span class="n">dup</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>まず初めに、基本的な有向グラフのメソッドについて見てみましょう。グラフは名前とそのグラフが連結される既存のノードリストで初期化されます。addConnection() メソッドは双方向に連結するために使われます。またそれは deepcopy 演算子により使用されます。</p>
+<p><tt class="docutils literal"><span class="pre">__deepcopy__()</span></tt> メソッドは、どのようにして呼び出されるかを示すためにメッセージを表示して、必要に応じてメモディクショナリを管理します。連結のリスト全てをコピーせずに、新しいリストを作成し、個々の連結のコピーをそこに加えます。それぞれのノードがコピーされると、メモディクショナリが更新されることを保証します。そして、再帰の問題やノードの追加コピーを避けます。前のセクションで説明したように、終了時にコピーされたオブジェクトを返します。</p>
+<p>次に <em>root</em>, <em>a</em>, <em>b</em> のノードをもつグラフを用意します。グラフは次のようなものです。</p>
+<p class="graphviz">
+<img src="../_images/graphviz-0485ecaea0389d64804d960c33c3b5dc82f9a6df.png" alt="digraph copy_example {
+&quot;root&quot;;
+&quot;a&quot; -&gt; &quot;root&quot;;
+&quot;b&quot; -&gt; &quot;root&quot;;
+&quot;b&quot; -&gt; &quot;a&quot;;
+&quot;root&quot; -&gt; &quot;a&quot;;
+&quot;root&quot; -&gt; &quot;b&quot;;
+}" />
+</p>
+<p>グラフ内の参照先が循環しますが、メモディクショナリでその再帰処理を扱うことでスタックオーバーフローエラーを発生させないようにします。 <em>root</em> ノードがコピーされるときは以下のようになります。</p>
+<div class="highlight-python"><pre>$ python copy_recursion.py
+
+&lt;Graph(root) id=4299643648&gt;
+{   }
+  COPYING TO &lt;Graph(root) id=4299644008&gt;
+
+&lt;Graph(a) id=4299643720&gt;
+{   &lt;Graph(root) id=4299643648&gt;: &lt;Graph(root) id=4299644008&gt;,
+    4298518192: ['root'],
+    4299576544: 'root'}
+  COPYING TO &lt;Graph(a) id=4299644080&gt;
+
+&lt;Graph(root) id=4299643648&gt;
+  ALREADY COPIED TO &lt;Graph(root) id=4299644008&gt;
+
+&lt;Graph(b) id=4299643792&gt;
+{   &lt;Graph(root) id=4299643648&gt;: &lt;Graph(root) id=4299644008&gt;,
+    &lt;Graph(a) id=4299643720&gt;: &lt;Graph(a) id=4299644080&gt;,
+    4297844216: 'a',
+    4298518192: [   'root',
+                    'a',
+                    &lt;Graph(root) id=4299643648&gt;,
+                    &lt;Graph(a) id=4299643720&gt;],
+    4299576544: 'root',
+    4299643648: &lt;Graph(root) id=4299644008&gt;,
+    4299643720: &lt;Graph(a) id=4299644080&gt;}
+  COPYING TO &lt;Graph(b) id=4299644584&gt;</pre>
+</div>
+<p><em>root</em> ノードが2回目に出てきたとき <em>a</em> ノードはコピーされているので、 <tt class="docutils literal"><span class="pre">__deepcopy__</span></tt> は再帰を検知し、新しいオブジェクトを作成せずにメモディクショナリから既存の値を再利用します。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/copy.html">copy</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../pprint/index.html" title="pprint – データ構造を見やすい形で出力する"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../weakref/index.html" title="weakref – オブジェクトのガベージコレクション可能な参照"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" >データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

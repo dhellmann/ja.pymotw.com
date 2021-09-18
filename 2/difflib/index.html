@@ -1,0 +1,603 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>difflib &#8211; シーケンスを比較する - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="文字列サービス" href="../string_services.html" />
+    <link rel="next" title="string – テキストを扱う" href="../string/index.html" />
+    <link rel="prev" title="codecs – String encoding and decoding" href="../codecs/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">difflib &#8211; シーケンスを比較する</a><ul>
+<li><a class="reference internal" href="#id1">テキストの内容を比較する</a><ul>
+<li><a class="reference internal" href="#id2">他の出力フォーマット</a></li>
+<li><a class="reference internal" href="#html">HTML 出力</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">不要なデータ</a></li>
+<li><a class="reference internal" href="#id4">任意の型を比較する</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../codecs/index.html" title="前の章へ"><strong>前:</strong> codecs &#8211; String encoding and decoding</a><br/>
+          <a href="../string/index.html" title="次の章へ"><strong>次:</strong> string &#8211; テキストを扱う</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/difflib/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../string/index.html" title="string – テキストを扱う"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../codecs/index.html" title="codecs – String encoding and decoding"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../string_services.html" accesskey="U">文字列サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="difflib">
+<h1>difflib &#8211; シーケンスを比較する<a class="headerlink" href="#difflib" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-difflib"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">特にテキストファイルの行単位での、シーケンスを比較する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.1 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-difflib" title="特にテキストファイルの行単位での、シーケンスを比較する"><tt class="xref py py-mod docutils literal"><span class="pre">difflib</span></tt></a> モジュールはシーケンス間の差異を算出するためのツールを提供します。特にテキストの比較に便利で、複数の共通 diff フォーマットを用いたレポートを生成する機能があります。</p>
+<p>本稿で紹介する全てのサンプルは <tt class="docutils literal"><span class="pre">difflib_data.py</span></tt> モジュールの共通テストデータを使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">text1</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer</span>
+<span class="s">eu lacus accumsan arcu fermentum euismod. Donec pulvinar porttitor</span>
+<span class="s">tellus. Aliquam venenatis. Donec facilisis pharetra tortor.  In nec</span>
+<span class="s">mauris eget magna consequat convallis. Nam sed sem vitae odio</span>
+<span class="s">pellentesque interdum. Sed consequat viverra nisl. Suspendisse arcu</span>
+<span class="s">metus, blandit quis, rhoncus ac, pharetra eget, velit. Mauris</span>
+<span class="s">urna. Morbi nonummy molestie orci. Praesent nisi elit, fringilla ac,</span>
+<span class="s">suscipit non, tristique vel, mauris. Curabitur vel lorem id nisl porta</span>
+<span class="s">adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate tristique</span>
+<span class="s">enim. Donec quis lectus a justo imperdiet tempus.&quot;&quot;&quot;</span>
+<span class="n">text1_lines</span> <span class="o">=</span> <span class="n">text1</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+
+<span class="n">text2</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer</span>
+<span class="s">eu lacus accumsan arcu fermentum euismod. Donec pulvinar, porttitor</span>
+<span class="s">tellus. Aliquam venenatis. Donec facilisis pharetra tortor. In nec</span>
+<span class="s">mauris eget magna consequat convallis. Nam cras vitae mi vitae odio</span>
+<span class="s">pellentesque interdum. Sed consequat viverra nisl. Suspendisse arcu</span>
+<span class="s">metus, blandit quis, rhoncus ac, pharetra eget, velit. Mauris</span>
+<span class="s">urna. Morbi nonummy molestie orci. Praesent nisi elit, fringilla ac,</span>
+<span class="s">suscipit non, tristique vel, mauris. Curabitur vel lorem id nisl porta</span>
+<span class="s">adipiscing. Duis vulputate tristique enim. Donec quis lectus a justo</span>
+<span class="s">imperdiet tempus. Suspendisse eu lectus. In nunc. &quot;&quot;&quot;</span>
+<span class="n">text2_lines</span> <span class="o">=</span> <span class="n">text2</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h2>テキストの内容を比較する<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Differ クラスはテキスト行に対して処理を行い、テキスト行単位の差異を含んだ人間が読み易い <em>差分</em> 、または変更命令を生成します。</p>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Differ</span></tt> が生成するデフォルト出力は <strong class="command">diff</strong> コマンドツールによく似ています。共通の値や何が変更されているかを表すマークアップデータを含みつつ、両方のリストからのオリジナルの入力値も含みます。</p>
+<ul class="simple">
+<li>1番目のシーケンスにはその入力値があったことを表すために行の先頭へ <tt class="docutils literal"><span class="pre">-</span></tt> が付けられるかもしれませんが、2番目にはありません。</li>
+<li>2番目のシーケンスには <tt class="docutils literal"><span class="pre">+</span></tt> が行の先頭へ付けられますが、1番目にはありません。</li>
+<li>ある行で文字の追加のみ行われたら、その行のどの位置かを表すために追加の行の先頭へ <tt class="docutils literal"><span class="pre">?</span></tt> が付けられます。</li>
+<li>もし何も変更がなければ、他の行が何かのマークアップを持つ可能性があるので行の先頭には余分なスペースが表示されます。</li>
+</ul>
+<p>テキストを比較するには、行単位でシーケンスを分割して <tt class="xref py py-func docutils literal"><span class="pre">compare()</span></tt> にそのシーケンスを渡します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">difflib</span>
+<span class="kn">from</span> <span class="nn">difflib_data</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">Differ</span><span class="p">()</span>
+<span class="n">diff</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">text1_lines</span><span class="p">,</span> <span class="n">text2_lines</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>サンプルデータの両方のテキストの1行目は同じなので、最初の行は先頭に何もマークアップされずに表示されます。</p>
+<div class="highlight-python"><pre>1:   Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer</pre>
+</div>
+<p>2行目はテキストにカンマを入れるように変更しました。両方のバージョンのテキスト行が表示されます。さらに4行目には、そのテキストで実際に <tt class="docutils literal"><span class="pre">,</span></tt> の文字が追加されたカラム位置を表す追加情報を表示します。</p>
+<div class="highlight-python"><pre>2: - eu lacus accumsan arcu fermentum euismod. Donec pulvinar porttitor
+3: + eu lacus accumsan arcu fermentum euismod. Donec pulvinar, porttitor
+4: ?                                                         +
+5:</pre>
+</div>
+<p>その出力の6-9行目は余分なスペースが削除された位置を表示します。</p>
+<div class="highlight-python"><pre>6: - tellus. Aliquam venenatis. Donec facilisis pharetra tortor.  In nec
+7: ?                                                             -
+8:
+9: + tellus. Aliquam venenatis. Donec facilisis pharetra tortor. In nec</pre>
+</div>
+<p>次はあるフレーズ内の単語を置き換えるといったもっと複雑な変更が行われました。</p>
+<div class="highlight-python"><pre>10: - mauris eget magna consequat convallis. Nam sed sem vitae odio
+11: ?                                              - --
+12:
+13: + mauris eget magna consequat convallis. Nam cras vitae mi vitae odio
+14: ?                                            +++ +++++   +
+15:</pre>
+</div>
+<p>そして、そのパラグラフの最後の文章はかなり変更されました。そのため、その差分は単純に旧バージョンを削除して新バージョンを追加することで表現されます(20-23行目)。</p>
+<div class="highlight-python"><pre>16:   pellentesque interdum. Sed consequat viverra nisl. Suspendisse arcu
+17:   metus, blandit quis, rhoncus ac, pharetra eget, velit. Mauris
+18:   urna. Morbi nonummy molestie orci. Praesent nisi elit, fringilla ac,
+19:   suscipit non, tristique vel, mauris. Curabitur vel lorem id nisl porta
+20: - adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate tristique
+21: - enim. Donec quis lectus a justo imperdiet tempus.
+22: + adipiscing. Duis vulputate tristique enim. Donec quis lectus a justo
+23: + imperdiet tempus. Suspendisse eu lectus. In nunc.</pre>
+</div>
+<p>ndiff() 関数は基本的に同じ出力を生成します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">difflib</span>
+<span class="kn">from</span> <span class="nn">difflib_data</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">diff</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">ndiff</span><span class="p">(</span><span class="n">text1_lines</span><span class="p">,</span> <span class="n">text2_lines</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>その処理は特に入力の &#8220;ノイズ&#8221; を取り除いてテキストデータを扱うことに適しています。</p>
+<div class="highlight-python"><pre>$ python difflib_ndiff.py
+  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer
+- eu lacus accumsan arcu fermentum euismod. Donec pulvinar porttitor
++ eu lacus accumsan arcu fermentum euismod. Donec pulvinar, porttitor
+?                                                         +
+
+- tellus. Aliquam venenatis. Donec facilisis pharetra tortor.  In nec
+?                                                             -
+
++ tellus. Aliquam venenatis. Donec facilisis pharetra tortor. In nec
+- mauris eget magna consequat convallis. Nam sed sem vitae odio
+?                                             ------
+
++ mauris eget magna consequat convallis. Nam cras vitae mi vitae odio
+?                                            +++        +++++++++
+
+  pellentesque interdum. Sed consequat viverra nisl. Suspendisse arcu
+  metus, blandit quis, rhoncus ac, pharetra eget, velit. Mauris
+  urna. Morbi nonummy molestie orci. Praesent nisi elit, fringilla ac,
+  suscipit non, tristique vel, mauris. Curabitur vel lorem id nisl porta
+- adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate tristique
+- enim. Donec quis lectus a justo imperdiet tempus.
++ adipiscing. Duis vulputate tristique enim. Donec quis lectus a justo
++ imperdiet tempus. Suspendisse eu lectus. In nunc.</pre>
+</div>
+<div class="section" id="id2">
+<h3>他の出力フォーマット<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Differ</span></tt> クラスは全ての入力行を表示しますが、 <em>unified 形式の diff</em> は変更された行と前後の数行のみを含みます。Python 2.3 では、unified 形式の出力を生成するために <tt class="xref py py-func docutils literal"><span class="pre">unified_diff()</span></tt> 関数が追加されました。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">difflib</span>
+<span class="kn">from</span> <span class="nn">difflib_data</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">diff</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">unified_diff</span><span class="p">(</span><span class="n">text1_lines</span><span class="p">,</span> <span class="n">text2_lines</span><span class="p">,</span> <span class="n">lineterm</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">diff</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>subversion 又は他のバージョン管理ツールのユーザはその出力に見覚えがあるでしょう。</p>
+<div class="highlight-python"><pre>$ python difflib_unified.py
+---
++++
+@@ -1,10 +1,10 @@
+ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer
+-eu lacus accumsan arcu fermentum euismod. Donec pulvinar porttitor
+-tellus. Aliquam venenatis. Donec facilisis pharetra tortor.  In nec
+-mauris eget magna consequat convallis. Nam sed sem vitae odio
++eu lacus accumsan arcu fermentum euismod. Donec pulvinar, porttitor
++tellus. Aliquam venenatis. Donec facilisis pharetra tortor. In nec
++mauris eget magna consequat convallis. Nam cras vitae mi vitae odio
+ pellentesque interdum. Sed consequat viverra nisl. Suspendisse arcu
+ metus, blandit quis, rhoncus ac, pharetra eget, velit. Mauris
+ urna. Morbi nonummy molestie orci. Praesent nisi elit, fringilla ac,
+ suscipit non, tristique vel, mauris. Curabitur vel lorem id nisl porta
+-adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate tristique
+-enim. Donec quis lectus a justo imperdiet tempus.
++adipiscing. Duis vulputate tristique enim. Donec quis lectus a justo
++imperdiet tempus. Suspendisse eu lectus. In nunc.</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">context_diff()</span></tt> を使用するとよく似た読み易い出力を生成します。</p>
+<div class="highlight-python"><pre>$ python difflib_context.py
+***
+---
+***************
+*** 1,10 ****
+  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer
+! eu lacus accumsan arcu fermentum euismod. Donec pulvinar porttitor
+! tellus. Aliquam venenatis. Donec facilisis pharetra tortor.  In nec
+! mauris eget magna consequat convallis. Nam sed sem vitae odio
+  pellentesque interdum. Sed consequat viverra nisl. Suspendisse arcu
+  metus, blandit quis, rhoncus ac, pharetra eget, velit. Mauris
+  urna. Morbi nonummy molestie orci. Praesent nisi elit, fringilla ac,
+  suscipit non, tristique vel, mauris. Curabitur vel lorem id nisl porta
+! adipiscing. Suspendisse eu lectus. In nunc. Duis vulputate tristique
+! enim. Donec quis lectus a justo imperdiet tempus.
+--- 1,10 ----
+  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer
+! eu lacus accumsan arcu fermentum euismod. Donec pulvinar, porttitor
+! tellus. Aliquam venenatis. Donec facilisis pharetra tortor. In nec
+! mauris eget magna consequat convallis. Nam cras vitae mi vitae odio
+  pellentesque interdum. Sed consequat viverra nisl. Suspendisse arcu
+  metus, blandit quis, rhoncus ac, pharetra eget, velit. Mauris
+  urna. Morbi nonummy molestie orci. Praesent nisi elit, fringilla ac,
+  suscipit non, tristique vel, mauris. Curabitur vel lorem id nisl porta
+! adipiscing. Duis vulputate tristique enim. Donec quis lectus a justo
+! imperdiet tempus. Suspendisse eu lectus. In nunc.</pre>
+</div>
+</div>
+<div class="section" id="html">
+<h3>HTML 出力<a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h3>
+<p><tt class="xref py py-class docutils literal"><span class="pre">HtmlDiff</span></tt> は <tt class="xref py py-class docutils literal"><span class="pre">Diff</span></tt> と同じような情報を HTML で生成します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">difflib</span>
+<span class="kn">from</span> <span class="nn">difflib_data</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">HtmlDiff</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">d</span><span class="o">.</span><span class="n">make_table</span><span class="p">(</span><span class="n">text1_lines</span><span class="p">,</span> <span class="n">text2_lines</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>このサンプルは <tt class="xref py py-func docutils literal"><span class="pre">make_table()</span></tt> を使用して、差異情報を含んだ <tt class="xref py py-const docutils literal"><span class="pre">table</span></tt> タグのみを返します。 <tt class="xref py py-func docutils literal"><span class="pre">make_file()</span></tt> メソッドを使用すると完全な HTML フォーマットのファイルを出力します。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">その出力はあまりに冗長なのでここでは紹介しません。</p>
+</div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>不要なデータ<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>diff シーケンスを生成する全ての関数は、無視すべき行と行内の文字を表す引数を受け取ります。そういった引数は、ファイルの2つのバージョン間でマークアップかスペースの変更を無視するために使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># This example is taken from the source for difflib.py.</span>
+
+<span class="kn">from</span> <span class="nn">difflib</span> <span class="kn">import</span> <span class="n">SequenceMatcher</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="s">&quot; abcd&quot;</span>
+<span class="n">B</span> <span class="o">=</span> <span class="s">&quot;abcd abcd&quot;</span>
+
+<span class="k">print</span> <span class="s">&#39;A = </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">A</span>
+<span class="k">print</span> <span class="s">&#39;B = </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">B</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Without junk detection:&#39;</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">SequenceMatcher</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find_longest_match</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  i = </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span>
+<span class="k">print</span> <span class="s">&#39;  j = </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">j</span>
+<span class="k">print</span> <span class="s">&#39;  k = </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">k</span>
+<span class="k">print</span> <span class="s">&#39;  A[i:i+k] = </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">k</span><span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;  B[j:j+k] = </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">k</span><span class="p">]</span>
+
+<span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Treat spaces as junk:&#39;</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">SequenceMatcher</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">==</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find_longest_match</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;  i = </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span>
+<span class="k">print</span> <span class="s">&#39;  j = </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">j</span>
+<span class="k">print</span> <span class="s">&#39;  k = </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">k</span>
+<span class="k">print</span> <span class="s">&#39;  A[i:i+k] = </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">k</span><span class="p">]</span>
+<span class="k">print</span> <span class="s">&#39;  B[j:j+k] = </span><span class="si">%r</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">k</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">Differ</span></tt> のデフォルトはどのような行や印字可能文字も無視しませんが、ノイズを検出するために <tt class="xref py py-class docutils literal"><span class="pre">SequenceMatcher</span></tt> の機能に依存します。 <tt class="xref py py-func docutils literal"><span class="pre">ndiff()</span></tt> のデフォルトはスペースやタブ文字を無視します。</p>
+<div class="highlight-python"><pre>$ python difflib_junk.py
+A = ' abcd'
+B = 'abcd abcd'
+
+Without junk detection:
+  i = 0
+  j = 4
+  k = 5
+  A[i:i+k] = ' abcd'
+  B[j:j+k] = ' abcd'
+
+Treat spaces as junk:
+  i = 1
+  j = 0
+  k = 4
+  A[i:i+k] = 'abcd'
+  B[j:j+k] = 'abcd'</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>任意の型を比較する<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">SequenceMatcher</span></tt> は、オブジェクトがハッシュ化できる限り、どのようなオブジェクト型のシーケンスでも比較します。それは実際のデータに影響しない &#8220;不要な&#8221; 値を取り除いて、そのシーケンスからもっとも長いマッチングブロックを識別するアルゴリズムを使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">difflib</span>
+<span class="kn">from</span> <span class="nn">difflib_data</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">s1</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span> <span class="p">]</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span> <span class="p">]</span>
+
+<span class="k">print</span> <span class="s">&#39;Initial data:&#39;</span>
+<span class="k">print</span> <span class="s">&#39;s1 =&#39;</span><span class="p">,</span> <span class="n">s1</span>
+<span class="k">print</span> <span class="s">&#39;s2 =&#39;</span><span class="p">,</span> <span class="n">s2</span>
+<span class="k">print</span> <span class="s">&#39;s1 == s2:&#39;</span><span class="p">,</span> <span class="n">s1</span><span class="o">==</span><span class="n">s2</span>
+<span class="k">print</span>
+
+<span class="n">matcher</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">SequenceMatcher</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">,</span> <span class="n">j1</span><span class="p">,</span> <span class="n">j2</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">matcher</span><span class="o">.</span><span class="n">get_opcodes</span><span class="p">()):</span>
+
+    <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s">&#39;delete&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Remove </span><span class="si">%s</span><span class="s"> from positions [</span><span class="si">%d</span><span class="s">:</span><span class="si">%d</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="n">i1</span><span class="p">:</span><span class="n">i2</span><span class="p">],</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">s1</span><span class="p">[</span><span class="n">i1</span><span class="p">:</span><span class="n">i2</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s">&#39;equal&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;The sections [</span><span class="si">%d</span><span class="s">:</span><span class="si">%d</span><span class="s">] of s1 and [</span><span class="si">%d</span><span class="s">:</span><span class="si">%d</span><span class="s">] of s2 are the same&#39;</span> <span class="o">%</span> \
+            <span class="p">(</span><span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">,</span> <span class="n">j1</span><span class="p">,</span> <span class="n">j2</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s">&#39;insert&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Insert </span><span class="si">%s</span><span class="s"> from [</span><span class="si">%d</span><span class="s">:</span><span class="si">%d</span><span class="s">] of s2 into s1 at </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> \
+            <span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="n">j1</span><span class="p">:</span><span class="n">j2</span><span class="p">],</span> <span class="n">j1</span><span class="p">,</span> <span class="n">j2</span><span class="p">,</span> <span class="n">i1</span><span class="p">)</span>
+        <span class="n">s1</span><span class="p">[</span><span class="n">i1</span><span class="p">:</span><span class="n">i2</span><span class="p">]</span> <span class="o">=</span> <span class="n">s2</span><span class="p">[</span><span class="n">j1</span><span class="p">:</span><span class="n">j2</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s">&#39;replace&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Replace </span><span class="si">%s</span><span class="s"> from [</span><span class="si">%d</span><span class="s">:</span><span class="si">%d</span><span class="s">] of s1 with </span><span class="si">%s</span><span class="s"> from [</span><span class="si">%d</span><span class="s">:</span><span class="si">%d</span><span class="s">] of s2&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">s1</span><span class="p">[</span><span class="n">i1</span><span class="p">:</span><span class="n">i2</span><span class="p">],</span> <span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">,</span> <span class="n">s2</span><span class="p">[</span><span class="n">j1</span><span class="p">:</span><span class="n">j2</span><span class="p">],</span> <span class="n">j1</span><span class="p">,</span> <span class="n">j2</span><span class="p">)</span>
+        <span class="n">s1</span><span class="p">[</span><span class="n">i1</span><span class="p">:</span><span class="n">i2</span><span class="p">]</span> <span class="o">=</span> <span class="n">s2</span><span class="p">[</span><span class="n">j1</span><span class="p">:</span><span class="n">j2</span><span class="p">]</span>
+
+    <span class="k">print</span> <span class="s">&#39;s1 =&#39;</span><span class="p">,</span> <span class="n">s1</span>
+    <span class="k">print</span> <span class="s">&#39;s2 =&#39;</span><span class="p">,</span> <span class="n">s2</span>
+    <span class="k">print</span>
+
+<span class="k">print</span> <span class="s">&#39;s1 == s2:&#39;</span><span class="p">,</span> <span class="n">s1</span><span class="o">==</span><span class="n">s2</span>
+</pre></div>
+</div>
+<p>このサンプルは2つの整数値リストを比較します。そして <tt class="xref py py-func docutils literal"><span class="pre">get_opcodes()</span></tt> を使用して、 オリジナルのリストを新たなリストへ変換する命令セットを表示します。その変更は、リストの要素が追加・削除された後でインデックスが正確に維持されるように逆の順番で適用されます。</p>
+<div class="highlight-python"><pre>$ python difflib_seq.py
+Initial data:
+s1 = [1, 2, 3, 5, 6, 4]
+s2 = [2, 3, 5, 4, 6, 1]
+s1 == s2: False
+
+Replace [4] from [5:6] of s1 with [1] from [5:6] of s2
+s1 = [1, 2, 3, 5, 6, 1]
+s2 = [2, 3, 5, 4, 6, 1]
+
+The sections [4:5] of s1 and [4:5] of s2 are the same
+s1 = [1, 2, 3, 5, 6, 1]
+s2 = [2, 3, 5, 4, 6, 1]
+
+Insert [4] from [3:4] of s2 into s1 at 4
+s1 = [1, 2, 3, 5, 4, 6, 1]
+s2 = [2, 3, 5, 4, 6, 1]
+
+The sections [1:4] of s1 and [0:3] of s2 are the same
+s1 = [1, 2, 3, 5, 4, 6, 1]
+s2 = [2, 3, 5, 4, 6, 1]
+
+Remove [1] from positions [0:1]
+s1 = [2, 3, 5, 4, 6, 1]
+s2 = [2, 3, 5, 4, 6, 1]
+
+s1 == s2: True</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">SequenceMatcher</span></tt> は、それらハッシュ化できる限り、ビルトイン型と同様に独自クラスで動作します。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/difflib.html">difflib</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference external" href="http://www.ddj.com/documents/s=1103/ddj8807c/">Pattern Matching: The Gestalt Approach</a></dt>
+<dd>1998年7月 Dr. Dobb のジャーナルに John W. Ratcliff と D. E. Metzener による似たようなアルゴリズムの議論が発表されました。</dd>
+</dl>
+<p class="last"><a class="reference internal" href="../articles/text_processing.html#article-text-processing"><em>テキスト処理ツール</em></a></p>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../string/index.html" title="string – テキストを扱う"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../codecs/index.html" title="codecs – String encoding and decoding"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../string_services.html" >文字列サービス</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

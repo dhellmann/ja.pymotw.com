@@ -1,0 +1,362 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Python Module of the Week について - Python Module of the Week</title>
+
+<link rel="stylesheet" href="_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '#',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="_static/jquery.js"></script>
+<script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="#" />
+    <link rel="contents" title="コンテンツテーブル" href="contents.html" />
+    <link rel="index" title="インデックス" href="genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="index.html" />
+    <link rel="next" title="標準ライブラリの機能" href="articles/index.html" />
+    <link rel="prev" title="Python Module of the Week" href="contents.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="#">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar"><h3>購読</h3>
+
+<p>
+<a href="http://feeds.feedburner.com/PyMOTW" title="Subscribe to my feed" rel="alternate" type="application/rss+xml"><img src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png" alt="" style="border:0"/></a> <a href="http://feeds.feedburner.com/PyMOTW" title="フィードを購読" rel="alternate" type="application/rss+xml">リーダーでフィードを購読</a></p>
+
+<p><a target="_blank" href="http://www.feedburner.com/fb/a/emailverifySubmit?feedId=806224&amp;loc=en_US" title="Receive email notification of posts"><img src="_static/images/mail-icon-32x32.png" alt="" style="border:0" /></a> <a target="_blank" href="http://www.feedburner.com/fb/a/emailverifySubmit?feedId=806224&amp;loc=en_US" title="投稿通知をメールで受け取る">メールで購読</a></p>
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">Python Module of the Week について</a><ul>
+<li><a class="reference internal" href="#id1">ツール</a></li>
+<li><a class="reference internal" href="#id2">フィード登録</a></li>
+<li><a class="reference internal" href="#motw">motw コマンドラインインタフェース</a></li>
+<li><a class="reference internal" href="#pymotw">PyMOTW をインタラクティブインタプリタで使用する</a></li>
+<li><a class="reference internal" href="#id4">翻訳や他のバージョン</a><ul>
+<li><a class="reference internal" href="#id10">抄録</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11">その他の貢献者</a></li>
+<li><a class="reference internal" href="#copyright-and-licensing">Copyright and Licensing</a></li>
+</ul>
+</li>
+</ul>
+<p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="articles/index.html" title="標準ライブラリの機能"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="contents.html" title="Python Module of the Week"
+             accesskey="P">previous</a> |</li>
+        <li><a href="contents.html">PyMOTW</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="python-module-of-the-week">
+<h1>Python Module of the Week について<a class="headerlink" href="#python-module-of-the-week" title="Permalink to this headline">¶</a></h1>
+<p>PyMOTW は <a class="reference external" href="http://www.doughellmann.com/">Doug Hellmann</a> が執筆しているブログの連載です。当初は定期的に何かを書く習慣を身に着ける方法として始めました。この連載の主要な点は <a class="reference external" href="http://www.python.org/">Python</a> 標準ライブラリモジュールのサンプルコードを書くことです。</p>
+<p>最新リリースや更新については、プロジェクトのホームページ(<a class="reference external" href="http://pymotw.com/">http://pymotw.com/</a> )を参照してください。ソースコードは <a class="reference external" href="http://bitbucket.org/dhellmann/pymotw/">http://bitbucket.org/dhellmann/pymotw/</a> から取得できます。</p>
+<p>標準ライブラリの完全なドキュメントは Python web サイト(<a class="reference external" href="http://docs.python.org/library/">http://docs.python.org/library/</a>) で見つけることができます。</p>
+<div class="section" id="id1">
+<h2>ツール<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>PyMOTW のソースは <a class="reference external" href="http://docutils.sourceforge.net/">reStructuredText</a> です。 <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a> を利用して HTML と PDF ファイルを作成しています。</p>
+<p>すべてのサンプルプログラムの出力は、CPython (バージョンは以下を参照) で生成され、 <a class="reference external" href="http://nedbatchelder.com/code/cog/">cog</a> を使用して本文に挿入しています。</p>
+<div class="highlight-python"><pre>$ python -V
+Python 2.7.2</pre>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">本連載では、標準ライブラリの初期のバージョンでは利用できない機能も紹介している可能性があります。疑問に思ったら、使用している Python のバージョンに関する標準ドキュメントを調べてください。</p>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>フィード登録<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>PyMOTW の新しい記事が私のブログ(<a class="reference external" href="http://blog.doughellmann.com/">http://blog.doughellmann.com/</a>)に投稿されると、新しい記事になります。 <a class="reference external" href="http://feeds.doughellmann.com/PyMOTW">http://feeds.doughellmann.com/PyMOTW</a> から RSS や <a class="reference external" href="http://feedburner.google.com/fb/a/mailverify?uri=PyMOTW&amp;amp;loc=en_US">メール</a> で更新情報を取得できます。</p>
+<span class="target" id="motw-cli"></span></div>
+<div class="section" id="motw">
+<h2>motw コマンドラインインタフェース<a class="headerlink" href="#motw" title="Permalink to this headline">¶</a></h2>
+<p>PyMOTW は開発中にサンプルコードへ簡単にアクセスできるようにコマンドラインプログラム <tt class="docutils literal"><span class="pre">motw</span></tt> が用意されています。単純に <tt class="docutils literal"><span class="pre">motw</span> <span class="pre">module</span></tt> と実行するとローカルにあるモジュールの HTML ファイルを表示します。またフォーマットを変更して記事を表示するオプションがあります(詳細は <tt class="docutils literal"><span class="pre">-h</span></tt> の出力を参照)。</p>
+<p>使用方法: <tt class="docutils literal"><span class="pre">motw</span> <span class="pre">[options]</span> <span class="pre">&lt;module_name&gt;</span></tt></p>
+<p>オプション:</p>
+<blockquote>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>ヘルプメッセージを表示する</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-t</span>, <span class="option">--text</span></kbd></td>
+<td>標準出力にヘルプのプレーンテキスト版を表示する</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-w</span>, <span class="option">--web</span></kbd></td>
+<td>ウェブからヘルプの HTML 版を開く</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--html</span></kbd></td>
+<td>インストールされたファイルからヘルプの HTML 版を開く</td></tr>
+</tbody>
+</table>
+</blockquote>
+<span class="target" id="motw-interactive"></span></div>
+<div class="section" id="pymotw">
+<h2>PyMOTW をインタラクティブインタプリタで使用する<a class="headerlink" href="#pymotw" title="Permalink to this headline">¶</a></h2>
+<p>PyMOTW の記事を Python インタラクティブインタプリタの実行中に見ることができます。 <tt class="docutils literal"><span class="pre">PyMOTW</span></tt> をインポートして <tt class="docutils literal"><span class="pre">motw()</span></tt> 関数を <tt class="docutils literal"><span class="pre">__builtins__</span></tt> 名前空間へ追加してください。そしてインポートされたモジュールのヘルプを見るために <tt class="docutils literal"><span class="pre">motw(module)</span></tt> を実行してください。見たいモジュールがインポートされていないときはモジュール名をクォートしてください。</p>
+<div class="highlight-python"><pre>$ python
+Python 2.6.2 (r262:71600, Apr 16 2009, 09:17:39)
+[GCC 4.0.1 (Apple Computer, Inc. build 5250)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; import PyMOTW
+&gt;&gt;&gt; motw('atexit')
+
+atexit -- Call functions when a program is closing down
+*******************************************************
+...</pre>
+</div>
+<span class="target" id="translations"></span></div>
+<div class="section" id="id4">
+<h2>翻訳や他のバージョン<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.vbarter.cn/pymotw/">中国語</a></p>
+<blockquote>
+Junjie Cai (蔡俊杰) と Yan Sheng (盛艳) は PyMOTWCN (<a class="reference external" href="http://code.google.com/p/pymotwcn/">http://code.google.com/p/pymotwcn/</a>) という google code プロジェクトを始めました。 <a class="reference external" href="http://www.vbarter.cn/pymotw/">http://www.vbarter.cn/pymotw/</a> に完全な翻訳を投稿しています。</blockquote>
+<p><a class="reference external" href="http://schoenian-online.de/pymotw.html">ドイツ語</a></p>
+<blockquote>
+Ralf Schönian はアルファベット順に PyMOTW をドイツ語に翻訳しています。その成果は彼の web サイト <a class="reference external" href="http://schoenian-online.de/pymotw.html">http://schoenian-online.de/pymotw.html</a> で確認できます。Ralf はドイツの <a class="reference external" href="http://wiki.python.de/User_Group_K%C3%B6ln?action=show&amp;redirect=pyCologne">pyCologne</a> ユーザグループのアクティブメンバーで、オープンソースの英語/ドイツ語のボキャブラリトレーナーである pyVoc (<a class="reference external" href="http://code.google.com/p/pyvoc/">http://code.google.com/p/pyvoc/</a>) の開発者です。</blockquote>
+<p><a class="reference external" href="http://robyp.x10hosting.com/">イタリア語</a></p>
+<blockquote>
+Roberto Pauletto が <a class="reference external" href="http://robyp.x10hosting.com/">http://robyp.x10hosting.com/</a> でイタリア語翻訳をしています。Roberto は昼間は Windows アプリケーションを C# で開発していて、自宅では Linux と Python をいじくり回しています。彼は最近、開発した全てのシステム管理用スクリプトを Perl から Python へ移行しました。</blockquote>
+<p><a class="reference external" href="http://denklab.org/articles/category/pymotw/">スペイン語</a></p>
+<blockquote>
+<a class="reference external" href="http://denklab.org/">Ernesto Rico Schmidt</a> は英語版の投稿を見ながらスペイン語翻訳を提供しています。Ernesto は Bolivia に住んでいて、Python を使用する <a class="reference external" href="http://www.softwarelibre.org.bo/">Bolivian Free Software</a> コミュニティメンバーへの貢献手段の1つの例として翻訳しています。スペイン語の記事の完全なリストは <a class="reference external" href="http://denklab.org/articles/category/pymotw/">http://denklab.org/articles/category/pymotw/</a> で発見できます。 <a class="reference external" href="http://denklab.org/feeds/articles/category/pymotw/">RSS フィード</a> も提供されています。</blockquote>
+<p><a class="reference external" href="http://ja.pymotw.com/">日本語</a></p>
+<blockquote>
+<a class="reference external" href="http://d.hatena.ne.jp/t2y-1979/">Tetsuya Morimoto</a> は日本語翻訳をしています。Tetsuya は Python を 1.5 年程度使っています。彼は Linux ディストリビュータで働いていた頃 RPM パッケージのビルド等に yum, anaconda や rpm-tools で Python を使用していました。現在は自分用のツールを開発したりして Django, mercurial や wxPython 等のアプリケーションフレームワークに興味を持っています。Tetsuya は <a class="reference external" href="http://www.python.jp/Zope/">Python Japan User&#8217;s Group</a> や <a class="reference external" href="http://groups.google.co.jp/group/python-code-reading">Python Code Reading</a> のメンバーです。日本語翻訳は <a class="reference external" href="http://ja.pymotw.com/">http://ja.pymotw.com/</a> にあります。</blockquote>
+<div class="section" id="id10">
+<h3>抄録<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>Gerard Flanagan は <a class="reference external" href="http://www.thehazeltree.org/">The Hazel Tree</a> という &#8220;Python 抄録&#8221; を作成しています。彼は Python に関連する新旧のリファレンス資料を reStructuredText へ変換しています。そして、その結果から1つの検索可能なリポジトリを構築します。私は Mark Pilgrim, Fredrik Lundh, Andrew Kuchling のような著者やさらに他の著者も増え続けるそのリストへ PyMOTW が追加されてとても嬉しいです。</p>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>その他の貢献者<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>オリジナルの HTML から reST への変換を手伝ってくれた John Benediktsson に感謝します。</p>
+</div>
+<div class="section" id="copyright-and-licensing">
+<span id="copyright"></span><h2>Copyright and Licensing<a class="headerlink" href="#copyright-and-licensing" title="Permalink to this headline">¶</a></h2>
+<p>All of the prose from the Python Module of the Week is licensed under a <a class="reference external" href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/">Creative Commons Attribution, Non-commercial, Share-alike 3.0</a> license.  You are free to share and create derivative works from it.  If you post the material online, you must give attribution and link to the PyMOTW home page (<a class="reference external" href="http://www.doughellmann.com/PyMOTW/">http://www.doughellmann.com/PyMOTW/</a>).  You may not use this work for commercial purposes.  If you alter, transform, or build upon this work, you may distribute the resulting work only under the same or similar license to this one.</p>
+<p>The source code included here is copyright Doug Hellmann and licensed under the BSD license.</p>
+<blockquote>
+<p>Copyright Doug Hellmann, All Rights Reserved</p>
+<p>Permission to use, copy, modify, and distribute this software and
+its documentation for any purpose and without fee is hereby
+granted, provided that the above copyright notice appear in all
+copies and that both that copyright notice and this permission
+notice appear in supporting documentation, and that the name of Doug
+Hellmann not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.</p>
+<p>DOUG HELLMANN DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
+NO EVENT SHALL DOUG HELLMANN BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
+</blockquote>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="articles/index.html" title="標準ライブラリの機能"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="contents.html" title="Python Module of the Week"
+             >previous</a> |</li>
+        <li><a href="contents.html">PyMOTW</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

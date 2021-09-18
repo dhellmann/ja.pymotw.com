@@ -1,0 +1,285 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ファイルアクセス - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="標準ライブラリの機能" href="index.html" />
+    <link rel="next" title="テキスト処理ツール" href="text_processing.html" />
+    <link rel="prev" title="インメモリデータ構造" href="data_structures.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">ファイルアクセス</a><ul>
+<li><a class="reference internal" href="#id2">ファイル名</a></li>
+<li><a class="reference internal" href="#id3">メタデータ</a></li>
+<li><a class="reference internal" href="#id4">ファイルを読み込む</a></li>
+<li><a class="reference internal" href="#id5">一時ファイル</a></li>
+<li><a class="reference internal" href="#id6">ファイルとディレクトリ</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="data_structures.html" title="前の章へ"><strong>前:</strong> インメモリデータ構造</a><br/>
+          <a href="text_processing.html" title="次の章へ"><strong>次:</strong> テキスト処理ツール</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/articles/file_access.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="text_processing.html" title="テキスト処理ツール"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="data_structures.html" title="インメモリデータ構造"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">標準ライブラリの機能</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="article-file-access">
+<span id="id1"></span><h1>ファイルアクセス<a class="headerlink" href="#article-file-access" title="Permalink to this headline">¶</a></h1>
+<p>Python の標準ライブラリは、ファイル、ファイル名、ファイル内容を扱う様々なツールを提供します。</p>
+<div class="section" id="id2">
+<h2>ファイル名<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>ファイルを扱う最初のステップは対象ファイルのファイル名を取得することです。Python はファイル名をシンプルな文字列で表現しますが、標準、プラットフォーム独自、 <a class="reference internal" href="../ospath/index.html#module-os.path" title="プラットホーム独自のファイル名を操作する"><tt class="xref py py-mod docutils literal"><span class="pre">os.path</span></tt></a> のコンテンツからファイル名を取得するツールを提供します。 <a class="reference internal" href="../os/index.html#module-os" title="Portable access to operating system specific features."><tt class="xref py py-mod docutils literal"><span class="pre">os</span></tt></a> の <tt class="xref py py-func docutils literal"><span class="pre">listdir()</span></tt> でディレクトリの内容を表示するか、ファイル名のリストをパターンから取得する <a class="reference internal" href="../glob/index.html#module-glob" title="ファイル名のパターンマッチングに適した Unix シェルのルールを使用する"><tt class="xref py py-mod docutils literal"><span class="pre">glob</span></tt></a>  を使用してください。 <a class="reference internal" href="../fnmatch/index.html#module-fnmatch" title="Unix の glob パターンに対応したファイ名比較"><tt class="xref py py-mod docutils literal"><span class="pre">fnmatch</span></tt></a> を使用すると細かな粒度でファイル名のフィルタリングができます。</p>
+</div>
+<div class="section" id="id3">
+<h2>メタデータ<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>ファイル名が分かったら <tt class="xref py py-func docutils literal"><span class="pre">os.stat()</span></tt> と <tt class="xref py py-mod docutils literal"><span class="pre">stat</span></tt> の定数を使用してファイルサイズやパーミッションといったその他の特性をチェックしても良いです。</p>
+</div>
+<div class="section" id="id4">
+<h2>ファイルを読み込む<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>行単位でテキスト入力を処理するフィルタアプリケーションを開発しているなら <a class="reference internal" href="../fileinput/index.html#module-fileinput" title="入力ストリームを行単位で処理する"><tt class="xref py py-mod docutils literal"><span class="pre">fileinput</span></tt></a> が簡単なフレームワークを提供します。 <a class="reference internal" href="../fileinput/index.html#module-fileinput" title="入力ストリームを行単位で処理する"><tt class="xref py py-mod docutils literal"><span class="pre">fileinput</span></tt></a> の API は、行単位で処理する <tt class="xref py py-func docutils literal"><span class="pre">input()</span></tt> が返すオブジェクトをイテレートします。そのオブジェクトはファイル名のためにコマンドライン引数を解析して扱うか、もしくは <tt class="xref py py-func docutils literal"><span class="pre">sys.stdin()</span></tt> から直接読み込みます。その出力はファイルやパイプラインの一部として直接実行可能な柔軟性のあるツールです。</p>
+<p>アプリケーションがファイルへランダムアクセスするなら <a class="reference internal" href="../linecache/index.html#module-linecache" title="ファイルまたはインポートされた Python モジュールからテキストの行を取り出して、同じファイルから効率的に多くの行を読み込むキャッシュを保持する"><tt class="xref py py-mod docutils literal"><span class="pre">linecache</span></tt></a> を使用すると行番号を指定して簡単にその行を読み込めます。ファイルのコンテンツはキャッシュに保持されるのでメモリの消費量に注意してください。</p>
+</div>
+<div class="section" id="id5">
+<h2>一時ファイル<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>適切な保存場所へ移動する前や一時的にデータを保持するために空っぽのファイルを作成する必要がある場合は <a class="reference internal" href="../tempfile/index.html#module-tempfile" title="一時的なファイルシステムリソースを作成する"><tt class="xref py py-mod docutils literal"><span class="pre">tempfile</span></tt></a> がとても便利です。それは一時ファイルやディレクトリを確実且つセキュアに作成するクラスを提供します。ファイル名は衝突しないことが保証されていて、簡単に推測できないようにランダムな文字列になります。</p>
+</div>
+<div class="section" id="id6">
+<h2>ファイルとディレクトリ<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>ファイルの中身ではなく、ファイルそのものを扱いたいこともよくあります。 <a class="reference internal" href="../shutil/index.html#module-shutil" title="高レベルなファイル操作"><tt class="xref py py-mod docutils literal"><span class="pre">shutil</span></tt></a> モジュールは、ファイルやディレクトリのコピー、パーミッションの設定といった高レベルのファイル操作を提供します。</p>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="text_processing.html" title="テキスト処理ツール"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="data_structures.html" title="インメモリデータ構造"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="index.html" >標準ライブラリの機能</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

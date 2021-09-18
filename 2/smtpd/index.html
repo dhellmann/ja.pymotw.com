@@ -1,0 +1,433 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>smtpd &#8211; サンプル SMTP サーバ - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="インターネットプロトコルとサポート" href="../internet_protocols.html" />
+    <link rel="next" title="smtplib – 簡易メール転送プロトコルクライアント" href="../smtplib/index.html" />
+    <link rel="prev" title="SimpleXMLRPCServer – XML-RPC サーバを実装する" href="../SimpleXMLRPCServer/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">smtpd &#8211; サンプル SMTP サーバ</a><ul>
+<li><a class="reference internal" href="#smtp">SMTP サーバ</a></li>
+<li><a class="reference internal" href="#debuggingserver">DebuggingServer</a></li>
+<li><a class="reference internal" href="#pureproxy">PureProxy</a></li>
+<li><a class="reference internal" href="#mailmanproxy">MailmanProxy</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../SimpleXMLRPCServer/index.html" title="前の章へ"><strong>前:</strong> SimpleXMLRPCServer &#8211; XML-RPC サーバを実装する</a><br/>
+          <a href="../smtplib/index.html" title="次の章へ"><strong>次:</strong> smtplib &#8211; 簡易メール転送プロトコルクライアント</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/smtpd/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../smtplib/index.html" title="smtplib – 簡易メール転送プロトコルクライアント"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../SimpleXMLRPCServer/index.html" title="SimpleXMLRPCServer – XML-RPC サーバを実装する"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_protocols.html" accesskey="U">インターネットプロトコルとサポート</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="smtpd-smtp">
+<h1>smtpd &#8211; サンプル SMTP サーバ<a class="headerlink" href="#smtpd-smtp" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-smtpd"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">SMTP サーバを実装するクラスを提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.1 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-smtpd" title="SMTP サーバを実装するクラスを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">smtpd</span></tt></a> モジュールは SMTP (簡易メール転送プロトコル) サーバを構築するためのクラスを提供します。それは <a class="reference internal" href="../smtplib/index.html#module-smtplib" title="簡易メール転送プロトコルクライアント"><tt class="xref py py-mod docutils literal"><span class="pre">smtplib</span></tt></a> が使用するプロトコルのサーバ側のプログラムです。</p>
+<div class="section" id="smtp">
+<h2>SMTP サーバ<a class="headerlink" href="#smtp" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">SMTPServer</span></tt> は全てのサンプルサーバのベースクラスになります。それはクライアントとの通信を制御してデータを受信します。そして、データを完全に受信すると、そのメッセージ操作をオーバライドする便利なフックを提供します。</p>
+<p>コンストラクタの引数はクライアントからの接続を listen するローカルアドレスとプロキシのリモートアドレスです。 <tt class="xref py py-func docutils literal"><span class="pre">process_message()</span></tt> メソッドは派生したサブクラスでオーバーライドされるフックとして提供されます。そのメソッドはメッセージを完全に受信したときに呼び出されて、次の引数を受け取ります。</p>
+<p>peer</p>
+<blockquote>
+クライアントのアドレス、IP アドレスと入力ポート番号のタプルです。</blockquote>
+<p>mailfrom</p>
+<blockquote>
+メッセージエンベロープから取り出された &#8220;from&#8221; の情報です。メッセージが配信されるときにクライアントからサーバへ渡されます。この情報は必ずしもメールヘッダの <tt class="docutils literal"><span class="pre">From</span></tt> と一致するというわけではありません。</blockquote>
+<p>rcpttos</p>
+<blockquote>
+メッセージエンベロープの受取人のリストです。繰り返しますが、この情報も必ずしもメールヘッダの <tt class="docutils literal"><span class="pre">To</span></tt> と一致するわけではありません。例えば BCC の場合が一致しません。</blockquote>
+<p>data</p>
+<blockquote>
+<span class="target" id="index-0"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc2822.html"><strong>RFC 2822</strong></a> 完全準拠のメッセージ本文です。</blockquote>
+<p><tt class="xref py py-func docutils literal"><span class="pre">process_message()</span></tt> のデフォルト実装は <a class="reference internal" href="../exceptions/index.html#exceptions-notimplementederror"><em>NotImplementedError</em></a> を発生させるので、 <tt class="xref py py-class docutils literal"><span class="pre">SMTPServer</span></tt> を使用して実行するには、サブクラスとそのメソッドの実装を作成する必要があります。最初のサンプルは受信したメッセージに関する情報を表示するサーバです。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">smtpd</span>
+<span class="kn">import</span> <span class="nn">asyncore</span>
+
+<span class="k">class</span> <span class="nc">CustomSMTPServer</span><span class="p">(</span><span class="n">smtpd</span><span class="o">.</span><span class="n">SMTPServer</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">process_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peer</span><span class="p">,</span> <span class="n">mailfrom</span><span class="p">,</span> <span class="n">rcpttos</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;Receiving message from:&#39;</span><span class="p">,</span> <span class="n">peer</span>
+        <span class="k">print</span> <span class="s">&#39;Message addressed from:&#39;</span><span class="p">,</span> <span class="n">mailfrom</span>
+        <span class="k">print</span> <span class="s">&#39;Message addressed to  :&#39;</span><span class="p">,</span> <span class="n">rcpttos</span>
+        <span class="k">print</span> <span class="s">&#39;Message length        :&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">CustomSMTPServer</span><span class="p">((</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">1025</span><span class="p">),</span> <span class="bp">None</span><span class="p">)</span>
+
+<span class="n">asyncore</span><span class="o">.</span><span class="n">loop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">SMTPServer</span></tt> は <a class="reference internal" href="../asyncore/index.html#module-asyncore" title="非同期 I/O ハンドラ"><tt class="xref py py-mod docutils literal"><span class="pre">asyncore</span></tt></a> を使用するので、そのサーバを実行するために <tt class="docutils literal"><span class="pre">asyncore.loop()</span></tt> を呼び出します。</p>
+<p>ここでデータを送信するクライアントが必要です。 <a class="reference internal" href="../smtplib/index.html#module-smtplib" title="簡易メール転送プロトコルクライアント"><tt class="xref py py-mod docutils literal"><span class="pre">smtplib</span></tt></a> ページから適応するサンプルを使用して、ローカルホストの 1025 番ポートで実行したテストサーバへデータを送信するクライアントを設定します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">smtplib</span>
+<span class="kn">import</span> <span class="nn">email.utils</span>
+<span class="kn">from</span> <span class="nn">email.mime.text</span> <span class="kn">import</span> <span class="n">MIMEText</span>
+
+<span class="c"># メッセージを作成する</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">MIMEText</span><span class="p">(</span><span class="s">&#39;This is the body of the message.&#39;</span><span class="p">)</span>
+<span class="n">msg</span><span class="p">[</span><span class="s">&#39;To&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">formataddr</span><span class="p">((</span><span class="s">&#39;Recipient&#39;</span><span class="p">,</span> <span class="s">&#39;recipient@example.com&#39;</span><span class="p">))</span>
+<span class="n">msg</span><span class="p">[</span><span class="s">&#39;From&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">formataddr</span><span class="p">((</span><span class="s">&#39;Author&#39;</span><span class="p">,</span> <span class="s">&#39;author@example.com&#39;</span><span class="p">))</span>
+<span class="n">msg</span><span class="p">[</span><span class="s">&#39;Subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Simple test message&#39;</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP</span><span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">1025</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">set_debuglevel</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span> <span class="c"># show communication with the server</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="s">&#39;author@example.com&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;recipient@example.com&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="o">.</span><span class="n">as_string</span><span class="p">())</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>あるターミナルで <tt class="docutils literal"><span class="pre">smtpd_custom.py</span></tt> を、別のターミナルで <tt class="docutils literal"><span class="pre">smtpd_senddata.py</span></tt> を実行すると次のようになります。</p>
+<div class="highlight-python"><pre>$ python smtpd_senddata.py
+send: 'ehlo farnsworth.local\r\n'
+reply: '502 Error: command "EHLO" not implemented\r\n'
+reply: retcode (502); Msg: Error: command "EHLO" not implemented
+send: 'helo farnsworth.local\r\n'
+reply: '250 farnsworth.local\r\n'
+reply: retcode (250); Msg: farnsworth.local
+send: 'mail FROM:&lt;author@example.com&gt;\r\n'
+reply: '250 Ok\r\n'
+reply: retcode (250); Msg: Ok
+send: 'rcpt TO:&lt;recipient@example.com&gt;\r\n'
+reply: '250 Ok\r\n'
+reply: retcode (250); Msg: Ok
+send: 'data\r\n'
+reply: '354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;\r\n'
+reply: retcode (354); Msg: End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+data: (354, 'End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;')
+send: 'Content-Type: text/plain; charset="us-ascii"\r\nMIME-Version: 1.0\r\nContent-Transfer-Encoding: 7bit\r\nTo: Recipient &lt;recipient@example.com&gt;\r\nFrom: Author &lt;author@example.com&gt;\r\nSubject: Simple test message\r\n\r\nThis is the body of the message.\r\n.\r\n'
+reply: '250 Ok\r\n'
+reply: retcode (250); Msg: Ok
+data: (250, 'Ok')
+send: 'quit\r\n'
+reply: '221 Bye\r\n'
+reply: retcode (221); Msg: Bye</pre>
+</div>
+<p>と</p>
+<div class="highlight-python"><pre>$ python smtpd_custom.py
+Receiving message from: ('127.0.0.1', 58541)
+Message addressed from: author@example.com
+Message addressed to  : ['recipient@example.com']
+Message length        : 229</pre>
+</div>
+<p>入力メッセージのポート番号は毎回変わります。 <em>rcpttos</em> 引数は値のリストで <em>mailfrom</em> は文字列であることに注意してください。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">サーバを停止するには <tt class="docutils literal"><span class="pre">Ctrl-C</span></tt> を入力してください。</p>
+</div>
+</div>
+<div class="section" id="debuggingserver">
+<h2>DebuggingServer<a class="headerlink" href="#debuggingserver" title="Permalink to this headline">¶</a></h2>
+<p>上述したサンプルは <tt class="xref py py-func docutils literal"><span class="pre">process_message()</span></tt> に渡された引数を表示しますが <a class="reference internal" href="#module-smtpd" title="SMTP サーバを実装するクラスを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">smtpd</span></tt></a> は <tt class="xref py py-class docutils literal"><span class="pre">DebuggingServer</span></tt> という、さらに完璧なデバッグのために特別に設計されたサーバも提供します。それは入力メッセージを標準出力へ全て表示してから処理を停止します(実際のメールサーバへプロキシのようにメッセージは送信しません)。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">smtpd</span>
+<span class="kn">import</span> <span class="nn">asyncore</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">smtpd</span><span class="o">.</span><span class="n">DebuggingServer</span><span class="p">((</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">1025</span><span class="p">),</span> <span class="bp">None</span><span class="p">)</span>
+
+<span class="n">asyncore</span><span class="o">.</span><span class="n">loop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>先ほど使用した <tt class="docutils literal"><span class="pre">smtpd_senddata.py</span></tt> クライアントプログラムを使用すると <tt class="xref py py-class docutils literal"><span class="pre">DebuggingServer</span></tt> の出力は次のようになります。</p>
+<div class="highlight-python"><pre>$ python smtpd_debug.py
+---------- MESSAGE FOLLOWS ----------
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+To: Recipient &lt;recipient@example.com&gt;
+From: Author &lt;author@example.com&gt;
+Subject: Simple test message
+X-Peer: 127.0.0.1
+
+This is the body of the message.
+------------ END MESSAGE ------------</pre>
+</div>
+</div>
+<div class="section" id="pureproxy">
+<h2>PureProxy<a class="headerlink" href="#pureproxy" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">PureProxy</span></tt> クラスは真っ直ぐで単純なプロキシサーバを実装します。入力メッセージはコンストラクタの引数として渡された上流のサーバへ転送されます。</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">標準ライブラリドキュメントには &#8220;このプログラムの実行はオープンリレーについて理解する良い機会なので慎重に行ってください&#8221; とあります。</p>
+</div>
+<p>プロキシサーバの設定はまさにデバッグサーバと同じぐらい簡単です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">smtpd</span>
+<span class="kn">import</span> <span class="nn">asyncore</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">smtpd</span><span class="o">.</span><span class="n">PureProxy</span><span class="p">((</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">1025</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;mail&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">))</span>
+
+<span class="n">asyncore</span><span class="o">.</span><span class="n">loop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このサンプルは何も出力しないのでプロキシサーバが動作しているかを調べるためにメールサーバのログを見る必要があります。</p>
+<div class="highlight-python"><pre>Oct 19 19:16:34 homer sendmail[6785]: m9JNGXJb006785: from=&lt;author@example.com&gt;, size=248, class=0, nrcpts=1, msgid=&lt;200810192316.m9JNGXJb006785@homer.example.com&gt;, proto=ESMTP, daemon=MTA, relay=[192.168.1.17]</pre>
+</div>
+</div>
+<div class="section" id="mailmanproxy">
+<h2>MailmanProxy<a class="headerlink" href="#mailmanproxy" title="Permalink to this headline">¶</a></h2>
+<p>さらに <a class="reference internal" href="#module-smtpd" title="SMTP サーバを実装するクラスを提供する"><tt class="xref py py-mod docutils literal"><span class="pre">smtpd</span></tt></a> は <a class="reference external" href="http://www.gnu.org/software/mailman/index.html">Mailman</a> のフロントエンドとして動作する特別なプロキシを提供します。それはローカルの Mailman 設定がそのアドレスを認識する場合、直接的に操作されます。一方、そのメッセージはプロキシへ配送されます。</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-smtpd.html">smtpd</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../smtplib/index.html#module-smtplib" title="簡易メール転送プロトコルクライアント"><tt class="xref py py-mod docutils literal"><span class="pre">smtplib</span></tt></a></dt>
+<dd>クライアントインタフェースを提供する</dd>
+<dt><tt class="xref py py-mod docutils literal"><span class="pre">email</span></tt></dt>
+<dd>メールメッセージを構文解析する</dd>
+<dt><a class="reference internal" href="../asyncore/index.html#module-asyncore" title="非同期 I/O ハンドラ"><tt class="xref py py-mod docutils literal"><span class="pre">asyncore</span></tt></a></dt>
+<dd>非同期サーバを実装するベースモジュール</dd>
+<dt><span class="target" id="index-1"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc2822.html"><strong>RFC 2822</strong></a></dt>
+<dd>メールメッセージフォーマットを定義する</dd>
+<dt><a class="reference external" href="http://www.gnu.org/software/mailman/index.html">GNU Mailman mailing list software</a></dt>
+<dd>メールを扱う Python ソフトウェアの優れたサンプル</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../smtplib/index.html" title="smtplib – 簡易メール転送プロトコルクライアント"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../SimpleXMLRPCServer/index.html" title="SimpleXMLRPCServer – XML-RPC サーバを実装する"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../internet_protocols.html" >インターネットプロトコルとサポート</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

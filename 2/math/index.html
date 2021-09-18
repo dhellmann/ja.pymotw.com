@@ -1,0 +1,1046 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>math &#8211; 数学に関する関数 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="数値や数学に関するモジュール" href="../numeric.html" />
+    <link rel="next" title="operator – ビルトイン演算子に対する関数インタフェース" href="../operator/index.html" />
+    <link rel="prev" title="itertools – 効率的なループ処理のためのイテレータ関数" href="../itertools/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">math &#8211; 数学に関する関数</a><ul>
+<li><a class="reference internal" href="#id1">特別な定数</a></li>
+<li><a class="reference internal" href="#id2">例外値のテスト</a></li>
+<li><a class="reference internal" href="#id3">整数への変換</a></li>
+<li><a class="reference internal" href="#id4">代替の表現</a></li>
+<li><a class="reference internal" href="#id5">正負の符号</a></li>
+<li><a class="reference internal" href="#id6">一般的によく使う計算</a></li>
+<li><a class="reference internal" href="#id7">指数と対数</a></li>
+<li><a class="reference internal" href="#id8">角度</a></li>
+<li><a class="reference internal" href="#id9">三角法</a></li>
+<li><a class="reference internal" href="#id10">双曲線関数</a></li>
+<li><a class="reference internal" href="#id11">特殊関数</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../itertools/index.html" title="前の章へ"><strong>前:</strong> itertools &#8211; 効率的なループ処理のためのイテレータ関数</a><br/>
+          <a href="../operator/index.html" title="次の章へ"><strong>次:</strong> operator &#8211; ビルトイン演算子に対する関数インタフェース</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/math/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../operator/index.html" title="operator – ビルトイン演算子に対する関数インタフェース"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../itertools/index.html" title="itertools – 効率的なループ処理のためのイテレータ関数"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../numeric.html" accesskey="U">数値や数学に関するモジュール</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="math">
+<h1>math &#8211; 数学に関する関数<a class="headerlink" href="#math" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-math"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">数学に関する演算に特化した機能を提供する</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">1.4</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-math" title="数学に関する関数"><tt class="xref py py-mod docutils literal"><span class="pre">math</span></tt></a> モジュールは、浮動小数点数、対数、三角法の演算を含む複雑な数学の演算のために、C 言語のネイティブライブラリで標準的に提供されている多くの IEEE 関数を実装します。</p>
+<div class="section" id="id1">
+<h2>特別な定数<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>多くの数学の演算は、特別な定数に依存します。 <a class="reference internal" href="#module-math" title="数学に関する関数"><tt class="xref py py-mod docutils literal"><span class="pre">math</span></tt></a> は π (パイ) や e の値を提供します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;π: </span><span class="si">%.30f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+<span class="k">print</span> <span class="s">&#39;e: </span><span class="si">%.30f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">math</span><span class="o">.</span><span class="n">e</span>
+</pre></div>
+</div>
+<p>両方の定数の値の精度は、プラットフォームの浮動小数点数の C 言語ライブラリにのみ制限されます。</p>
+<div class="highlight-python"><pre>$ python math_constants.py
+π: 3.141592653589793115997963468544
+e: 2.718281828459045090795598298428</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>例外値のテスト<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>浮動小数点数の計算は、2つの例外値を導くことがあります。 <tt class="docutils literal"><span class="pre">INF</span></tt> (&#8220;無限大&#8221;) は、 浮動小数点数の <em>double</em> 型のある値から巨大な絶対値をもつ値にオーバーフローするときに現れます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^3}  {:6}  {:6}  {:6}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;x**2&#39;</span><span class="p">,</span> <span class="s">&#39;isinf&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^3}  {:-^6}  {:-^6}  {:-^6}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">201</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">**</span> <span class="n">e</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+    <span class="k">print</span> <span class="s">&#39;{:3d}  {!s:6}  {!s:6}  {!s:6}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>このサンプルの指数は、 <em>x</em> の2乗が <em>double</em> 型の範囲内に収まらないほど巨大な値になると、その値は無限大として記録されます。</p>
+<div class="highlight-python"><pre>$ python math_isinf.py
+ e   x       x**2    isinf
+---  ------  ------  ------
+  0  1.0     1.0     False
+ 20  1e+20   1e+40   False
+ 40  1e+40   1e+80   False
+ 60  1e+60   1e+120  False
+ 80  1e+80   1e+160  False
+100  1e+100  1e+200  False
+120  1e+120  1e+240  False
+140  1e+140  1e+280  False
+160  1e+160  inf     True
+180  1e+180  inf     True
+200  1e+200  inf     True</pre>
+</div>
+<p>しかし、全ての浮動小数点数の値がオーバーフローすると <tt class="docutils literal"><span class="pre">INF</span></tt> の値になるというわけではありません。特に浮動小数点数の指数計算を行うと <tt class="docutils literal"><span class="pre">INF</span></tt> を保持するのではなく <a class="reference internal" href="../exceptions/index.html#exceptions-overflowerror"><em>OverflowError</em></a> を発生させます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">**</span> <span class="mi">200</span>
+
+<span class="k">print</span> <span class="s">&#39;x    =&#39;</span><span class="p">,</span> <span class="n">x</span>
+<span class="k">print</span> <span class="s">&#39;x*x  =&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;x**2 =&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+<span class="k">except</span> <span class="ne">OverflowError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p>この不一致は、CPython が使用するライブラリの実装の違いが原因です。</p>
+<div class="highlight-python"><pre>$ python math_overflow.py
+x    = 1e+200
+x*x  = inf
+x**2 = (34, 'Result too large')</pre>
+</div>
+<p>無限大の値を使用する除算は未定義です。ある数を無限大で割ると <tt class="docutils literal"><span class="pre">NaN</span></tt> (&#8220;数字ではない&#8221;) になります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mf">10.0</span> <span class="o">**</span> <span class="mi">200</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">10.0</span> <span class="o">**</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="n">x</span>
+
+<span class="k">print</span> <span class="s">&#39;x =&#39;</span><span class="p">,</span> <span class="n">x</span>
+<span class="k">print</span> <span class="s">&#39;isnan(x) =&#39;</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;y = x / x =&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">/</span><span class="n">x</span>
+<span class="k">print</span> <span class="s">&#39;y == nan =&#39;</span><span class="p">,</span> <span class="n">y</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s">&#39;nan&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;isnan(y) =&#39;</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">NaN</span></tt> は、自分自身との比較も含め、どんな値と比較しても等しくないので、 <tt class="docutils literal"><span class="pre">NaN</span></tt> を調べるには <tt class="xref py py-func docutils literal"><span class="pre">isnan()</span></tt> を使用しなければなりません。</p>
+<div class="highlight-python"><pre>$ python math_isnan.py
+x = inf
+isnan(x) = False
+y = x / x = nan
+y == nan = False
+isnan(y) = True</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>整数への変換<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-math" title="数学に関する関数"><tt class="xref py py-mod docutils literal"><span class="pre">math</span></tt></a> モジュールは、浮動小数点数の値から整数に変換する3つの関数を提供します。それぞれが別のアプローチを取り、様々な状況で役に立ちます。</p>
+<p>最も簡単なのは <tt class="xref py py-func docutils literal"><span class="pre">trunc()</span></tt> で、ある値の整数部分の桁のみを残して、その小数部分の桁を切り捨てます。 <tt class="xref py py-func docutils literal"><span class="pre">floor()</span></tt> は入力値以下の最も大きな整数に変換し、 <tt class="xref py py-func docutils literal"><span class="pre">ceil()</span></tt> (天井値) は入力値以上の最も大きな整数を生成します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^5}  {:^5}  {:^5}  {:^5}  {:^5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;int&#39;</span><span class="p">,</span> <span class="s">&#39;trunk&#39;</span><span class="p">,</span> <span class="s">&#39;floor&#39;</span><span class="p">,</span> <span class="s">&#39;ceil&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^5}  {:-^5}  {:-^5}  {:-^5}  {:-^5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;{:5.1f}&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span> <span class="p">]:</span>
+    <span class="k">print</span> <span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">trunc()</span></tt> は、直接 <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> に変換するのと等価です。</p>
+<div class="highlight-python"><pre>$ python math_integers.py
+  i     int   trunk  floor  ceil
+-----  -----  -----  -----  -----
+ -1.5   -1.0   -1.0   -2.0   -1.0
+ -0.8    0.0    0.0   -1.0   -0.0
+ -0.5    0.0    0.0   -1.0   -0.0
+ -0.2    0.0    0.0   -1.0   -0.0
+  0.0    0.0    0.0    0.0    0.0
+  0.2    0.0    0.0    0.0    1.0
+  0.5    0.0    0.0    0.0    1.0
+  0.8    0.0    0.0    0.0    1.0
+  1.0    1.0    1.0    1.0    1.0</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>代替の表現<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-func docutils literal"><span class="pre">modf()</span></tt> は、1つの浮動小数点数を受け取り、その入力値から小数部と整数部に分けたタプルを返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;{}/2 = {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">modf</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="mf">2.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>返り値のタプルに含まれる両方の値は float 型です。</p>
+<div class="highlight-python"><pre>$ python math_modf.py
+0/2 = (0.0, 0.0)
+1/2 = (0.5, 0.0)
+2/2 = (0.0, 1.0)
+3/2 = (0.5, 1.0)
+4/2 = (0.0, 2.0)
+5/2 = (0.5, 2.0)</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">frexp()</span></tt> は、浮動小数点数の仮数と指数を返し、引数の値のより移植性の高い表現を作成するのに使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^7}  {:^7}  {:^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^7}  {:-^7}  {:-^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">4.0</span> <span class="p">]:</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">frexp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;{:7.2f}  {:7.2f}  {:7d}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">frexp()</span></tt> は、数式 <tt class="docutils literal"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">m</span> <span class="pre">*</span> <span class="pre">2**e</span></tt> を導く <em>m</em> と <em>e</em> の値を返します。</p>
+<div class="highlight-python"><pre>$ python math_frexp.py
+   x        m        e
+-------  -------  -------
+   0.10     0.80       -3
+   0.50     0.50        0
+   4.00     0.50        3</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">ldexp()</span></tt> は <tt class="xref py py-func docutils literal"><span class="pre">frexp()</span></tt> の逆の計算をします。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^7}  {:^7}  {:^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^7}  {:-^7}  {:-^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span> <span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">),</span>
+              <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span>  <span class="mi">0</span><span class="p">),</span>
+              <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span>  <span class="mi">3</span><span class="p">),</span>
+              <span class="p">]:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ldexp</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;{:7.2f}  {:7d}  {:7.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">frexp()</span></tt> と同じ数式を用いて、 <tt class="xref py py-func docutils literal"><span class="pre">ldexp()</span></tt> は、仮数と指数の値を引数として受け取り、浮動小数点数の値を返します。</p>
+<div class="highlight-python"><pre>$ python math_ldexp.py
+   m        e        x
+-------  -------  -------
+   0.80       -3     0.10
+   0.50        0     0.50
+   0.50        3     4.00</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>正負の符号<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>数値の絶対値は符号をもたない値です。浮動小数点数の絶対値を計算するには <tt class="xref py py-func docutils literal"><span class="pre">fabs()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="o">-</span><span class="mf">1.1</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="o">-</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>実際には <tt class="xref py py-class docutils literal"><span class="pre">float</span></tt> 型の絶対値は正の値として表現されます。</p>
+<div class="highlight-python"><pre>$ python math_fabs.py
+1.1
+0.0
+0.0
+1.1</pre>
+</div>
+<p>ある値の符号を決めるには、与えられた値セットが同じ符号をもつ、またはシンプルに比較する目的であるなら、既知の値から符号をセットするために <tt class="xref py py-func docutils literal"><span class="pre">copysign()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;{:^5}  {:^5}  {:^5}  {:^5}  {:^5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;&lt; 0&#39;</span><span class="p">,</span> <span class="s">&#39;&gt; 0&#39;</span><span class="p">,</span> <span class="s">&#39;= 0&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^5}  {:-^5}  {:-^5}  {:-^5}  {:-^5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="mf">1.0</span><span class="p">,</span>
+            <span class="nb">float</span><span class="p">(</span><span class="s">&#39;-inf&#39;</span><span class="p">),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="s">&#39;inf&#39;</span><span class="p">),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="s">&#39;-nan&#39;</span><span class="p">),</span>
+            <span class="nb">float</span><span class="p">(</span><span class="s">&#39;nan&#39;</span><span class="p">),</span>
+            <span class="p">]:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">copysign</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&#39;{:5.1f}  {:5d}  {!s:5}  {!s:5}  {!s:5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">f</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">f</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">copysign()</span></tt> のような拡張関数は、NaN と -NaN を他の値と直接的に比較すると正しく処理されないので必要です。</p>
+<div class="highlight-python"><pre>$ python math_copysign.py
+
+  f      s     &lt; 0    &gt; 0    = 0
+-----  -----  -----  -----  -----
+ -1.0     -1  True   False  False
+  0.0      1  False  False  True
+  1.0      1  False  True   False
+ -inf     -1  True   False  False
+  inf      1  False  True   False
+  nan     -1  False  False  False
+  nan      1  False  False  False</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>一般的によく使う計算<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>バイナリの浮動小数点数メモリに正確な値を表現することが挑戦されています。いくつかの値は、正確に表現することはできません。そして、繰り返しの計算を通して多くの値が操作され、表現エラーが発生する可能性が高くなります。 <a class="reference internal" href="#module-math" title="数学に関する関数"><tt class="xref py py-mod docutils literal"><span class="pre">math</span></tt></a> は、そういったエラーを最小限に抑えるように効率化されたアルゴリズムを使用して、一連の浮動小数点数の和を計算する関数を提供します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">values</span> <span class="o">=</span> <span class="p">[</span> <span class="mf">0.1</span> <span class="p">]</span> <span class="o">*</span> <span class="mi">10</span>
+
+<span class="k">print</span> <span class="s">&#39;Input values:&#39;</span><span class="p">,</span> <span class="n">values</span>
+
+<span class="k">print</span> <span class="s">&#39;sum()       : {:.20f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+    <span class="n">s</span> <span class="o">+=</span> <span class="n">i</span>
+<span class="k">print</span> <span class="s">&#39;for-loop    : {:.20f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    
+<span class="k">print</span> <span class="s">&#39;math.fsum() : {:.20f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">fsum</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>あるシーケンスの10個の値がそれぞれ <tt class="docutils literal"><span class="pre">0.1</span></tt> のとき、そのシーケンスの合計値は <tt class="docutils literal"><span class="pre">1.0</span></tt> になると予想されます。 <tt class="docutils literal"><span class="pre">0.1</span></tt> は浮動小数点数の値として正確な表現ではないので、 <tt class="xref py py-func docutils literal"><span class="pre">fsum()</span></tt> で計算しない限り、その和はエラーになります。</p>
+<div class="highlight-python"><pre>$ python math_fsum.py
+Input values: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+sum()       : 0.99999999999999988898
+for-loop    : 0.99999999999999988898
+math.fsum() : 1.00000000000000000000</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">factorial()</span></tt> は、一般的に一連のオブジェクトの順列や組み合わせの数を計算するのに使用されます。正の整数 <em>n</em> の階乗は、 <tt class="docutils literal"><span class="pre">n!</span></tt> で表され、 <tt class="docutils literal"><span class="pre">(n-1)!</span> <span class="pre">*</span> <span class="pre">n</span></tt> として再帰的に定義されて <tt class="docutils literal"><span class="pre">0!</span> <span class="pre">==</span> <span class="pre">1</span></tt> で止まります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.1</span> <span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;{:2.0f}  {:6.0f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Error computing factorial(</span><span class="si">%s</span><span class="s">):&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">factorial()</span></tt> は整数でのみ動作しますが、値を失わずに整数に変換されるのであれば <tt class="xref py py-class docutils literal"><span class="pre">float</span></tt> の引数を受け取ります。</p>
+<div class="highlight-python"><pre>$ python math_factorial.py
+ 0       1
+ 1       1
+ 2       2
+ 3       6
+ 4      24
+ 5     120
+Error computing factorial(6.1): factorial() only accepts integral values</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">gamma()</span></tt> も実数で動作する点を除けば、 <tt class="xref py py-func docutils literal"><span class="pre">factorial()</span></tt> と同じように動作しますが、その値は1つシフトダウンされます (ガンマは <tt class="docutils literal"><span class="pre">(n</span> <span class="pre">-</span> <span class="pre">1)!</span></tt> と等価です) 。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.6</span> <span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;{:2.1f}  {:6.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Error computing gamma(</span><span class="si">%s</span><span class="s">):&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p>ゼロは初期値が負の値から始まるので計算できません。</p>
+<div class="highlight-python"><pre>$ python math_gamma.py
+Error computing gamma(0): math domain error
+1.1    0.95
+2.2    1.10
+3.3    2.68
+4.4   10.14
+5.5   52.34
+6.6  344.70</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">lgamma()</span></tt> は、入力値のためにガンマの絶対値の自然対数を返します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mf">4.4</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">6.6</span> <span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;{:2.1f}  {:.20f}  {:.20f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">lgamma</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">gamma</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Error computing lgamma(</span><span class="si">%s</span><span class="s">):&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">err</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">lgamma()</span></tt> を使用した方が、 <tt class="xref py py-func docutils literal"><span class="pre">gamma()</span></tt> の結果を使用して別々にその対数を計算するよりも高い精度を保持します。</p>
+<div class="highlight-python"><pre>$ python math_lgamma.py
+Error computing lgamma(0): math domain error
+1.1  -0.04987244125984036103  -0.04987244125983997245
+2.2  0.09694746679063825923  0.09694746679063866168
+3.3  0.98709857789473387513  0.98709857789473409717
+4.4  2.31610349142485727469  2.31610349142485727469
+5.5  3.95781396761871651080  3.95781396761871606671
+6.6  5.84268005527463252236  5.84268005527463252236</pre>
+</div>
+<p>モジュロ演算子 (<tt class="docutils literal"><span class="pre">%</span></tt>) は、除算の余りを計算します (例えば <tt class="docutils literal"><span class="pre">5</span> <span class="pre">%</span> <span class="pre">2</span> <span class="pre">=</span> <span class="pre">1</span></tt> ) 。この演算子は整数でうまく計算するように言語内に組み込まれていますが、その他の多くの浮動小数点数の計算と同様に、中間の計算で結果的にデータを失ってしまう表現の問題を引き起こします。 <tt class="xref py py-func docutils literal"><span class="pre">fmod()</span></tt> は、浮動小数点数のためにより正確な計算の実装を提供します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^4}  {:^4}  {:^5}  {:^5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;%&#39;</span><span class="p">,</span> <span class="s">&#39;fmod&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;----  ----  -----  -----&#39;</span>
+
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+              <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+              <span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+              <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;{:4.1f}  {:4.1f}  {:5.2f}  {:5.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">%</span> <span class="n">y</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">fmod</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>潜在的によく混乱するのは、モジュロ演算のために <tt class="xref py py-mod docutils literal"><span class="pre">fmod</span></tt> が使用するアルゴリズムが <tt class="docutils literal"><span class="pre">%</span></tt> が使用するのと違っているという事実です。そのため、その結果の符号は違います。符号が混在した入力値を与えます。</p>
+<div class="highlight-python"><pre>$ python math_fmod.py
+ x     y      %    fmod
+----  ----  -----  -----
+ 5.0   2.0   1.00   1.00
+ 5.0  -2.0  -1.00   1.00
+-5.0   2.0   1.00  -1.00</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>指数と対数<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>指数関数的な曲線は、経済学、物理学、その他の科学の分野においても見られます。Python は組み込みのべき乗演算子 (&#8220;<tt class="docutils literal"><span class="pre">**</span></tt>&#8220;) がありますが、呼び出し可能な関数に引数として渡す必要があるときは <tt class="xref py py-func docutils literal"><span class="pre">pow()</span></tt> が便利です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="c"># 典型的な使用例</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">2.1</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">),</span>
+
+    <span class="c"># 必ず 1 になる</span>
+    <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+
+    <span class="c"># 数字ではない</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s">&#39;nan&#39;</span><span class="p">)),</span>
+
+    <span class="c"># ルート</span>
+    <span class="p">(</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">27.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="mi">3</span><span class="p">),</span>
+    <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;{:5.1f} ** {:5.3f} = {:6.3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>任意の数を <tt class="docutils literal"><span class="pre">0.0</span></tt> 乗するのと同様に、 <tt class="docutils literal"><span class="pre">1</span></tt> を任意の数でべき乗しても <tt class="docutils literal"><span class="pre">1.0</span></tt> を返します。数字ではない値 <tt class="docutils literal"><span class="pre">nan</span></tt> について、ほとんどの演算は <tt class="docutils literal"><span class="pre">nan</span></tt> を返します。 <tt class="docutils literal"><span class="pre">1</span></tt> よりも小さい指数なら <tt class="xref py py-func docutils literal"><span class="pre">pow()</span></tt> はルート(√)を計算します。</p>
+<div class="highlight-python"><pre>$ python math_pow.py
+  2.0 ** 3.000 =  8.000
+  2.1 ** 3.200 = 10.742
+  1.0 ** 5.000 =  1.000
+  2.0 ** 0.000 =  1.000
+  2.0 **   nan =    nan
+  9.0 ** 0.500 =  3.000
+ 27.0 ** 0.333 =  3.000</pre>
+</div>
+<p>よく使う平方根 (<tt class="docutils literal"><span class="pre">1/2</span></tt> の指数) を計算するには別の関数があります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">9.0</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&#39;Cannot compute sqrt(-1):&#39;</span><span class="p">,</span> <span class="n">err</span>
+    
+</pre></div>
+</div>
+<p>負の数の平方根を計算するには、 <a class="reference internal" href="#module-math" title="数学に関する関数"><tt class="xref py py-mod docutils literal"><span class="pre">math</span></tt></a> では処理できない <em>複素数</em> を必要とします。負の数の平方根を計算しようとすると <a class="reference internal" href="../exceptions/index.html#exceptions-valueerror"><em>ValueError</em></a> が発生します。</p>
+<div class="highlight-python"><pre>$ python math_sqrt.py
+3.0
+1.73205080757
+Cannot compute sqrt(-1): math domain error</pre>
+</div>
+<p>対数関数は <tt class="docutils literal"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">b</span> <span class="pre">**</span> <span class="pre">y</span></tt> という式の <em>y</em> を導きます。デフォルトでは、 <tt class="xref py py-func docutils literal"><span class="pre">log()</span></tt> は自然対数 (底は <em>e</em>) を計算します。第2引数が指定された場合、その値は底として利用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>x</em> が1より小さい対数は、負の数を導きます。</p>
+<div class="highlight-python"><pre>$ python math_log.py
+2.07944154168
+3.0
+-1.0</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">log()</span></tt> には2つの関数があります。浮動小数点表現と丸め誤差の値を <tt class="docutils literal"><span class="pre">log(x,</span> <span class="pre">b)</span></tt> に渡して生成された値は、特に底の精度が制限されます。 <tt class="xref py py-func docutils literal"><span class="pre">log10()</span></tt> は、 <tt class="xref py py-func docutils literal"><span class="pre">log()</span></tt> より正確なアルゴリズムを用いて <tt class="docutils literal"><span class="pre">log(x,</span> <span class="pre">10)</span></tt> を計算します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:2}  {:^12}  {:^20}  {:^20}  {:8}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;accurate&#39;</span><span class="p">,</span> <span class="s">&#39;inaccurate&#39;</span><span class="p">,</span> <span class="s">&#39;mismatch&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^2}  {:-^12}  {:-^20}  {:-^20}  {:-^8}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">accurate</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">inaccurate</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="s">&#39;&#39;</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">inaccurate</span><span class="p">)</span> <span class="o">==</span> <span class="n">i</span> <span class="k">else</span> <span class="s">&#39;*&#39;</span>
+    <span class="k">print</span> <span class="s">&#39;{:2d}  {:12.1f}  {:20.18f}  {:20.18f}  {:^5}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">accurate</span><span class="p">,</span> <span class="n">inaccurate</span><span class="p">,</span> <span class="n">match</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">*</span></tt> が最後に付けられた出力結果の行は間違った値です。</p>
+<div class="highlight-python"><pre>$ python math_log10.py
+i        x              accurate             inaccurate       mismatch
+--  ------------  --------------------  --------------------  --------
+ 0           1.0  0.000000000000000000  0.000000000000000000
+ 1          10.0  1.000000000000000000  1.000000000000000000
+ 2         100.0  2.000000000000000000  2.000000000000000000
+ 3        1000.0  3.000000000000000000  2.999999999999999556    *
+ 4       10000.0  4.000000000000000000  4.000000000000000000
+ 5      100000.0  5.000000000000000000  5.000000000000000000
+ 6     1000000.0  6.000000000000000000  5.999999999999999112    *
+ 7    10000000.0  7.000000000000000000  7.000000000000000000
+ 8   100000000.0  8.000000000000000000  8.000000000000000000
+ 9  1000000000.0  9.000000000000000000  8.999999999999998224    *</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">log1p()</span></tt> は、ニュートンメルカトル級数 (<tt class="docutils literal"><span class="pre">1+x</span></tt> の自然対数) を計算します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="mf">0.0000000000000000000000001</span>
+<span class="k">print</span> <span class="s">&#39;x       :&#39;</span><span class="p">,</span> <span class="n">x</span>
+<span class="k">print</span> <span class="s">&#39;1 + x   :&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">x</span>
+<span class="k">print</span> <span class="s">&#39;log(1+x):&#39;</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">x</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;log1p(x):&#39;</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">log1p()</span></tt> は、ゼロにとても近い <em>x</em> の、より正確な値を計算します。それは初期値からの丸め誤差を補償するアルゴリズムを使用するからです。</p>
+<div class="highlight-python"><pre>$ python math_log1p.py
+x       : 1e-25
+1 + x   : 1.0
+log(1+x): 0.0
+log1p(x): 1e-25</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">exp()</span></tt> は指数関数を計算します (<tt class="docutils literal"><span class="pre">e**x</span></tt>) 。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%.20f</span><span class="s">&#39;</span>
+<span class="k">print</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">e</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">fmt</span> <span class="o">%</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">e</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">fmt</span> <span class="o">%</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>その他の特殊な関数と同様に、汎用目的で等価な <tt class="docutils literal"><span class="pre">math.pow(math.e,</span> <span class="pre">x)</span></tt> よりも正確な値を計算するアルゴリズムを使用します。</p>
+<div class="highlight-python"><pre>$ python math_exp.py
+7.38905609893064951876
+7.38905609893064951876
+7.38905609893065040694</pre>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">expm1()</span></tt> は <tt class="xref py py-func docutils literal"><span class="pre">log1p()</span></tt> の逆にあたる <tt class="docutils literal"><span class="pre">e**x</span> <span class="pre">-</span> <span class="pre">1</span></tt> を計算します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="mf">0.0000000000000000000000001</span>
+
+<span class="k">print</span> <span class="n">x</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="k">print</span> <span class="n">math</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">log1p()</span></tt> と同様に <em>x</em> の小さな値は、その引き算が別々に計算されるときに精度が失われます。</p>
+<div class="highlight-python"><pre>$ python math_expm1.py
+1e-25
+0.0
+1e-25</pre>
+</div>
+</div>
+<div class="section" id="id8">
+<h2>角度<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>日常の議論では、度の方が角度よりも一般的に使用されますが、ラジアンは科学と数学の世界で角度を測定する標準単位です。ラジアンは、円周上の半径と同じ長さをもつ範囲において円の中心で交差する2つの線で作成された角度です。</p>
+<p>円周は <tt class="docutils literal"><span class="pre">2πr</span></tt> として計算されるので、ラジアンとパイ (π) は関連があり、それは三角法の計算でよく示される値です。その関連はもっと小さな公式になるので三角法と計算で使用されるラジアンを導きます。</p>
+<p>度からラジアンへ変換するには <tt class="xref py py-func docutils literal"><span class="pre">radians()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^7}  {:^7}  {:^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;Degrees&#39;</span><span class="p">,</span> <span class="s">&#39;Radians&#39;</span><span class="p">,</span> <span class="s">&#39;Expected&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^7}  {:-^7}  {:-^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">deg</span><span class="p">,</span> <span class="n">expected</span> <span class="ow">in</span> <span class="p">[</span> <span class="p">(</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">),</span>
+                       <span class="p">(</span> <span class="mi">30</span><span class="p">,</span>  <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">),</span>
+                       <span class="p">(</span> <span class="mi">45</span><span class="p">,</span>  <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span>
+                       <span class="p">(</span> <span class="mi">60</span><span class="p">,</span>  <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">),</span>
+                       <span class="p">(</span> <span class="mi">90</span><span class="p">,</span>  <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">180</span><span class="p">,</span>  <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">270</span><span class="p">,</span>  <span class="mi">3</span><span class="o">/</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">360</span><span class="p">,</span>  <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+                       <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;{:7d}  {:7.2f}  {:7.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">deg</span><span class="p">),</span> <span class="n">expected</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>変換の公式は <tt class="docutils literal"><span class="pre">rad</span> <span class="pre">=</span> <span class="pre">deg</span> <span class="pre">*</span> <span class="pre">π</span> <span class="pre">/</span> <span class="pre">180</span></tt> です。</p>
+<div class="highlight-python"><pre>$ python math_radians.py
+Degrees  Radians  Expected
+-------  -------  -------
+      0     0.00     0.00
+     30     0.52     0.52
+     45     0.79     0.79
+     60     1.05     1.05
+     90     1.57     1.57
+    180     3.14     3.14
+    270     4.71     4.71
+    360     6.28     6.28</pre>
+</div>
+<p>ラジアンから度へ変換するには <tt class="xref py py-func docutils literal"><span class="pre">degrees()</span></tt> を使用してください。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^8}  {:^8}  {:^8}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;Radians&#39;</span><span class="p">,</span> <span class="s">&#39;Degrees&#39;</span><span class="p">,</span> <span class="s">&#39;Expected&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^8}  {:-^8}  {:-^8}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">rad</span><span class="p">,</span> <span class="n">expected</span> <span class="ow">in</span> <span class="p">[</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span>                  <span class="mi">0</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span>         <span class="mi">30</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span>         <span class="mi">45</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span>         <span class="mi">60</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>         <span class="mi">90</span><span class="p">),</span>
+                       <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>          <span class="mi">180</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>  <span class="mi">270</span><span class="p">),</span>
+                       <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>      <span class="mi">360</span><span class="p">),</span>
+                       <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;{:8.2f}  {:8.2f}  {:8.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rad</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">rad</span><span class="p">),</span> <span class="n">expected</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>公式は <tt class="docutils literal"><span class="pre">deg</span> <span class="pre">=</span> <span class="pre">rad</span> <span class="pre">*</span> <span class="pre">180</span> <span class="pre">/</span> <span class="pre">π</span></tt> です。</p>
+<div class="highlight-python"><pre>$ python math_degrees.py
+Radians   Degrees   Expected
+--------  --------  --------
+    0.00      0.00      0.00
+    0.52     30.00     30.00
+    0.79     45.00     45.00
+    1.05     60.00     60.00
+    1.57     90.00     90.00
+    3.14    180.00    180.00
+    4.71    270.00    270.00
+    6.28    360.00    360.00</pre>
+</div>
+</div>
+<div class="section" id="id9">
+<h2>三角法<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>三角関数は、その辺の長さに対する三角形の角度に関連しています。調和や円運動か、角度を扱うときといった周期的性質をもつ公式で示されます。</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">標準ライブラリの全ての三角関数は、ラジアンで表される角度を受け取ります。</p>
+</div>
+<p>直角三角形のある角度が与えられたとき、 <em>正弦 (sine)</em> は、斜辺に対する角の辺の長さの比です (<tt class="docutils literal"><span class="pre">sin</span> <span class="pre">A</span> <span class="pre">=</span> <span class="pre">opposite/hypotenuse</span></tt>) 。 <em>余弦 (cosine)</em> は、斜辺に隣接する辺の長さの比です (<tt class="docutils literal"><span class="pre">cos</span> <span class="pre">A</span> <span class="pre">=</span> <span class="pre">adjacent/hypotenuse</span></tt>) 。そして <em>正接 (tangent)</em> は、隣接する辺の反対側の辺の比です (<tt class="docutils literal"><span class="pre">tan</span> <span class="pre">A</span> <span class="pre">=</span> <span class="pre">opposite/adjacent</span></tt>) 。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;Degrees  Radians  Sine     Cosine    Tangent&#39;</span>
+<span class="k">print</span> <span class="s">&#39;-------  -------  -------  --------  -------&#39;</span>
+
+<span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;</span><span class="si">%7.2f</span><span class="s">&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">361</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
+    <span class="n">rad</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">deg</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="mi">270</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s">&#39;inf&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">rad</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">rad</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad</span><span class="p">),</span> <span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>正接 (tangent) は、その余弦 (cosine) に対する角の正弦 (sine) としても定義されます。そして、余弦 (cosine) は、π/2 や 3π/2 ラジアンに対して 0 なので、正接 (tangent) は無限大です。</p>
+<div class="highlight-python"><pre>$ python math_trig.py
+Degrees  Radians  Sine     Cosine    Tangent
+-------  -------  -------  --------  -------
+   0.00     0.00     0.00     1.00     0.00
+  30.00     0.52     0.50     0.87     0.58
+  60.00     1.05     0.87     0.50     1.73
+  90.00     1.57     1.00     0.00      inf
+ 120.00     2.09     0.87    -0.50    -1.73
+ 150.00     2.62     0.50    -0.87    -0.58
+ 180.00     3.14     0.00    -1.00    -0.00
+ 210.00     3.67    -0.50    -0.87     0.58
+ 240.00     4.19    -0.87    -0.50     1.73
+ 270.00     4.71    -1.00    -0.00      inf
+ 300.00     5.24    -0.87     0.50    -1.73
+ 330.00     5.76    -0.50     0.87    -0.58
+ 360.00     6.28    -0.00     1.00    -0.00</pre>
+</div>
+<p>座標 (<em>x</em>, <em>y</em>) が与えられたとき、[(0, 0), (<em>x</em>, 0), (<em>x</em>, <em>y</em>)] の座標間にある三角形の斜辺の長さは、 <tt class="docutils literal"><span class="pre">(x**2</span> <span class="pre">+</span> <span class="pre">y**2)</span> <span class="pre">**</span> <span class="pre">1/2</span></tt> です。これは <tt class="xref py py-func docutils literal"><span class="pre">hypot()</span></tt> でも計算できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^7}  {:^7}  {:^10}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="s">&#39;Y&#39;</span><span class="p">,</span> <span class="s">&#39;Hypotenuse&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^7}  {:-^7}  {:-^10}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span> <span class="c"># simple points</span>
+              <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+              <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+              <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)),</span>
+              <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="c"># 3-4-5 triangle</span>
+              <span class="c"># on the circle</span>
+              <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="c"># pi/4 rads</span>
+              <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="c"># pi/3 rads</span>
+              <span class="p">]:</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;{:7.2f}  {:7.2f}  {:7.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>円になるのは、必ず hypotenuse == <tt class="docutils literal"><span class="pre">1</span></tt> になります。</p>
+<div class="highlight-python"><pre>$ python math_hypot.py
+   X        Y     Hypotenuse
+-------  -------  ----------
+   1.00     1.00     1.41
+  -1.00    -1.00     1.41
+   1.41     1.41     2.00
+   3.00     4.00     5.00
+   0.71     0.71     1.00
+   0.50     0.87     1.00</pre>
+</div>
+<p>2つの座標間の距離を調べるために同じ関数が使用できます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^8}  {:^8}  {:^8}  {:^8}  {:^8}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;X1&#39;</span><span class="p">,</span> <span class="s">&#39;Y1&#39;</span><span class="p">,</span> <span class="s">&#39;X2&#39;</span><span class="p">,</span> <span class="s">&#39;Y2&#39;</span><span class="p">,</span> <span class="s">&#39;Distance&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^8}  {:-^8}  {:-^8}  {:-^8}  {:-^8}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+
+<span class="k">for</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span> <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)),</span>
+                            <span class="p">((</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">)),</span>
+                            <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="c"># 3-4-5 triangle</span>
+                            <span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="c"># 3-4-5 triangle</span>
+                            <span class="p">]:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;{:8.2f}  {:8.2f}  {:8.2f}  {:8.2f}  {:8.2f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>原点から端点へ移動する <em>x</em> と <em>y</em> の距離を計算してから <tt class="xref py py-func docutils literal"><span class="pre">hypot()</span></tt> へその結果を渡してください。</p>
+<div class="highlight-python"><pre>$ python math_distance_2_points.py
+   X1        Y1        X2        Y2     Distance
+--------  --------  --------  --------  --------
+    5.00      5.00      6.00      6.00      1.41
+   -6.00     -6.00     -5.00     -5.00      1.41
+    0.00      0.00      3.00      4.00      5.00
+   -1.00     -1.00      2.00      3.00      5.00</pre>
+</div>
+<p>さらに <a class="reference internal" href="#module-math" title="数学に関する関数"><tt class="xref py py-mod docutils literal"><span class="pre">math</span></tt></a> は逆三角関数も定義します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span> <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;arcsine(</span><span class="si">%.1f</span><span class="s">)    = </span><span class="si">%5.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&#39;arccosine(</span><span class="si">%.1f</span><span class="s">)  = </span><span class="si">%5.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&#39;arctangent(</span><span class="si">%.1f</span><span class="s">) = </span><span class="si">%5.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+    <span class="k">print</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">1.57</span></tt> は、およそ <tt class="docutils literal"><span class="pre">π/2</span></tt> または90度です。それは正弦 (sine) が 1 且つ余弦 (cosine) が 0 の角度です。</p>
+<div class="highlight-python"><pre>$ python math_inverse_trig.py
+arcsine(0.0)    =  0.00
+arccosine(0.0)  =  1.57
+arctangent(0.0) =  0.00
+
+arcsine(0.5)    =  0.52
+arccosine(0.5)  =  1.05
+arctangent(0.5) =  0.46
+
+arcsine(1.0)    =  1.57
+arccosine(1.0)  =  0.00
+arctangent(1.0) =  0.79</pre>
+</div>
+</div>
+<div class="section" id="id10">
+<h2>双曲線関数<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p>線形微分方程式に見られる双曲線関数は、電磁界、流体力学、特殊相対性理論、その他の高度な物理学と数学の世界で使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^6}  {:^6}  {:^6}  {:^6}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="s">&#39;sinh&#39;</span><span class="p">,</span> <span class="s">&#39;cosh&#39;</span><span class="p">,</span> <span class="s">&#39;tanh&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^6}  {:-^6}  {:-^6}  {:-^6}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;  &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;{:6.4f}&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">i</span><span class="o">/</span><span class="mf">10.0</span>
+    <span class="k">print</span> <span class="n">fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    
+</pre></div>
+</div>
+<p>余弦 (cosine) と正弦 (sine) の関数は円を描くのに対して、双曲線余弦と双曲線正弦フォームは双曲線の半分です。</p>
+<div class="highlight-python"><pre>$ python math_hyperbolic.py
+  X      sinh    cosh    tanh
+------  ------  ------  ------
+0.0000  0.0000  1.0000  0.0000
+0.2000  0.2013  1.0201  0.1974
+0.4000  0.4108  1.0811  0.3799
+0.6000  0.6367  1.1855  0.5370
+0.8000  0.8881  1.3374  0.6640
+1.0000  1.1752  1.5431  0.7616</pre>
+</div>
+<p>逆双曲線関数 <tt class="xref py py-func docutils literal"><span class="pre">acosh()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">asinh()</span></tt>, <tt class="xref py py-func docutils literal"><span class="pre">atanh()</span></tt> も利用できます。</p>
+</div>
+<div class="section" id="id11">
+<h2>特殊関数<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>統計では、ガウスエラー関数が使用されます。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^5}  {:7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;erf(x)&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^5}  {:-^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;{:5.2f}  {:7.4f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">erf(-x)</span> <span class="pre">==</span> <span class="pre">-erf(x)</span></tt> であることに注意してください。</p>
+<div class="highlight-python"><pre>$ python math_erf.py
+  x    erf(x)
+-----  -------
+-3.00  -1.0000
+-2.00  -0.9953
+-1.00  -0.8427
+-0.50  -0.5205
+-0.25  -0.2763
+ 0.00   0.0000
+ 0.25   0.2763
+ 0.50   0.5205
+ 1.00   0.8427
+ 2.00   0.9953
+ 3.00   1.0000</pre>
+</div>
+<p>補足のエラー関数は <tt class="docutils literal"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">erf(x)</span></tt> です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">print</span> <span class="s">&#39;{:^5}  {:7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;erfc(x)&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;{:-^5}  {:-^7}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">]:</span>
+    <span class="k">print</span> <span class="s">&#39;{:5.2f}  {:7.4f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">erfc</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    
+</pre></div>
+</div>
+<div class="highlight-python"><pre>$ python math_erfc.py
+  x    erfc(x)
+-----  -------
+-3.00   2.0000
+-2.00   1.9953
+-1.00   1.8427
+-0.50   1.5205
+-0.25   1.2763
+ 0.00   1.0000
+ 0.25   0.7237
+ 0.50   0.4795
+ 1.00   0.1573
+ 2.00   0.0047
+ 3.00   0.0000</pre>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/library/math.html">math</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference external" href="http://www.johndcook.com/blog/2009/07/21/ieee-arithmetic-python/">IEEE floating point arithmetic in Python</a></dt>
+<dd>John Cook による Python で数学をするときに特殊な値の発生とその対処方法について書かれたブログの記事</dd>
+<dt><a class="reference external" href="http://scipy.org/">SciPy</a></dt>
+<dd>Python で科学技術計算や数学のためのオープンソースライブラリ</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../operator/index.html" title="operator – ビルトイン演算子に対する関数インタフェース"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../itertools/index.html" title="itertools – 効率的なループ処理のためのイテレータ関数"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../numeric.html" >数値や数学に関するモジュール</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

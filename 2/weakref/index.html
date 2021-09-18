@@ -1,0 +1,689 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>weakref &#8211; オブジェクトのガベージコレクション可能な参照 - Python Module of the Week</title>
+
+<link rel="stylesheet" href="../_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="../_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '../',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="../_static/jquery.js"></script>
+<script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="../about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="../contents.html" />
+    <link rel="index" title="インデックス" href="../genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="../index.html" />
+    <link rel="up" title="データタイプ" href="../data_types.html" />
+    <link rel="next" title="copy – オブジェクトのコピー" href="../copy/index.html" />
+    <link rel="prev" title="Queue – スレッドセーフな FIFO の実装" href="../Queue/index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="../index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="../about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">
+  <h3>ページコンテンツ</h3>
+  <ul>
+<li><a class="reference internal" href="#">weakref &#8211; オブジェクトのガベージコレクション可能な参照</a><ul>
+<li><a class="reference internal" href="#id1">参照</a></li>
+<li><a class="reference internal" href="#id2">参照コールバック</a></li>
+<li><a class="reference internal" href="#id3">プロキシ</a></li>
+<li><a class="reference internal" href="#id4">循環参照</a></li>
+<li><a class="reference internal" href="#id5">キャッシュオブジェクト</a></li>
+</ul>
+</li>
+</ul>
+    <h3>ナビゲーション</h3>
+      <p>
+    <a href="../contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+          <a href="../Queue/index.html" title="前の章へ"><strong>前:</strong> Queue &#8211; スレッドセーフな FIFO の実装</a><br/>
+          <a href="../copy/index.html" title="次の章へ"><strong>次:</strong> copy &#8211; オブジェクトのコピー</a><br/>
+      </p>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="../_sources/weakref/index.txt"
+               rel="nofollow">Show Source</a>
+      </p><h3>サンプルプログラム</h3>
+
+<p>PyMOTW の全てのサンプルプログラムの出力は、
+注記されていない限りは Python 2.7.2 で生成されています。
+標準ライブラリの初期のバージョンでは利用できない機能も紹介している
+可能性があります。</p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../copy/index.html" title="copy – オブジェクトのコピー"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../Queue/index.html" title="Queue – スレッドセーフな FIFO の実装"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" accesskey="U">データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <div class="section" id="weakref">
+<h1>weakref &#8211; オブジェクトのガベージコレクション可能な参照<a class="headerlink" href="#weakref" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-weakref"></span><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">目的:</th><td class="field-body">&#8220;巨大な&#8221; オブジェクトを参照して、他に非弱参照のオブジェクトがない場合にガベージコレクションの対象にする</td>
+</tr>
+<tr class="field"><th class="field-name">利用できるバージョン:</th><td class="field-body">2.1 以上</td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="#module-weakref" title="&quot;巨大な&quot; オブジェクトを参照して、他に非弱参照のオブジェクトがない場合にガベージコレクションの対象にする"><tt class="xref py py-mod docutils literal"><span class="pre">weakref</span></tt></a> モジュールは、オブジェクトに対する弱参照をサポートします。通常の参照は、オブジェクトの参照カウンタを増加させて、そのオブジェクトがガベージコレクタの対象にならないようにします。これは必ずしも望ましいことではありません。例えば、循環参照が存在するとき、またはメモリが必要なときに削除すべきオブジェクトのキャッシュを作るとき等です。</p>
+<div class="section" id="id1">
+<h2>参照<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>オブジェクトに対する弱参照は <tt class="xref py py-class docutils literal"><span class="pre">ref</span></tt> クラスを通して管理します。元のオブジェクトを取得するには、参照オブジェクトを呼び出します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="k">class</span> <span class="nc">ExpensiveObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;(Deleting </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">ExpensiveObject</span><span class="p">()</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;obj:&#39;</span><span class="p">,</span> <span class="n">obj</span>
+<span class="k">print</span> <span class="s">&#39;ref:&#39;</span><span class="p">,</span> <span class="n">r</span>
+<span class="k">print</span> <span class="s">&#39;r():&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;deleting obj&#39;</span>
+<span class="k">del</span> <span class="n">obj</span>
+<span class="k">print</span> <span class="s">&#39;r():&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>この場合、 <tt class="docutils literal"><span class="pre">obj</span></tt> は2回目の参照オブジェクトの呼び出し前に削除されるので <tt class="xref py py-class docutils literal"><span class="pre">ref</span></tt> は <tt class="xref docutils literal"><span class="pre">None</span></tt> を返します。</p>
+<div class="highlight-python"><pre>$ python weakref_ref.py
+obj: &lt;__main__.ExpensiveObject object at 0x10046e410&gt;
+ref: &lt;weakref at 0x1004696d8; to 'ExpensiveObject' at 0x10046e410&gt;
+r(): &lt;__main__.ExpensiveObject object at 0x10046e410&gt;
+deleting obj
+(Deleting &lt;__main__.ExpensiveObject object at 0x10046e410&gt;)
+r(): None</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>参照コールバック<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">ref</span></tt> コンストラクタは、オプションで2番目の引数に参照されるオブジェクトが削除されたときに実行するコールバック関数を取ります。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="k">class</span> <span class="nc">ExpensiveObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;(Deleting </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span>
+        
+<span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">reference</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Invoked when referenced object is deleted&quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;callback(&#39;</span><span class="p">,</span> <span class="n">reference</span><span class="p">,</span> <span class="s">&#39;)&#39;</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">ExpensiveObject</span><span class="p">()</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;obj:&#39;</span><span class="p">,</span> <span class="n">obj</span>
+<span class="k">print</span> <span class="s">&#39;ref:&#39;</span><span class="p">,</span> <span class="n">r</span>
+<span class="k">print</span> <span class="s">&#39;r():&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s">&#39;deleting obj&#39;</span>
+<span class="k">del</span> <span class="n">obj</span>
+<span class="k">print</span> <span class="s">&#39;r():&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>このコールバック関数は、元のオブジェクトに対する参照ではなくその参照が &#8220;dead&#8221; になった後で、引数として参照オブジェクトを受け取ります。例えば、これはキャッシュから弱参照オブジェクトを削除させます。</p>
+<div class="highlight-python"><pre>$ python weakref_ref_callback.py
+obj: &lt;__main__.ExpensiveObject object at 0x10046e610&gt;
+ref: &lt;weakref at 0x100469730; to 'ExpensiveObject' at 0x10046e610&gt;
+r(): &lt;__main__.ExpensiveObject object at 0x10046e610&gt;
+deleting obj
+callback( &lt;weakref at 0x100469730; dead&gt; )
+(Deleting &lt;__main__.ExpensiveObject object at 0x10046e610&gt;)
+r(): None</pre>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>プロキシ<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>直接 <tt class="xref py py-class docutils literal"><span class="pre">ref</span></tt> を使用する代わりに、プロキシを使用する方がもっと便利です。プロキシは元のオブジェクトを扱うように使用できるので、そのオブジェクトへアクセスする前に <tt class="xref py py-class docutils literal"><span class="pre">ref</span></tt> を呼び出す必要はありません。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="k">class</span> <span class="nc">ExpensiveObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;(Deleting </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span>
+
+<span class="n">obj</span> <span class="o">=</span> <span class="n">ExpensiveObject</span><span class="p">(</span><span class="s">&#39;My Object&#39;</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;via obj:&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
+<span class="k">print</span> <span class="s">&#39;via ref:&#39;</span><span class="p">,</span> <span class="n">r</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+<span class="k">print</span> <span class="s">&#39;via proxy:&#39;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+<span class="k">del</span> <span class="n">obj</span>
+<span class="k">print</span> <span class="s">&#39;via proxy:&#39;</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+</div>
+<p>参照されたオブジェクトが削除された後でこのプロキシにアクセスすると、 <tt class="xref py py-class docutils literal"><span class="pre">ReferenceError</span></tt> 例外が発生します。</p>
+<div class="highlight-python"><pre>$ python weakref_proxy.py
+via obj: My Object
+via ref: My Object
+via proxy: My Object
+(Deleting &lt;__main__.ExpensiveObject object at 0x10046d490&gt;)
+via proxy:
+Traceback (most recent call last):
+  File "weakref_proxy.py", line 26, in &lt;module&gt;
+    print 'via proxy:', p.name
+ReferenceError: weakly-referenced object no longer exists</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>循環参照<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>弱参照の使用法の1つは、ガベージコレクションを妨げずに循環参照できることです。このサンプルは、循環するグラフを含むときに普通のオブジェクトとプロキシを使用することの違いを説明します。</p>
+<p>まずシーケンスの &#8220;次&#8221; ノードとして渡された任意のオブジェクトをもつ <tt class="xref py py-class docutils literal"><span class="pre">Graph</span></tt> クラスが必要です。簡単にするために、この <tt class="xref py py-class docutils literal"><span class="pre">Graph</span></tt> は、各ノードから1つの外向きの参照をサポートします。つまらないグラフですが、簡単に循環参照を作成します。関数 <tt class="xref py py-func docutils literal"><span class="pre">demo()</span></tt> は、循環参照を作成した後で様々な参照を削除することで、グラフのクラスにアクセスするユーテリティ関数です。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">other</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">set_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.set_next(</span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">))&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">other</span> <span class="o">=</span> <span class="n">other</span>
+    <span class="k">def</span> <span class="nf">all_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">&quot;Generate the nodes in the graph sequence.&quot;</span>
+        <span class="k">yield</span> <span class="bp">self</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">other</span>
+        <span class="k">while</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">n</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">other</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">n</span>
+        <span class="k">return</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;-&gt;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">()])</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;(Deleting </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">WeakGraph</span><span class="p">(</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># 弱参照をもつ他の参照に置き換えるべきかを調べる</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">():</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WeakGraph</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<span class="k">def</span> <span class="nf">collect_and_show_garbage</span><span class="p">():</span>
+    <span class="s">&quot;Show what garbage is present.&quot;</span>
+    <span class="k">print</span> <span class="s">&#39;Collecting...&#39;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&#39;Unreachable objects:&#39;</span><span class="p">,</span> <span class="n">n</span>
+    <span class="k">print</span> <span class="s">&#39;Garbage:&#39;</span><span class="p">,</span> 
+    <span class="n">pprint</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">garbage</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">graph_factory</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;Set up graph:&#39;</span>
+    <span class="n">one</span> <span class="o">=</span> <span class="n">graph_factory</span><span class="p">(</span><span class="s">&#39;one&#39;</span><span class="p">)</span>
+    <span class="n">two</span> <span class="o">=</span> <span class="n">graph_factory</span><span class="p">(</span><span class="s">&#39;two&#39;</span><span class="p">)</span>
+    <span class="n">three</span> <span class="o">=</span> <span class="n">graph_factory</span><span class="p">(</span><span class="s">&#39;three&#39;</span><span class="p">)</span>
+    <span class="n">one</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">two</span><span class="p">)</span>
+    <span class="n">two</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">three</span><span class="p">)</span>
+    <span class="n">three</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">one</span><span class="p">)</span>
+    
+    <span class="k">print</span>
+    <span class="k">print</span> <span class="s">&#39;Graphs:&#39;</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">one</span><span class="p">)</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">two</span><span class="p">)</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">three</span><span class="p">)</span>
+    <span class="n">collect_and_show_garbage</span><span class="p">()</span>
+
+    <span class="k">print</span>
+    <span class="n">three</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">two</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">print</span> <span class="s">&#39;After 2 references removed:&#39;</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">one</span><span class="p">)</span>
+    <span class="n">collect_and_show_garbage</span><span class="p">()</span>
+
+    <span class="k">print</span>
+    <span class="k">print</span> <span class="s">&#39;Removing last reference:&#39;</span>
+    <span class="n">one</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">collect_and_show_garbage</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>ここでメモリリークをデバッグするときに便利な <a class="reference internal" href="../gc/index.html#module-gc" title="Garbage Collector"><tt class="xref py py-mod docutils literal"><span class="pre">gc</span></tt></a> モジュールを使用したテストプログラムがあります。 <tt class="docutils literal"><span class="pre">DEBUG_LEAK</span></tt> フラグは、 <a class="reference internal" href="../gc/index.html#module-gc" title="Garbage Collector"><tt class="xref py py-mod docutils literal"><span class="pre">gc</span></tt></a> モジュールを経由しないと見れないガベージコレクタがもつ参照先であるオブジェクトに関する情報を表示します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="kn">from</span> <span class="nn">weakref_graph</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">demo</span><span class="p">,</span> <span class="n">collect_and_show_garbage</span>
+
+<span class="n">gc</span><span class="o">.</span><span class="n">set_debug</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">DEBUG_LEAK</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&#39;Setting up the cycle&#39;</span>
+<span class="k">print</span>
+<span class="n">demo</span><span class="p">(</span><span class="n">Graph</span><span class="p">)</span>
+
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&#39;Breaking the cycle and cleaning up garbage&#39;</span>
+<span class="k">print</span>
+<span class="n">gc</span><span class="o">.</span><span class="n">garbage</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">gc</span><span class="o">.</span><span class="n">garbage</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">gc</span><span class="o">.</span><span class="n">garbage</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">print</span>
+<span class="n">collect_and_show_garbage</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-func docutils literal"><span class="pre">demo()</span></tt> で <tt class="xref py py-class docutils literal"><span class="pre">Graph</span></tt> インスタンスに対するローカル参照を削除した後でさえ、そのグラフはガベージリストに表示されて、ガベージコレクションされません。このガベージリストのディクショナリは、 <tt class="xref py py-class docutils literal"><span class="pre">Graph</span></tt> インスタンスの属性を保持します。このグラフはそれが何なのかを知っているので強制的に削除できます。</p>
+<div class="highlight-python"><pre>$ python -u weakref_cycle.py
+Setting up the cycle
+
+Set up graph:
+one.set_next(two (&lt;class 'weakref_graph.Graph'&gt;))
+two.set_next(three (&lt;class 'weakref_graph.Graph'&gt;))
+three.set_next(one-&gt;two-&gt;three (&lt;class 'weakref_graph.Graph'&gt;))
+
+Graphs:
+one-&gt;two-&gt;three-&gt;one
+two-&gt;three-&gt;one-&gt;two
+three-&gt;one-&gt;two-&gt;three
+Collecting...
+Unreachable objects: 0
+Garbage:[]
+
+After 2 references removed:
+one-&gt;two-&gt;three-&gt;one
+Collecting...
+Unreachable objects: 0
+Garbage:[]
+
+Removing last reference:
+Collecting...
+gc: uncollectable &lt;Graph 0x100471f50&gt;
+gc: uncollectable &lt;Graph 0x100471f90&gt;
+gc: uncollectable &lt;Graph 0x100471fd0&gt;
+gc: uncollectable &lt;dict 0x100363160&gt;
+gc: uncollectable &lt;dict 0x100366560&gt;
+gc: uncollectable &lt;dict 0x1003672f0&gt;
+Unreachable objects: 6
+Garbage:[Graph(one),
+ Graph(two),
+ Graph(three),
+ {'name': 'one', 'other': Graph(two)},
+ {'name': 'two', 'other': Graph(three)},
+ {'name': 'three', 'other': Graph(one)}]
+
+Breaking the cycle and cleaning up garbage
+
+one.set_next(None (&lt;type 'NoneType'&gt;))
+(Deleting two)
+two.set_next(None (&lt;type 'NoneType'&gt;))
+(Deleting three)
+three.set_next(None (&lt;type 'NoneType'&gt;))
+(Deleting one)
+one.set_next(None (&lt;type 'NoneType'&gt;))
+
+Collecting...
+Unreachable objects: 0
+Garbage:[]</pre>
+</div>
+<p>今度は普通の参照を使用して循環参照を作成しないもっと賢い <tt class="xref py py-class docutils literal"><span class="pre">WeakGraph</span></tt> クラスを定義しましょう。しかし、循環参照が削除されるときは <tt class="xref py py-class docutils literal"><span class="pre">ref</span></tt> を使用します。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="kn">from</span> <span class="nn">weakref_graph</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">demo</span>
+
+<span class="k">class</span> <span class="nc">WeakGraph</span><span class="p">(</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># 弱参照をもつ他の参照に置き換えるべきかを調べる</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">():</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WeakGraph</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">set_next</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">return</span>
+                
+<span class="n">demo</span><span class="p">(</span><span class="n">WeakGraph</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">WeakGraph</span></tt> インスタンスは、既に見たことがあるオブジェクトを参照するためにプロキシを使用するので、 <tt class="xref py py-func docutils literal"><span class="pre">demo()</span></tt> がこのオブジェクトの全てのローカル属性を削除して、循環参照が壊れて、ガベージコレクタはこのオブジェクトを削除します。</p>
+<div class="highlight-python"><pre>$ python weakref_weakgraph.py
+Set up graph:
+one.set_next(two (&lt;class '__main__.WeakGraph'&gt;))
+two.set_next(three (&lt;class '__main__.WeakGraph'&gt;))
+three.set_next(one-&gt;two-&gt;three (&lt;type 'weakproxy'&gt;))
+
+Graphs:
+one-&gt;two-&gt;three
+two-&gt;three-&gt;one-&gt;two
+three-&gt;one-&gt;two-&gt;three
+Collecting...
+Unreachable objects: 0
+Garbage:[]
+
+After 2 references removed:
+one-&gt;two-&gt;three
+Collecting...
+Unreachable objects: 0
+Garbage:[]
+
+Removing last reference:
+(Deleting one)
+one.set_next(None (&lt;type 'NoneType'&gt;))
+(Deleting two)
+two.set_next(None (&lt;type 'NoneType'&gt;))
+(Deleting three)
+three.set_next(None (&lt;type 'NoneType'&gt;))
+Collecting...
+Unreachable objects: 0
+Garbage:[]</pre>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>キャッシュオブジェクト<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-class docutils literal"><span class="pre">ref</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">proxy</span></tt> クラスは &#8220;低レベル&#8221; なものと考えられます。そういったクラスが個々のオブジェクトに対する弱参照を保持して循環参照をガベージコレクションできるものの、オブジェクトのキャッシュを作成する必要があるなら、 <tt class="xref py py-class docutils literal"><span class="pre">WeakKeyDictionary</span></tt> と <tt class="xref py py-class docutils literal"><span class="pre">WeakValueDictionary</span></tt> がもっと適切な API を提供します。</p>
+<p>期待通り、 <tt class="xref py py-class docutils literal"><span class="pre">WeakValueDictionary</span></tt> は保持するオブジェクトに対する弱参照を使用します。そして、別のコードが実際にそういったオブジェクトを使用しないときにガベージコレクションできるようにします。</p>
+<p>普通のディクショナリと <tt class="xref py py-class docutils literal"><span class="pre">WeakValueDictionary</span></tt> を使用することでメモリ操作の違いを説明するために、再度ガベージコレクタを呼び出して実験してみましょう。</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+
+<span class="n">gc</span><span class="o">.</span><span class="n">set_debug</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">DEBUG_LEAK</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ExpensiveObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;ExpensiveObject(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;(Deleting </span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="bp">self</span>
+        
+<span class="k">def</span> <span class="nf">demo</span><span class="p">(</span><span class="n">cache_factory</span><span class="p">):</span>
+    <span class="c"># オブジェクトを保持して</span>
+    <span class="c"># 全ての弱参照がすぐに削除されないようにする</span>
+    <span class="n">all_refs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c"># 渡されたファクトリを使用するキャッシュ</span>
+    <span class="k">print</span> <span class="s">&#39;CACHE TYPE:&#39;</span><span class="p">,</span> <span class="n">cache_factory</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="n">cache_factory</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span> <span class="s">&#39;one&#39;</span><span class="p">,</span> <span class="s">&#39;two&#39;</span><span class="p">,</span> <span class="s">&#39;three&#39;</span> <span class="p">]:</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">ExpensiveObject</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">cache</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span>
+        <span class="n">all_refs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span>
+        <span class="k">del</span> <span class="n">o</span> <span class="c"># 参照カウンタを減らす</span>
+
+    <span class="k">print</span> <span class="s">&#39;all_refs =&#39;</span><span class="p">,</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">all_refs</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;Before, cache contains:&#39;</span><span class="p">,</span> <span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;  </span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">value</span> <span class="c"># decref</span>
+        
+    <span class="c"># キャッシュを除く全てのオブジェクトに対する参照を削除</span>
+    <span class="k">print</span> <span class="s">&#39;Cleanup:&#39;</span>
+    <span class="k">del</span> <span class="n">all_refs</span>
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+    <span class="k">print</span> <span class="s">&#39;After, cache contains:&#39;</span><span class="p">,</span> <span class="n">cache</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">print</span> <span class="s">&#39;  </span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;demo returning&#39;</span>
+    <span class="k">return</span>
+
+<span class="n">demo</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+<span class="k">print</span>
+<span class="n">demo</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>キャッシュしている値を参照する任意のループ変数は、そのオブジェクトの参照カウンタを減らすために明示的にクリアしなければならないことに注意してください。それ以外は、ガベージコレクタはそのオブジェクトを削除せずにキャッシュに残ったままになります。同様に <tt class="docutils literal"><span class="pre">all_ref</span></tt> 変数は、途中でガベージコレクションされないようにそのオブジェクトに対する参照を保持するために使用されます。</p>
+<div class="highlight-python"><pre>$ python weakref_valuedict.py
+CACHE TYPE: &lt;type 'dict'&gt;
+all_refs ={'one': ExpensiveObject(one),
+ 'three': ExpensiveObject(three),
+ 'two': ExpensiveObject(two)}
+Before, cache contains: ['three', 'two', 'one']
+  three = ExpensiveObject(three)
+  two = ExpensiveObject(two)
+  one = ExpensiveObject(one)
+Cleanup:
+After, cache contains: ['three', 'two', 'one']
+  three = ExpensiveObject(three)
+  two = ExpensiveObject(two)
+  one = ExpensiveObject(one)
+demo returning
+(Deleting ExpensiveObject(three))
+(Deleting ExpensiveObject(two))
+(Deleting ExpensiveObject(one))
+
+CACHE TYPE: weakref.WeakValueDictionary
+all_refs ={'one': ExpensiveObject(one),
+ 'three': ExpensiveObject(three),
+ 'two': ExpensiveObject(two)}
+Before, cache contains: ['three', 'two', 'one']
+  three = ExpensiveObject(three)
+  two = ExpensiveObject(two)
+  one = ExpensiveObject(one)
+Cleanup:
+(Deleting ExpensiveObject(three))
+(Deleting ExpensiveObject(two))
+(Deleting ExpensiveObject(one))
+After, cache contains: []
+demo returning</pre>
+</div>
+<p><tt class="xref py py-class docutils literal"><span class="pre">WeakKeyDictionary</span></tt> は同様に動作しますが、ディクショナリの値ではなく、キーの弱参照を使用します。</p>
+<p><a class="reference internal" href="#module-weakref" title="&quot;巨大な&quot; オブジェクトを参照して、他に非弱参照のオブジェクトがない場合にガベージコレクションの対象にする"><tt class="xref py py-mod docutils literal"><span class="pre">weakref</span></tt></a> の標準ライブラリドキュメントには次の警告があります。</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">注意: <tt class="xref py py-class docutils literal"><span class="pre">WeakValueDictionary</span></tt> は Python のディクショナリの上で作成されるので、繰り返し処理するときにサイズを変更してはいけません。 <tt class="xref py py-class docutils literal"><span class="pre">WeakValueDictionary</span></tt> が繰り返し処理されるとき、プログラムが行うアクションがディクショナリの要素を (ガベージコレクションの副作用として) &#8220;魔法のように&#8221; 消してしまう可能性があるので、サイズ変更を保証するのが難しくなります。</p>
+</div>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<dl class="last docutils">
+<dt><a class="reference external" href="http://docs.python.org/lib/module-weakref.html">weakref</a></dt>
+<dd>本モジュールの標準ライブラリドキュメント</dd>
+<dt><a class="reference internal" href="../gc/index.html#module-gc" title="Garbage Collector"><tt class="xref py py-mod docutils literal"><span class="pre">gc</span></tt></a></dt>
+<dd>インタープリタのガベージコレクタのインタフェース</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../copy/index.html" title="copy – オブジェクトのコピー"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../Queue/index.html" title="Queue – スレッドセーフな FIFO の実装"
+             >previous</a> |</li>
+        <li><a href="../contents.html">PyMOTW</a> &raquo;</li>
+          <li><a href="../data_types.html" >データタイプ</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>

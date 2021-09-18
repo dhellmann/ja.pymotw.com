@@ -1,0 +1,510 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>&lt;no title&gt; - Python Module of the Week</title>
+
+<link rel="stylesheet" href="_static/default.css" 
+    type="text/css" />
+<style>
+    body {
+        margin: 8px;
+    }
+    .highlight {
+        background-color: white;
+        border: 0;
+    }
+    .highlight pre {
+        background-color: white;
+    }
+</style>
+
+<link href="_static/css/leaves.css" rel="stylesheet" type="text/css" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann"
+      href="http://feeds.feedburner.com/DougHellmann" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Project Releases"
+      href="http://feeds.feedburner.com/DougHellmann-Releases" />
+<link rel="alternate" type="application/atom+xml"
+      title="Doug Hellmann Links"
+      href="http://feeds.feedburner.com/DougHellmannLinkBlog" />
+
+
+
+<script type="text/javascript">
+  var DOCUMENTATION_OPTIONS = {
+      URL_ROOT:    '#',
+      VERSION:     '1.132',
+      COLLAPSE_MODINDEX: false,
+      FILE_SUFFIX: '.html'
+  };
+</script>
+
+<script type="text/javascript" src="_static/jquery.js"></script>
+<script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="author" title="このドキュメントについて" href="about.html" />
+    <link rel="contents" title="コンテンツテーブル" href="contents.html" />
+    <link rel="index" title="インデックス" href="genindex.html" />
+    <link rel="top" title="Python Module of the Week" href="index.html" />
+
+<meta name="verify-v1" content="5saTcOa2HLac4V85yUg3SARfun1PqT5Upu7IR/6fpv4="/>
+</head>
+<body>
+    
+<div id="container">
+    
+<div id="header">
+  <a href="/"><h1>PyMOTW</h1></a>
+  <p></p>
+</div>
+
+<div id="sidebar_left_wrapper">
+
+<div id="navigation"> 
+	<ul id="navlist">
+		<li><a href="index.html">ホーム</a></li>
+		<li><a href="http://blog.doughellmann.com/" target="_">ブログ</a></li>
+        <li><a href="http://www.doughellmann.com/books/">書籍</a></li>
+		<li><a href="about.html">自己紹介</a></li>
+		<li><a href="/2/genindex.html">サイトインデックス</a></li>
+	</ul>
+</div>
+
+
+  <div id="sidebar_left">
+      <p>この情報が役に立つと思われたら、私の本を手に取ってみてください。
+      <i><a href="/books/byexample/">The Python Standard Library By
+      Example</a></i>.</p>
+  </div>
+
+</div>
+
+
+<div id="sidebar">    <h3>ナビゲーション</h3>
+      <p>
+    <a href="contents.html"><strong>コンテンツテーブル</strong></a><br/>
+    
+      <h3>This Page</h3>
+      <p>
+      <a href="_sources/pdf_contents.txt"
+               rel="nofollow">Show Source</a>
+      </p><p><iframe src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=000000&IS2=1&bg1=DDDDDD&fc1=000000&lc1=CC6714&t=hellflynet-20&o=1&p=8&l=as1&m=amazon&f=ifr&md=10FE9736YVPPT7A0FBG2&asins=0321767349" style="width:120px;height:240px;margin:0 1em 0 1em;" scrolling="no" frameborder="0"></iframe></p>    <p class="ads">
+    <script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 120;
+    google_ad_height = 600;
+    google_ad_format = "120x600_as";
+    google_ad_type = "text";
+    //2007-10-27: www.doughellmann.com
+    google_ad_channel = "0828653884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>
+    </p>
+</div>
+
+
+<div id="content">
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="contents.html">PyMOTW</a> &raquo;</li> 
+      </ul>
+    </div>
+
+  <p class="rubric">About Python Module of the Week</p>
+<p>PyMOTW is a series of blog posts written by <a class="reference external" href="http://www.doughellmann.com/">Doug Hellmann</a>.  It was started as a way to build
+the habit of writing something on a regular basis.  The focus of the
+series is building a set of example code for the modules in the
+<a class="reference external" href="http://www.python.org/">Python</a> standard library.</p>
+<p>Complete documentation for the standard library can be found on the
+Python web site at <a class="reference external" href="http://docs.python.org/library/contents.html">http://docs.python.org/library/contents.html</a>.</p>
+<p class="rubric">Tools</p>
+<p>The source text for PyMOTW is <a class="reference external" href="http://docutils.sourceforge.net/">reStructuredText</a> and the HTML and PDF output are
+created using <a class="reference external" href="http://sphinx.pocoo.org/">Sphinx</a>.</p>
+<p class="rubric">Subscribe</p>
+<p>As new articles are written, they are posted to <a class="reference external" href="http://blog.doughellmann.com/">my blog</a>. Updates are available by <a class="reference external" href="http://feeds.feedburner.com/PyMOTW">RSS</a> and <a class="reference external" href="http://www.feedburner.com/fb/a/emailverifySubmit?feedId=806224&amp;amp;loc=en_US">email</a>. See
+the project home page for details
+(<a class="reference external" href="http://www.doughellmann.com/PyMOTW/">http://www.doughellmann.com/PyMOTW/</a>).</p>
+<p class="rubric">Translations and Other Versions</p>
+<p>Junjie Cai and Yan Sheng have started a google code project called
+PyMOTWCN (<a class="reference external" href="http://code.google.com/p/pymotwcn/">http://code.google.com/p/pymotwcn/</a>) and posted the completed
+translations at <a class="reference external" href="http://www.vbarter.cn/pymotw/">http://www.vbarter.cn/pymotw/</a>.</p>
+<p>Ralf Schönian is translating PyMOTW into German, following an
+alphabetical order.  The results are available on his web site,
+<a class="reference external" href="http://schoenian-online.de/pymotw.html">http://schoenian-online.de/pymotw.html</a>.  Ralf is an active member of
+the <a class="reference external" href="http://wiki.python.de/User_Group_K%C3%B6ln?action=show&amp;redirect=pyCologne">pyCologne</a>
+user group in Germany and author of pyVoc, the open source
+English/German vocabulary trainer (<a class="reference external" href="http://code.google.com/p/pyvoc/">http://code.google.com/p/pyvoc/</a>).</p>
+<p>Roberto Pauletto is working on an Italian translation at
+<a class="reference external" href="http://robyp.x10hosting.com/">http://robyp.x10hosting.com/</a>.  Roberto creates Windows applications
+with C# by day, and tinkers with Linux and Python at home.  He has
+recently moved to Python from Perl for all of his
+system-administration scripting.</p>
+<p><a class="reference external" href="http://denklab.org/">Ernesto Rico Schmidt</a> provides a Spanish
+translation that follows the English version posts. Ernesto is in
+Bolivia, and is translating these examples as a way to contribute to
+the members of the <a class="reference external" href="http://www.softwarelibre.org.bo/">Bolivian Free Software</a> community who use Python.  The
+full list of articles available in Spanish can be found at
+<a class="reference external" href="http://denklab.org/articles/category/pymotw/">http://denklab.org/articles/category/pymotw/</a>, and there is an <a class="reference external" href="http://denklab.org/feeds/articles/category/pymotw/">RSS
+feed</a>.</p>
+<p><a class="reference external" href="http://d.hatena.ne.jp/t2y-1979/">Tetsuya Morimoto</a> is creating a
+Japanese translation. Tetsuya has used Python for 1.5 years. He has as
+experience at a Linux Distributor using Python with yum, anaconda, and
+rpm-tools while building RPM packages. Now, he uses it to make useful
+tools for himself, and is interested in application frameworks such as
+Django, mercurial and wxPython. Tetsuya is a member of <a class="reference external" href="http://www.python.jp/Zope/">Python Japan
+User&#8217;s Group</a> and <a class="reference external" href="http://groups.google.co.jp/group/python-code-reading">Python Code Reading</a>. The home
+page for his translation is
+<a class="reference external" href="http://d.hatena.ne.jp/t2y-1979/20090525/1243227350">http://d.hatena.ne.jp/t2y-1979/20090525/1243227350</a>.</p>
+<p>Gerard Flanagan is working on a &#8220;Python compendium&#8221; called <a class="reference external" href="http://www.thehazeltree.org/">The Hazel
+Tree</a>.  He is converting a collection
+of old and new of Python-related reference material into
+reStructuredText and then building a single searchable repository from
+the results.  I am very pleased to have PyMOTW included with works
+from authors like Mark Pilgrim, Fredrik Lundh, Andrew Kuchling, and a
+growing list of others.</p>
+<p class="rubric">Other Contributors</p>
+<p>Thank you to John Benediktsson for the original HTML-to-reST
+conversion.</p>
+<p class="rubric">Copyright</p>
+<p>All of the prose from the Python Module of the Week is licensed under
+a <a class="reference external" href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/">Creative Commons Attribution, Non-commercial, Share-alike 3.0</a> license.  You
+are free to share and create derivative works from it.  If you post
+the material online, you must give attribution and link to the PyMOTW
+home page (<a class="reference external" href="http://www.doughellmann.com/PyMOTW/">http://www.doughellmann.com/PyMOTW/</a>).  You may not use this
+work for commercial purposes.  If you alter, transform, or build upon
+this work, you may distribute the resulting work only under the same
+or similar license to this one.</p>
+<p>The source code included here is copyright Doug Hellmann and licensed
+under the BSD license.</p>
+<blockquote>
+<p>Copyright Doug Hellmann, All Rights Reserved</p>
+<p>Permission to use, copy, modify, and distribute this software and
+its documentation for any purpose and without fee is hereby
+granted, provided that the above copyright notice appear in all
+copies and that both that copyright notice and this permission
+notice appear in supporting documentation, and that the name of Doug
+Hellmann not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.</p>
+<p>DOUG HELLMANN DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
+NO EVENT SHALL DOUG HELLMANN BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
+</blockquote>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="articles/index.html">標準ライブラリの機能</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="articles/data_persistence.html">データの永続化と変換</a></li>
+<li class="toctree-l2"><a class="reference internal" href="articles/data_structures.html">インメモリデータ構造</a></li>
+<li class="toctree-l2"><a class="reference internal" href="articles/file_access.html">ファイルアクセス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="articles/text_processing.html">テキスト処理ツール</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="builtins.html">組み込みブジェクト</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions/index.html">exceptions &#8211; ビルトインエラークラス</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="string_services.html">文字列サービス</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codecs/index.html">codecs &#8211; String encoding and decoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="difflib/index.html">difflib &#8211; シーケンスを比較する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="string/index.html">string &#8211; テキストを扱う</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StringIO/index.html">StringIO と cStringIO &#8211; ファイルのような API でテキストバッファを扱う</a></li>
+<li class="toctree-l2"><a class="reference internal" href="re/index.html">re &#8211; Regular Expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="struct/index.html">struct &#8211; バイナリデータを扱う</a></li>
+<li class="toctree-l2"><a class="reference internal" href="textwrap/index.html">textwrap &#8211; 段落内のテキストを整形する</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_types.html">データタイプ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="array/index.html">array &#8211; データ型固定のシーケンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime/index.html">datetime &#8211; 日付/時間の操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calendar/index.html">calendar &#8211; 日付の処理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collections/index.html">collections &#8211; コンテナデータ型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="heapq/index.html">heapq &#8211; インプレースヒープソートアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bisect/index.html">bisect &#8211; ソート済みのリストを保持する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sched/index.html">sched &#8211; 汎用イベントスケジューラ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Queue/index.html">Queue &#8211; スレッドセーフな FIFO の実装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weakref/index.html">weakref &#8211; オブジェクトのガベージコレクション可能な参照</a></li>
+<li class="toctree-l2"><a class="reference internal" href="copy/index.html">copy &#8211; オブジェクトのコピー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pprint/index.html">pprint &#8211; データ構造を見やすい形で出力する</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="numeric.html">数値や数学に関するモジュール</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="decimal/index.html">decimal &#8211; 固定小数点数と浮動小数点数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fractions/index.html">fractions &#8211; 有理数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functools/index.html">functools &#8211; 関数を巧みに操作するためのツール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="itertools/index.html">itertools &#8211; 効率的なループ処理のためのイテレータ関数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math/index.html">math &#8211; 数学に関する関数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operator/index.html">operator &#8211; ビルトイン演算子に対する関数インタフェース</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random/index.html">random &#8211; 疑似乱数の生成</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internet_data.html">インターネットデータ操作</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="base64/index.html">base64 &#8211; バイナリデータを ASCII 文字へエンコードする</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json/index.html">json &#8211; JavaScript Object Notation シリアライザ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mailbox/index.html">mailbox &#8211; メールアーカイブのアクセスと操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mhlib/index.html">mhlib &#8211; MH メールボックスと連携する</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file_formats.html">ファイルフォーマット</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="csv/index.html">csv &#8211; カンマ区切りのファイル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConfigParser/index.html">ConfigParser &#8211; Work with configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="robotparser/index.html">robotparser &#8211; インターネットスパイダーのアクセス制御</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cryptographic.html">暗号サービス</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hashlib/index.html">hashlib &#8211; 暗号ハッシュとメッセージダイジェスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hmac/index.html">hmac &#8211; 暗号化シグネチャとメッセージ検証</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file_access.html">ファイルとディレクトリアクセス</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ospath/index.html">os.path &#8211; プラットホーム独自のファイル名を操作する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fileinput/index.html">fileinput &#8211; 入力ストリームを行単位で処理する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filecmp/index.html">filecmp &#8211; ファイルを比較する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tempfile/index.html">tempfile &#8211; 一時的なファイルシステムリソースを作成する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glob/index.html">glob &#8211; ファイル名のパターンマッチング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fnmatch/index.html">fnmatch &#8211; Unix の glob パターンに対応したファイ名比較</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linecache/index.html">linecache &#8211; テキストファイルを効率的に読み込む</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shutil/index.html">shutil &#8211; 高レベルなファイル操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dircache/index.html">dircache &#8211; ディレクトリの内容をキャッシュする</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compression.html">データの圧縮とアーカイブ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bz2/index.html">bz2 &#8211; bzip2 compression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gzip/index.html">gzip &#8211; Read and write GNU zip files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tarfile/index.html">tarfile &#8211; Tar archive access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zipfile/index.html">zipfile &#8211; Read and write ZIP archive files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zlib/index.html">zlib &#8211; GNU zlib 圧縮ライブラリへの低レベルアクセス</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="persistence.html">データの永続化</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="anydbm/index.html">anydbm &#8211; DBM スタイルのデータベースへのアクセス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbhash/index.html">dbhash &#8211; BSD データベースライブラリ向けの DBM スタイル API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbm/index.html">dbm &#8211; シンプルなデータベースインタフェース</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dumbdbm/index.html">dumbdbm &#8211; 移植性の高い DBM 実装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gdbm/index.html">gdbm &#8211; dbm ライブラリの GNU バージョン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pickle/index.html">pickle と cPickle &#8211; Python オブジェクトシリアライゼーション</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shelve/index.html">shelve &#8211; 任意の Python オブジェクトの永続ストレージ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="whichdb/index.html">whichdb &#8211; DBM スタイルのデータベースフォーマットを確認する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlite3/index.html">sqlite3 &#8211; 組み込み関係データベース</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generic_os.html">汎用 OS サービス</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="os/index.html">os &#8211; Portable access to operating system specific features.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time/index.html">time &#8211; 時間を扱う関数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getopt/index.html">getopt &#8211; Command line option parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optparse/index.html">optparse &#8211; getopt に代わるコマンドラインオプションパーサ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="argparse/index.html">argparse &#8211; コマンドラインオプションと引数の解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging/index.html">logging &#8211; ステータス、エラー、その他の情報をログ出力する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getpass/index.html">getpass &#8211; パスワードのために入力文字を表示しないプロンプト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="platform/index.html">platform &#8211; システムのバージョン情報にアクセスする</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optional_os.html">オプション OS サービス</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="threading/index.html">threading &#8211; スレッドによる並列処理を管理する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmap/index.html">mmap &#8211; メモリマップファイル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiprocessing/index.html">multiprocessing &#8211; スレッドのようにプロセスを管理する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readline/index.html">readline &#8211; GNU readline ライブラリのインタフェース</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rlcompleter/index.html">rlcompleter &#8211; インタラクティブインタープリタへタブ補完を追加する</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unix.html">Unix に特化したサービス</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands/index.html">commands &#8211; Run external shell commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grp/index.html">grp &#8211; Unix Group Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipes/index.html">pipes &#8211; Unix shell command pipeline templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pwd/index.html">pwd &#8211; Unix Password Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource/index.html">resource &#8211; システムリソース管理</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ipc.html">プロセス間通信とネットワーキング</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="asynchat/index.html">asynchat &#8211; 非同期プロトコルハンドラ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="asyncore/index.html">asyncore &#8211; 非同期 I/O ハンドラ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal/index.html">signal &#8211; 非同期のシステムイベント通知を受け取る</a></li>
+<li class="toctree-l2"><a class="reference internal" href="subprocess/index.html">subprocess &#8211; プロセスを生成して連携する</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internet_protocols.html">インターネットプロトコルとサポート</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="BaseHTTPServer/index.html">BaseHTTPServer &#8211; web サーバを実装するベースクラス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cgitb/index.html">cgitb &#8211; 詳細なトレースバックレポート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Cookie/index.html">Cookie &#8211; HTTP Cookies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imaplib/index.html">imaplib - IMAP4 client library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SimpleXMLRPCServer/index.html">SimpleXMLRPCServer &#8211; XML-RPC サーバを実装する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="smtpd/index.html">smtpd &#8211; サンプル SMTP サーバ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="smtplib/index.html">smtplib &#8211; 簡易メール転送プロトコルクライアント</a></li>
+<li class="toctree-l2"><a class="reference internal" href="socket/index.html">socket &#8211; Network Communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="select/index.html">select &#8211; Wait for I/O Efficiently</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SocketServer/index.html">SocketServer &#8211; ネットワークサービスを作成する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="urllib/index.html">urllib &#8211; ネットワークリソースへのシンプルなインタフェース</a></li>
+<li class="toctree-l2"><a class="reference internal" href="urllib2/index.html">urllib2 &#8211; URL をオープンするライブラリ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="urlparse/index.html">urlparse &#8211; URL を部分文字列に分割する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uuid/index.html">uuid &#8211; 汎用一意識別子</a></li>
+<li class="toctree-l2"><a class="reference internal" href="webbrowser/index.html">webbrowser &#8211; web ページを表示する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xmlrpclib/index.html">xmlrpclib &#8211; XML-RPC 通信のためのクライアントライブラリ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markup.html">構造化マークアップ処理ツール</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="xml/etree/ElementTree/index.html">xml.etree.ElementTree &#8211; XML 操作 API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="i18n.html">国際化</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gettext/index.html">gettext &#8211; メッセージカタログ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="locale/index.html">locale &#8211; POSIX 文化のローカライゼーション API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="frameworks.html">プログラムフレームワーク</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cmd/index.html">cmd &#8211; Create line-oriented command processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shlex/index.html">shlex &#8211; シェルスタイルの字句解析</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev_tools.html">開発ツール</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="doctest/index.html">doctest &#8211; Testing through documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydoc/index.html">pydoc &#8211; Python モジュールのオンラインヘルプ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unittest/index.html">unittest &#8211; Automated testing framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdb/index.html">pdb &#8211; Interactive Debugger</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="profilers.html">デバッグとプロファイリング</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="profile/index.html">profile, cProfile, pstats &#8211; Python プログラムのパフォーマンス解析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timeit/index.html">timeit &#8211; 小さな Python コードの実行時間を計る</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trace/index.html">trace &#8211; 実行された通りに Python コードを追跡する</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="runtime_services.html">Python ランタイムサービス</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="abc/index.html">abc &#8211; 抽象基底クラス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="atexit/index.html">atexit &#8211; プログラムの終了時に関数を呼び出す</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contextlib/index.html">contextlib &#8211; コンテキストマネージャユーティリティ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gc/index.html">gc &#8211; Garbage Collector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inspect/index.html">inspect &#8211; Inspect live objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="site/index.html">site &#8211; Site-wide configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sys/index.html">sys &#8211; System-specific Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sysconfig/index.html">sysconfig &#8211; Interpreter Compile-time Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="traceback/index.html">traceback &#8211; Extract, format, and print exceptions and stack traces.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="warnings/index.html">warnings &#8211; Non-fatal alerts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="importing.html">インポートモジュール</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="imp/index.html">imp &#8211; モジュールのインポート構造に対するインタフェース</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pkgutil/index.html">pkgutil &#8211; パッケージユーティリティ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zipimport/index.html">zipimport &#8211; ZIP アーカイブ内から Python コードを読み込む</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="miscelaneous.html">種々雑多なもの</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="EasyDialogs/index.html">EasyDialogs &#8211; Mac OS X 向けの Carbon ダイアログ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plistlib/index.html">plistlib &#8211; Mac OS X のプロパティリストファイルを扱う</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">履歴</a></li>
+</ul>
+</div>
+
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="contents.html">PyMOTW</a> &raquo;</li> 
+      </ul>
+    </div>
+
+
+
+<div id="addthis"><a href="http://www.addthis.com/bookmark.php" onclick="addthis_url   = location.href; addthis_title = document.title; return addthis_click(this);" target="_blank"><img src="http://s7.addthis.com/static/btn/lg-share-en.gif" width="125" height="16" border="0" alt="Bookmark and Share" /></a><script type="text/javascript">var addthis_pub = "dhellmann";</script><script type="text/javascript" src="http://s7.addthis.com/js/widget.php?v=10"></script></div>
+
+
+
+<!-- Disqus -->
+<div id="disqus_wrapper">
+<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/doughellmann/embed.js"></script><noscript><a href="http://doughellmann.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</div>
+
+<div id="footer_ads">
+
+    <p><script type="text/javascript"><!--
+    google_ad_client = "pub-3205160560229413";
+    google_ad_width = 728;
+    google_ad_height = 90;
+    google_ad_format = "728x90_as";
+    google_ad_type = "text";
+    //2007-10-21: www.doughellmann.com
+    google_ad_channel = "9907726884";
+    google_color_border = "FFFFFF";
+    google_color_bg = "FFFFFF";
+    google_color_link = "CC6714";
+    google_color_text = "000000";
+    google_color_url = "999999";
+    google_ui_features = "rc:0";
+    //-->
+    </script>
+    <script type="text/javascript"
+      src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script></p>
+</div>
+
+<div id="footer">
+ 
+<p>
+    &copy; Copyright Doug Hellmann.
+    | <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/us/" rel="license"><img alt="Creative Commons License" style="border-width:0; align: center;" width="80" height="15" src="http://i.creativecommons.org/l/by-nc-sa/3.0/us/80x15.png"/></a>
+    | Last updated on Feb 17, 2013.
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+   | Design based on "Leaves" by <a href="http://smallpark.org">SmallPark</a>
+</p>
+   
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript" />
+<script type="text/javascript">
+  _uacct = "UA-1847381-1";
+  urchinTracker();
+</script>
+
+</div>
+
+</div>
+
+
+<!-- Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+		var links = document.getElementsByTagName('a');
+		var query = '?';
+		for(var i = 0; i < links.length; i++) {
+			if(links[i].href.indexOf('#disqus_thread') >= 0) {
+				query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+			}
+		}
+		document.write('<script type="text/javascript" src="http://disqus.com/forums/doughellmann/get_num_replies.js' + query + '"></' + 'script>');
+	})();
+//]]>
+</script>
+
+
+</body>
+</html>
